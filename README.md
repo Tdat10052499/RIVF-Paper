@@ -46,7 +46,7 @@ When you fix an analysis script, re-derive from the same raw file.
 
 ```bash
 # 1. Clone and enter the repo
-git clone <repo-url>
+git clone <https://github.com/Tdat10052499/RIVF-Paper>
 cd backdoor-shard-skew
 
 # 2. Create and activate virtual environment
