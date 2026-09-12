@@ -1,0 +1,19 @@
+# Core
+torch>=2.1.0
+torchvision>=0.16.0
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Utilities
+tqdm>=4.65.0
+pyyaml>=6.0
+jsonschema>=4.17.0
+
+# Reproducibility
+# Pin exact versions after first working run:
+# pip freeze > environment/requirements_frozen.txt

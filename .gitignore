@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.env
+
+# Checkpoints & large data (track by manifest, not by content)
+data/checkpoints/
+data/datasets/
+*.pth
+*.pt
+*.ckpt
+*.h5
+
+# Raw results (keep in git — immutable record)
+# results/raw/ is intentionally NOT ignored
+
+# Figures (regenerated from scripts)
+figures/*.png
+figures/*.pdf
+
+# Paper build artifacts
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.synctex.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
