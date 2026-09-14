@@ -1,0 +1,17 @@
+﻿{
+  "date": "2026-09-14",
+  "author": "Nguyen Minh Chinh",
+  "checkpoint": "resnet18_cifar10_badnets_infected.pt",
+  "model": "preactresnet18",
+  "dataset": "cifar10",
+  "attack": "badnets",
+  "poison_rate": 0.1,
+  "seed": 42,
+  "clean_accuracy": 89.41,
+  "attack_success_rate": 97.43,
+  "total_bd_test_samples": 9000,
+  "correct_bd": 8769,
+  "device": "cpu",
+  "torch_version": "2.14.0+cpu",
+  "notes": "Baseline ASR reproduced. Day 2 deliverable complete."
+}

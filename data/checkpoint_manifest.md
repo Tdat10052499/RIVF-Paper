@@ -1,17 +1,7 @@
-# Checkpoint Manifest
+﻿# Checkpoint Manifest
 
-Every checkpoint used in this project must be recorded here.
-Owner: Nguyen Minh Chinh
-
-## Format
-
-| Filename | Source | URL | SHA256 | Date downloaded | Notes |
-|---|---|---|---|---|---|
-| (none yet) | BackdoorBench | https://github.com/SCLBD/BackdoorBench | - | - | Chinh to confirm file exists on Drive before Day 2 (14/09) |
-
-## Checklist before using any checkpoint
-
-- [ ] File confirmed to exist on Drive/SharePoint (not just listed in BackdoorBench README)
-- [ ] SHA256 recorded
-- [ ] Source URL recorded
-- [ ] Checkpoint loads on M2 without error
+## resnet18_cifar10_badnets_infected.pt
+- **Source:** https://cuhko365.sharepoint.com/:f:/s/SDSbackdoorbench/EmYD8BoPY8hAqNCV_Rb_zwsBFdqf88Yx01xi0V8tc4whvw?e=d7oJNc
+- **Original filename:** cifar10_preactresnet18_badnet_0_1.zip → attack_result.pt
+- **Model:** PreActResNet18, CIFAR-10, BadNets, poison_rate=0.1
+- **Owner:** Nguyen Minh Chinh
