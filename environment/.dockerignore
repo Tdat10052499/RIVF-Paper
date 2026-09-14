@@ -1,0 +1,6 @@
+venv/
+data/checkpoints/badnet_extracted/
+data/cifar10/
+.git/
+__pycache__/
+*.pyc

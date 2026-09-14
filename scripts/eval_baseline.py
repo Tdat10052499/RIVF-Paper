@@ -1,8 +1,8 @@
-﻿import sys, torch, os
+import sys, torch, os
 import torchvision.transforms as transforms
 from PIL import Image
 
-sys.path.insert(0, r'C:\Users\nguye\Documents\BackdoorBench')
+sys.path.insert(0, os.environ.get('BACKDOORBENCH_PATH', r'D:\BackdoorBench'))
 result = torch.load(r'data/checkpoints/resnet18_cifar10_badnets_infected.pt', map_location='cpu', weights_only=False)
 from models.preact_resnet import PreActResNet18
 model = PreActResNet18(num_classes=10)
@@ -15,7 +15,7 @@ transform = transforms.Compose([
 ])
 
 data_dict = result['bd_test']['bd_data_container']['data_dict']
-base = r'C:\Users\nguye\Downloads\badnet_extracted'
+base = os.environ.get('BADNET_PATH', r'D:\RIVF-Paper\data\checkpoints\badnet_extracted')
 
 correct = total = 0
 for entry in data_dict.values():
@@ -32,3 +32,5 @@ asr = 100. * correct / total
 print('CA:  89.41%')
 print('ASR: %.2f%%  (%d/%d)' % (asr, correct, total))
 print('PASS' if asr >= 80 else 'FAIL', '- target >= 80%')
+
+
