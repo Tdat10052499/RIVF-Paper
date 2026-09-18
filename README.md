@@ -5,6 +5,11 @@
 **Target:** RIVF 2026 Special Session SS3  
 **Deadline:** 29/09/2026
 
+> ### Start here, 18/09
+> Read [`notes/2026-09-18_hung_supervisor.md`](notes/2026-09-18_hung_supervisor.md) before running anything else.
+> It supersedes the Day-5 gate stated below, it defines two blocking controls that must run first,
+> and it redirects the study onto repair locality. The schedule in its Section 6 is the operative one.
+
 ---
 
 ## Research question

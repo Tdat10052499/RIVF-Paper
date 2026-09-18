@@ -69,15 +69,16 @@ share_s = || W_repaired[s] - W_infected[s] ||_2^2  /  sum_j || W_repaired[j] - W
 
 Plot `share_s` against recovered ASR across every repair method. That scatter is the central figure of the paper, for it converts a binary gate into a quantitative relationship and it explains both the negative and the positive cases within one account.
 
-### 4.2 Add local repair methods
+### 4.2 Add one local repair method, not four
 
-Produce repaired checkpoints under at least two of the following, holding the infected checkpoint, the partition, the seed, and the evaluation fixed:
+The thesis requires the two endpoints of the locality axis, not a dense spectrum. Produce exactly two repaired checkpoints, holding the infected checkpoint, the partition, the seed, and the evaluation fixed:
 
-- Apply ANP, which prunes by mask and concentrates the update in few neurons.
-- Apply fine-pruning, which prunes dormant channels and then fine-tunes briefly.
-- Apply clean fine-tuning for 1 epoch at lr=0.001, which is the same method as the current baseline reduced to a realistic patch budget.
+- Retain the existing 20-epoch clean fine-tune as the global endpoint. This is already done.
+- Apply ANP as the local endpoint, which prunes by mask and concentrates the update in few neurons.
 
-Retain the 20-epoch run as the global endpoint. Expect the ordering ANP < fine-pruning < short fine-tuning < 20-epoch fine-tuning in resistance, and report it whatever it turns out to be.
+BackdoorBench ships ANP, fine-pruning, and NAD as implemented defenses. Run their script against our infected checkpoint rather than implementing anything, and record the exact command, configuration, and seed.
+
+Treat fine-pruning and a 1-epoch fine-tune at lr=0.001 as optional intermediate points. Add them only if the two endpoints are complete and validated by 22/09. Two endpoints establish the relationship; intermediate points decorate it.
 
 ### 4.3 Extend to multi-shard skew
 
@@ -86,6 +87,31 @@ Run the two-shard sweep at n=6. Fifteen combinations at inference cost is minute
 ### 4.4 Batch the evaluation
 
 The current loop opens one image at a time and runs a forward pass per image over 9,000 images on CPU. Load the poisoned test set once, batch at 256, and run on the M2 with `device="mps"`. The sweeps in 4.2 and 4.3 are otherwise slower than they need to be by a factor of roughly fifty, and we do not have the days to spare.
+
+### 4.5 Bound the serving experiment to one table
+
+`src/serving/` is empty with eleven days remaining, so we build the smallest artifact that supports the claim. Do not build a system. Build two processes that load a model from a manifest, and report four numbers comparing per-shard signature checking against epoch-manifest pinning:
+
+- Report manifest size in bytes.
+- Report verification latency per model load.
+- Report rollout recovery time after an interrupted update.
+- Report whether the skewed assembly is accepted or rejected under each policy.
+
+One table and one paragraph. The security claim rests on Section 4.1 and the sweeps; the serving component establishes deployment relevance for a 6G session and nothing more.
+
+---
+
+## 4a. The paper lands whatever the measurements say
+
+Read this before you worry about the outcome. Three branches remain open, and each yields a submittable paper under the framing in Section 4.
+
+Under the first branch, hybrid clean accuracy holds and ASR recovers under the local repair. We report shard-version skew as a practical attack against locally repaired models, and epoch pinning as the control that defeats it.
+
+Under the second, hybrid clean accuracy holds and ASR stays low under every repair. We report repair locality as a measurable predictor of shard-skew resistance, with a negative attack result stated plainly and the conditions for success identified.
+
+Under the third, hybrid clean accuracy collapses. Skew degrades utility before it restores the backdoor, which makes utility monitoring a viable detector and makes the attack self-announcing. That is an availability finding, and it is worth reporting, for it tells an operator what to watch when manifest pinning is absent.
+
+None of these is a failure. The failure mode available to us is not a null measurement. It is running out of days.
 
 ---
 
@@ -103,16 +129,22 @@ If no repair method clears this, we write the negative result, and Section 4.1 s
 
 | Dates | Work | Owner |
 |---|---|---|
-| 18-19/09 | Run controls in Section 2. Add clean accuracy to every existing configuration and verify full rollback. | Dan |
-| 18-19/09 | Compute `r_s` and `share_s` for the 20-epoch repair. Batch the evaluation. | Dan, Chinh |
-| 19-21/09 | Produce ANP and fine-pruning checkpoints, and the 1-epoch fine-tune. | Chinh |
-| 20-22/09 | Run single-shard and two-shard sweeps for every repair method, two seeds. | Dan |
-| 21-23/09 | Build the serving comparison: per-shard signature checking against epoch-manifest pinning, with latency and rollout recovery measured on the M2 only. | Dat |
-| 22/09 | Decide against the revised gate. | All |
-| 23-27/09 | Write the six pages. Results first, then method, then introduction, related work, and abstract last. | All |
-| 28-29/09 | Audit adversarially, then submit. | All |
+| 18-19/09 | Run both controls in Section 2. Add clean accuracy to every configuration already run, and verify full rollback returns ASR 97.43% and CA 89.41%. | Dan |
+| 18-19/09 | Compute `r_s` and `share_s` for the 20-epoch repair. Batch the evaluation at 256 on the M2. | Dan, Chinh |
+| 19-20/09 | Produce the ANP checkpoint using BackdoorBench's own defense script. | Chinh |
+| 20-22/09 | Run single-shard and two-shard sweeps for both repairs, two seeds, recording ASR and clean accuracy together. | Dan |
+| 20-22/09 | Build the two-process serving harness bounded to the four numbers in Section 4.5. | Dat |
+| 22/09 | Decide against the revised gate. Freeze scope. | All |
+| 23/09 | Freeze figures and tables. Assign one section owner each. | All |
+| 23-26/09 | Write the six pages. Results first, then method and threat model, then introduction, related work, and the abstract last. | All |
+| 27-28/09 | Two editing passes over the full manuscript. | Hung |
+| 28-29/09 | Audit adversarially against the claim-evidence table, then submit. | All |
 
-Report the Section 2 results to me as soon as they exist. They determine whether the rest of this schedule stands.
+Two rules hold this schedule together.
+
+Report the Section 2 results to me as soon as they exist, for they determine whether the rest of the schedule stands. If full rollback does not return 97.43%, stop everything and find the defect.
+
+Add no new experiment after 22/09. A figure that does not exist by the freeze does not enter the paper. We have eleven days, and the way a first paper fails is never depth. It is breadth pursued until the writing has no time left.
 
 ---
 
