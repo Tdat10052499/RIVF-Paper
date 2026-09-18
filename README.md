@@ -71,8 +71,8 @@ This command must **fail visibly** if any required file is missing.
 
 ```bash
 python scripts/run_smoke_test.py \
-  --infected-ckpt  data/checkpoints/resnet18_cifar10_badnets_infected.pth \
-  --repaired-ckpt  data/checkpoints/resnet18_cifar10_badnets_repaired.pth \
+  --infected-ckpt  data/checkpoints/resnet18_cifar10_badnets_infected.pt \
+  --repaired-ckpt  data/checkpoints/resnet18_cifar10_badnets_repaired.pt \
   --config         configs/smoke_test.yaml \
   --seed           42 \
   --out            results/raw/smoke_test/

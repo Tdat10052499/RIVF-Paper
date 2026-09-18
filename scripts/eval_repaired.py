@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ.get('BACKDOORBENCH_PATH', r'D:\BackdoorBench'))
 from models.preact_resnet import PreActResNet18
 
 repaired = torch.load(
-    r'/workspace/data/checkpoints/resnet18_cifar10_badnets_repaired.pt',
+    'data/checkpoints/resnet18_cifar10_badnets_repaired.pt',
     map_location='cpu', weights_only=False
 )
 model = PreActResNet18(num_classes=10)
@@ -15,7 +15,7 @@ model.load_state_dict(repaired['model'])
 model.eval()
 
 result = torch.load(
-    r'/workspace/data/checkpoints/resnet18_cifar10_badnets_infected.pt',
+    'data/checkpoints/resnet18_cifar10_badnets_infected.pt',
     map_location='cpu', weights_only=False
 )
 

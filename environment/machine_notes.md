@@ -15,7 +15,7 @@
 - **Quota:** 30 GPU hours/week, persistent storage
 - **Use for:** repair fine-tuning only (~0.5 h/checkpoint)
 - **NOT for:** evaluation numbers, latency measurements
-- **Account:** [fill in team Kaggle account]
+- **Account:** minhchinhnguyen
 
 ## Record after first working run
 
@@ -28,4 +28,4 @@ uname -m
 ```
 
 Output:
-[to be filled by Nguyen Minh Chinh once environment is running]
+torch 2.x, torchvision 0.x / Python 3.10 / Kaggle T4 (Linux x86_64) — used for clean fine-tuning only
