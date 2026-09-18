@@ -1,0 +1,38 @@
+# BadNets attack on CIFAR-10 (PreActResNet18)
+# Experiment config — Nguyen Minh Chinh, 2026-09-14
+
+dataset:
+  name: CIFAR-10
+  num_classes: 10
+  normalization:
+    mean: [0.4914, 0.4822, 0.4465]
+    std:  [0.2023, 0.1994, 0.2010]
+
+model:
+  architecture: PreActResNet18
+
+attack:
+  method: BadNets
+  trigger:
+    type: white_patch
+    size: 3x3
+    location: bottom_right
+    pixels: "[29:32, 29:32, :] = 255"
+  target_class: 0
+  poison_ratio: 0.1
+
+repair:
+  method: clean_fine_tuning
+  epochs: 20
+  optimizer: SGD
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 0.0005
+  scheduler: CosineAnnealingLR
+  scheduler_T_max: 20
+  seed: 42
+  platform: Kaggle T4 GPU
+
+checkpoints:
+  infected:  data/checkpoints/resnet18_cifar10_badnets_infected.pt
+  repaired:  data/checkpoints/resnet18_cifar10_badnets_repaired.pt
