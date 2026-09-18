@@ -1,0 +1,9 @@
+{
+  "shard_idx": 1,
+  "n_shards": 6,
+  "seed": 42,
+  "asr": 1.29,
+  "correct": 116,
+  "total": 9000,
+  "elapsed_sec": 57.7
+}
