@@ -5,5 +5,8 @@
   "asr": 17.46,
   "correct": 1571,
   "total": 9000,
-  "elapsed_sec": 58.7
+  "elapsed_sec": 58.7,
+  "ca": 86.64,
+  "ca_correct": 8664,
+  "ca_total": 10000
 }

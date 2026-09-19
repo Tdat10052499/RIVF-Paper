@@ -35,3 +35,5 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+data/cifar10/

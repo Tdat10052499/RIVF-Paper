@@ -1,0 +1,55 @@
+{
+  "n_shards": 6,
+  "repair": "20epoch_clean_finetune",
+  "shards": [
+    {
+      "shard_idx": 0,
+      "r_s": 0.15833991,
+      "norm_delta": 0.575632,
+      "norm_delta_sq": 0.331352,
+      "norm_inf": 3.635419,
+      "share_s": 0.0
+    },
+    {
+      "shard_idx": 1,
+      "r_s": 0.20051282,
+      "norm_delta": 15640.0,
+      "norm_delta_sq": 244609600.0,
+      "norm_inf": 78000.0,
+      "share_s": 0.25
+    },
+    {
+      "shard_idx": 2,
+      "r_s": 0.20051282,
+      "norm_delta": 15640.0,
+      "norm_delta_sq": 244609600.0,
+      "norm_inf": 78000.0,
+      "share_s": 0.25
+    },
+    {
+      "shard_idx": 3,
+      "r_s": 0.20051282,
+      "norm_delta": 15640.0,
+      "norm_delta_sq": 244609600.0,
+      "norm_inf": 78000.0,
+      "share_s": 0.25
+    },
+    {
+      "shard_idx": 4,
+      "r_s": 0.20051282,
+      "norm_delta": 15640.0,
+      "norm_delta_sq": 244609600.0,
+      "norm_inf": 78000.0,
+      "share_s": 0.25
+    },
+    {
+      "shard_idx": 5,
+      "r_s": 0.08649614,
+      "norm_delta": 0.374723,
+      "norm_delta_sq": 0.140417,
+      "norm_inf": 4.332252,
+      "share_s": 0.0
+    }
+  ],
+  "total_norm_delta_sq": 978438400.47177
+}

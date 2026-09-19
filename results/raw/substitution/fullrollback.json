@@ -1,0 +1,16 @@
+{
+  "n3": {
+    "n_shards": 3,
+    "asr": 97.43,
+    "ca": 89.41,
+    "asr_pass": true,
+    "ca_pass": true
+  },
+  "n6": {
+    "n_shards": 6,
+    "asr": 97.43,
+    "ca": 89.41,
+    "asr_pass": true,
+    "ca_pass": true
+  }
+}

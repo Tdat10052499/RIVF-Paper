@@ -1,0 +1,7 @@
+{
+  "shard_idx": 0,
+  "n_shards": 6,
+  "ca": 93.05,
+  "correct": 9305,
+  "total": 10000
+}

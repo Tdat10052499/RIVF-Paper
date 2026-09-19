@@ -1,0 +1,31 @@
+{
+  "n_shards": 3,
+  "repair": "20epoch_clean_finetune",
+  "shards": [
+    {
+      "shard_idx": 0,
+      "r_s": 0.20051282,
+      "norm_delta": 15640.0,
+      "norm_delta_sq": 244609600.0,
+      "norm_inf": 78000.0,
+      "share_s": 0.24999999
+    },
+    {
+      "shard_idx": 1,
+      "r_s": 0.20051283,
+      "norm_delta": 22118.300781,
+      "norm_delta_sq": 489219229.449844,
+      "norm_inf": 110308.65625,
+      "share_s": 0.50000002
+    },
+    {
+      "shard_idx": 2,
+      "r_s": 0.20051282,
+      "norm_delta": 15640.0,
+      "norm_delta_sq": 244609600.0,
+      "norm_inf": 78000.0,
+      "share_s": 0.24999999
+    }
+  ],
+  "total_norm_delta_sq": 978438429.449844
+}
