@@ -13,6 +13,11 @@ data/datasets/
 *.ckpt
 *.h5
 
+# Serving-comparison shard artifacts (DAT-SERVING-01): regenerable from
+# data/checkpoints/ by scripts/build_shard_manifest.py, same size class as
+# the checkpoints themselves -- not tracked by content, same rule as above.
+data/serving_manifests/
+
 # Raw results (keep in git — immutable record)
 # results/raw/ is intentionally NOT ignored
 
