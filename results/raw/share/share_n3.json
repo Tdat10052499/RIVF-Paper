@@ -1,31 +1,36 @@
 {
   "n_shards": 3,
   "repair": "20epoch_clean_finetune",
+  "skipped_buffers": [
+    "num_batches_tracked",
+    "running_mean",
+    "running_var"
+  ],
   "shards": [
     {
       "shard_idx": 0,
-      "r_s": 0.20051282,
-      "norm_delta": 15640.0,
-      "norm_delta_sq": 244609600.0,
-      "norm_inf": 78000.0,
-      "share_s": 0.24999999
+      "r_s": 0.25524303,
+      "norm_delta": 2.748634,
+      "norm_delta_sq": 7.554989,
+      "norm_inf": 10.768694,
+      "share_s": 0.06731584
     },
     {
       "shard_idx": 1,
-      "r_s": 0.20051283,
-      "norm_delta": 22118.300781,
-      "norm_delta_sq": 489219229.449844,
-      "norm_inf": 110308.65625,
-      "share_s": 0.50000002
+      "r_s": 0.38169709,
+      "norm_delta": 8.790666,
+      "norm_delta_sq": 77.275802,
+      "norm_inf": 23.030476,
+      "share_s": 0.68853642
     },
     {
       "shard_idx": 2,
-      "r_s": 0.20051282,
-      "norm_delta": 15640.0,
-      "norm_delta_sq": 244609600.0,
-      "norm_inf": 78000.0,
-      "share_s": 0.24999999
+      "r_s": 0.23784515,
+      "norm_delta": 5.234614,
+      "norm_delta_sq": 27.401183,
+      "norm_inf": 22.008495,
+      "share_s": 0.24414774
     }
   ],
-  "total_norm_delta_sq": 978438429.449844
+  "total_norm_delta_sq": 112.231974
 }

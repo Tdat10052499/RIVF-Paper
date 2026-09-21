@@ -15,6 +15,9 @@ repaired = torch.load(args.repaired_ckpt, map_location="cpu", weights_only=False
 infected_sd = infected["model"]
 repaired_sd = repaired["model"]
 
+# Skip non-learnable buffers (BatchNorm counters and running stats)
+SKIP = ("num_batches_tracked", "running_mean", "running_var")
+
 os.makedirs(args.out, exist_ok=True)
 
 for n in args.n_shards:
@@ -27,6 +30,8 @@ for n in args.n_shards:
     for s, (inf_shard, rep_shard) in enumerate(zip(infected_shards, repaired_shards)):
         delta_parts, inf_parts = [], []
         for key in inf_shard:
+            if any(key.endswith(sk) for sk in SKIP):
+                continue
             delta_parts.append((rep_shard[key] - inf_shard[key]).float().flatten())
             inf_parts.append(inf_shard[key].float().flatten())
         delta = torch.cat(delta_parts)
@@ -56,6 +61,7 @@ for n in args.n_shards:
     out_data = {
         "n_shards": n,
         "repair": "20epoch_clean_finetune",
+        "skipped_buffers": list(SKIP),
         "shards": [
             {**r, "r_s": round(r["r_s"], 8), "share_s": round(r["share_s"], 8),
              "norm_delta": round(r["norm_delta"], 6), "norm_delta_sq": round(r["norm_delta_sq"], 6),
