@@ -5,10 +5,13 @@
 **Target:** RIVF 2026 Special Session SS3  
 **Deadline:** 29/09/2026
 
-> ### Start here, 18/09
-> Read [`notes/2026-09-18_hung_supervisor.md`](notes/2026-09-18_hung_supervisor.md) before running anything else.
-> It supersedes the Day-5 gate stated below, it defines two blocking controls that must run first,
-> and it redirects the study onto repair locality. The schedule in its Section 6 is the operative one.
+> ### Start here, 21/09
+> Read [`notes/2026-09-21_hung_supervisor.md`](notes/2026-09-21_hung_supervisor.md) first. It is the operative plan.
+> Both controls passed and the harness is verified. The `share_s` locality metric is invalid and is being
+> recomputed, so do not cite it. Experiments freeze at the end of 23/09, the complete first draft is due late
+> on 26/09, and the Day-5 gate stated below is superseded.
+>
+> Earlier direction, still valid for background: [`notes/2026-09-18_hung_supervisor.md`](notes/2026-09-18_hung_supervisor.md).
 
 ---
 
