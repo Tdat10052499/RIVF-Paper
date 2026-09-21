@@ -5,13 +5,12 @@
 **Target:** RIVF 2026 Special Session SS3  
 **Deadline:** 29/09/2026
 
-> ### Start here, 21/09
-> Read [`notes/2026-09-21_hung_supervisor.md`](notes/2026-09-21_hung_supervisor.md) first. It is the operative plan.
-> Both controls passed and the harness is verified. The `share_s` locality metric is invalid and is being
-> recomputed, so do not cite it. Experiments freeze at the end of 23/09, the complete first draft is due late
-> on 26/09, and the Day-5 gate stated below is superseded.
+> ### Read this first
+> [`notes/2026-09-21_hung_supervisor.md`](notes/2026-09-21_hung_supervisor.md) is **the plan**. It replaces every
+> earlier instruction, including the Day-5 gate stated below and the 18/09 note. If anything in this README
+> contradicts it, follow the plan.
 >
-> Earlier direction, still valid for background: [`notes/2026-09-18_hung_supervisor.md`](notes/2026-09-18_hung_supervisor.md).
+> Key dates: experiments stop end of **23/09**, complete draft due late **26/09**, submit **29/09**.
 
 ---
 
