@@ -1,0 +1,68 @@
+% =====================================================================
+% paper/references.bib — scaffold, 21/09/2026
+%
+% Only fields actually confirmed in this repo's own documents are
+% filled in. Every other field is a TODO placeholder — do NOT guess
+% author names, page numbers, or exact venues; look each one up before
+% the 26/09 freeze. The six entries below correspond 1:1 to the
+% "Closest prior work" list in Project Agreement.md, Section 2, plus
+% the BackdoorBench toolkit citation (source confirmed in
+% data/checkpoint_manifest.md and Project Agreement.md Section 5).
+% =====================================================================
+
+@misc{backdoorbench2024,
+  title        = {BackdoorBench: A Comprehensive Benchmark of Backdoor Learning},
+  author       = {TODO: confirm full author list from arXiv:2401.15002},
+  year         = {TODO: confirm},
+  note         = {arXiv:2401.15002; toolkit: \url{https://github.com/SCLBD/BackdoorBench}},
+}
+
+@inproceedings{min2024reactivation,
+  title        = {TODO: exact title of the reactivation-via-retuning/querying paper},
+  author       = {Min and others},
+  booktitle    = {NeurIPS},
+  year         = {2024},
+  note         = {Cited in Project Agreement.md as "Min et al. (NeurIPS 2024) -- shows purified backdoors can reactivate via retuning or querying." Difference used in this paper: we test reactivation via rollback of a historically valid shard, not via retuning.},
+}
+
+@misc{deferbad,
+  title        = {TODO: exact title and venue for DeferBad},
+  author       = {TODO},
+  year         = {TODO},
+  note         = {Deliberately engineers unlearning to be fragile to subsequent benign updates. Difference used in this paper: we examine fragility to rollback toward a prior historical state, not forward benign updates.},
+}
+
+@misc{subnetreplacement,
+  title        = {Subnet Replacement Attack},
+  author       = {TODO: exact title/author/venue},
+  year         = {TODO},
+  note         = {Allows the attacker to freely select replacement parameters. Difference used in this paper: we restrict the attacker to shards that were historically valid and signed, not arbitrary parameter substitution.},
+}
+
+@misc{badmerging,
+  title        = {TODO: exact title -- BadMerging / MergeBackdoor},
+  author       = {TODO},
+  year         = {TODO},
+  note         = {Addresses deliberate merging across distinct model sources. Difference used in this paper: we concern partial rollback within a single, known model lineage, not merging across sources.},
+}
+
+@misc{airs,
+  title        = {TODO: exact title -- AIRS},
+  author       = {TODO},
+  year         = {TODO},
+  note         = {Narrows to per-shard hash/signature and loader integrity checks. Difference used in this paper: AIRS does not address a shard that is valid in hash/signature but belongs to a stale epoch -- precisely the gap this paper addresses.},
+}
+
+@misc{tuf,
+  title        = {The Update Framework (TUF)},
+  author       = {TODO: confirm citation form (spec vs. paper)},
+  year         = {TODO},
+  note         = {Establishes rollback and mix-and-match detection at the snapshot-metadata level. This paper does not propose a new protocol; epoch pinning is used as an existing control.},
+}
+
+@misc{uptane,
+  title        = {Uptane: Securing Software Updates for Automobiles},
+  author       = {TODO: confirm citation form},
+  year         = {TODO},
+  note         = {Same role as TUF above, cited alongside it in Project Agreement.md.},
+}
