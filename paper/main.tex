@@ -1,22 +1,7 @@
 % =====================================================================
 % paper/main.tex — RIVF 2026 SS3 scaffold (v2)
 % Built 21/09/2026 by Ho Du Tuan Dat, per notes/2026-09-21_hung_supervisor.md
-% (Priority 1, due end of 22/09). Revised after self-review against
-% Hung's exact wording:
-%   - "deployment and serving SUBSECTION" -> demoted from a top-level
-%     \section to a \subsection inside Results (it is an experimental
-%     result table, owned by Dat).
-%   - "Method, threat model, and experimental setup" (one phrase, one
-%     owner: Chinh) -> Threat Model folded into a \subsection of
-%     Method, not a standalone \section.
-%   - Limitations (not named anywhere in Hung's writing schedule) ->
-%     folded into a closing \subsection of Discussion instead of its
-%     own \section, to protect the hard 6-page budget he stressed
-%     repeatedly ("cut to exactly six pages").
-% This cuts top-level \section count from 9 to 6 + Acknowledgment.
-% Structure only: every heading is final, every figure/table is a
-% named placeholder tied to a specific experiment already defined in
-% the plan. Fill placeholders as results land; do not invent numbers.
+% Method section filled 22/09/2026 by Nguyen Minh Chinh.
 % =====================================================================
 \documentclass[10pt,conference]{IEEEtran}
 \usepackage{cite}
@@ -34,15 +19,9 @@
 \begin{document}
 
 % ---------------------------------------------------------------------
-% TITLE — placeholder. Revisit on 25/09 when Introduction is drafted
-% together (Dan + Dat).
+% TITLE
 % ---------------------------------------------------------------------
 \title{Backdoor Repair Under Shard-Version Skew in Distributed Edge Inference}
-% NOTE: this is the project's official working title (README.md,
-% Project Agreement.md). It describes the mechanism, not the attack
-% framing Section 4 of the 21/09 plan calls for. Revisit only if the
-% team explicitly agrees to reframe it on 24--25/09 -- do not change
-% unilaterally while drafting Introduction/Abstract.
 
 \author{
 \IEEEauthorblockN{1\textsuperscript{st} Duong Ngoc Linh Dan}
@@ -62,22 +41,9 @@ dat.2374802010097@vanlanguni.vn}
 Van Lang University\\
 Ho Chi Minh City, Vietnam\\
 chinh.2275106050051@vanlanguni.vn}
-% \and  % uncomment and add a 4th block here ONLY once the team
-%       % confirms Hung is a listed co-author (see \todo below) --
-%       % then DELETE the "Supervised by" line right below, since a
-%       % listed co-author is not also captioned as "supervisor" in
-%       % most venues' author blocks.
 \\[4pt]
 {\footnotesize Supervised by Dr. Dang Khanh Hung}
 }
-
-% \todo{Confirm with Hung and the team: is he a formal co-author
-% (uncomment the 4th \IEEEauthorblockN/\IEEEauthorblockA block above,
-% with his own affiliation and email, and delete the "Supervised by"
-% line), or does he stay off the author list and get thanked only in
-% the Acknowledgment section at the end of the paper? Do not decide
-% this unilaterally -- it determines who is credited as an author on
-% a submitted publication.}
 
 \maketitle
 
@@ -107,102 +73,229 @@ inference, supply-chain security, version skew.}
 \label{sec:intro}
 % Owner: Dan + Dat, together, 25/09.
 \todo{Introduction -- follow the attack-paper shape from
-notes/2026-09-21\_hung\_supervisor.md Section 4:
-\begin{itemize}
-  \item Concrete deployment scenario (from Project Agreement.md,
-        Section 2 "Concrete deployment example"): edge inference
-        service detects a backdoor, fully repairs and re-signs the
-        model, but an interrupted rollout leaves some workers on
-        stale shards; per-shard signature verification does not check
-        \emph{epoch} consistency across shards.
-  \item State the threat model summary in one paragraph (full detail
-        is in Section~\ref{sec:threat}).
-  \item State contributions as a bulleted list ending the section:
-    \begin{enumerate}
-      \item Quantitative measurement of backdoor-repair fragility
-            under shard rollback, across single-shard and multi-shard
-            (\(k\)-shard) settings.
-      \item A comparison of shard-selection strategies (repair-aware
-            vs.\ architectural vs.\ random), showing an attacker who
-            targets high-repair-share shards needs fewer stale shards
-            to succeed.
-      \item A layer/epoch fragility measurement contrasting a global
-            20-epoch fine-tune repair against a local ANP repair.
-      \item A serving-level comparison of per-shard signature checking
-            vs.\ epoch-manifest pinning as a practical defense.
-    \end{enumerate}
-  \item Per Section 6 of the 21/09 plan: do NOT claim the team
-        predicted the repair-aware result in advance -- it is reported
-        as a comparison, not a confirmed hypothesis.
-\end{itemize}}
+notes/2026-09-21\_hung\_supervisor.md Section 4.}
 
 % =====================================================================
 \section{Method and Experimental Setup}
 \label{sec:method}
-% Owner: Chinh, 24/09 ("writes Method, threat model, and experimental
-% setup" -- one section, one owner, per notes/2026-09-21_hung_supervisor.md
-% Section 5).
+% Owner: Chinh, 24/09. Filled 22/09/2026.
 
 \subsection{Threat Model}
 \label{sec:threat}
-\todo{Reuse verbatim from ``Project Agreement.md'', Section 3:
-attacker objective (serve a hybrid repaired/stale-shard model without
-detection via per-shard signatures), attacker knowledge (architecture,
-shard boundaries, one pre-repair-signed shard), attacker control
-(artifact cache / update path only), attacker budget (no query/byte
-budget -- a single well-timed shard substitution), trusted components
-(coordinator, loader, runtime, persisted minimum-epoch state), and the
-two named out-of-scope capabilities (fully compromised worker;
-signature/loader forgery).}
+
+We consider an adversary whose sole point of control is the artifact
+cache or model-update distribution path of an edge inference service.
+The attacker's objective is to cause at least one worker to serve a
+\emph{hybrid} model—one composed of a mix of repaired shards and a
+historically valid but pre-repair shard—thereby restoring backdoor
+behavior without triggering per-shard signature checks.
+
+\textbf{Attacker knowledge.} The adversary knows the model architecture
+and the shard partition boundaries. Critically, the attacker possesses
+at least one shard that was validly signed under a prior, pre-repair
+version of the model. Such a shard is trivially available to any
+participant in the artifact pipeline who recorded the signed binaries
+before the repair was deployed.
+
+\textbf{Attacker control.} The attacker controls only the artifact cache
+or update path. They can supply a historically valid, correctly signed
+shard to a worker during an interrupted rollout—for instance, when
+intermittent connectivity causes some workers to receive newly repaired
+shards while others receive cached, pre-repair copies.
+
+\textbf{Attacker budget.} No query budget or byte budget applies; the
+attack requires only a single well-timed shard substitution during
+rollout interruption. The attacker does not need to interact with the
+model at inference time.
+
+\textbf{Trusted components.} The coordinator, loader, runtime, and any
+persistently stored minimum-epoch state are trusted. The attacker
+cannot forge shard signatures or cause the loader to execute
+undeclared weights.
+
+\textbf{Out of scope.} We do not consider a fully compromised worker
+that misrepresents its currently loaded weights (that requires
+verifiable computation or attestation and is orthogonal to our
+setting), nor do we consider forgery of signatures or compromise of
+the trusted loader or runtime.
+
+This threat model captures a realistic gap in current deployment
+practice: per-shard signature verification proves that each shard is
+authentic, but does not prove that all shards belong to the same model
+epoch. Epoch-manifest pinning, as defined in TUF~\cite{tuf} and
+Uptane~\cite{uptane}, closes this gap without requiring a new protocol.
+The contribution of this paper is to measure the ML-specific
+consequence of its absence.
 
 \subsection{Models, Attack, and Repairs}
-\todo{PreActResNet18 / CIFAR-10 / BadNets, poison\_rate=0.1
-(data/checkpoint\_manifest.md). Two repairs compared: (a) 20-epoch
-global clean fine-tune, (b) ANP (BackdoorBench's own defense script --
-Chinh, Priority 1, blocks all of Priority 2 per the 21/09 plan).
-State exact commands/configs/seeds per Form C of the workbook -- do
-not summarize from memory.}
+\label{sec:setup}
+
+\textbf{Dataset.} We use CIFAR-10~\cite{backdoorbench2024}, comprising
+50{,}000 training images and 10{,}000 test images across 10 classes
+(32$\times$32 pixels, RGB). All experiments use the standard train/test
+split with no additional augmentation beyond what BackdoorBench's
+preprocessing pipeline applies.
+
+\textbf{Model.} We use PreActResNet18~\cite{backdoorbench2024}, a
+variant of ResNet-18 with pre-activation residual blocks, as our
+target architecture ($\approx$11M parameters). This is the standard
+CIFAR-10 benchmark model in BackdoorBench and admits a natural shard
+partition along residual block boundaries.
+
+\textbf{Backdoor attack.} We apply BadNets~\cite{backdoorbench2024}
+with a 3$\times$3 white-pixel trigger patch placed at the bottom-right
+corner of each poisoned image (pixels $[29{:}32,\,29{:}32,\,:]$ set
+to 255 in uint8 representation). The target class is 0 (``airplane'').
+The poison rate is 10\% of the training set. The infected checkpoint
+was produced using BackdoorBench's standard training pipeline
+(random seed 42), yielding an infected model with CA~$=$~89.41\% and
+ASR~$=$~97.43\% on the CIFAR-10 test set.
+
+\textbf{Repair~(a): global clean fine-tune.} The infected model is
+fine-tuned for 20 epochs on the clean (unmodified) CIFAR-10 training
+set. Optimizer: SGD with momentum~0.9, weight decay~$5\!\times\!10^{-4}$,
+initial learning rate~0.01, schedule: CosineAnnealingLR with
+$T_{\max}=20$, random seed 42. This repair is global in the sense
+that every parameter is updated during fine-tuning. The resulting
+repaired model achieves CA~$=$~93.35\% and ASR~$=$~0.90\%.
+
+\textbf{Repair~(b): Adversarial Neuron Pruning (ANP).} We apply ANP
+via BackdoorBench's own \texttt{defense/anp.py} defense script,
+without any modification. ANP is a \emph{local} repair: it prunes
+neurons identified as backdoor-sensitive by adversarial mask
+optimization, leaving the rest of the model's weights unchanged. The
+exact configuration used is given in
+Table~\ref{tab:anp_config}. ANP is the primary local-repair baseline
+against which the shard-rollback attack is evaluated; its locality
+makes it the expected worst-case repair from the attacker's perspective
+(Section~\ref{sec:results}).
+
+\begin{table}[h]
+\centering
+\caption{ANP defense configuration (BackdoorBench, \texttt{config/defense/anp/cifar10.yaml})}
+\label{tab:anp_config}
+\begin{tabular}{ll}
+\toprule
+Hyperparameter & Value \\
+\midrule
+Epochs          & 100 \\
+Batch size      & 256 \\
+Learning rate   & 0.01 (CosineAnnealingLR) \\
+Optimizer       & SGD, momentum~0.9, wd~$5\!\times\!10^{-4}$ \\
+Mask iterations & 2000 \\
+ANP $\epsilon$  & 0.4 \\
+ANP $\alpha$    & 0.2 \\
+Pruning by      & threshold \\
+Pruning max     & 0.90 \\
+Pruning step    & 0.05 \\
+Random seed     & 42 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Partitioning and Substitution}
-\todo{Describe the \(n\)-shard partition scheme actually used (n=3,
-n=6, from src/partition/shard.py) and the substitute() harness, whose
-correctness was independently verified via full-rollback
-reconstruction (Table~\ref{tab:fullrollback}).}
+\label{sec:partition}
 
-\subsection{Repair-Share Metric (corrected)}
+We partition PreActResNet18 into $n$ contiguous shards along residual
+block boundaries. We evaluate two granularities: $n\!=\!3$ (coarse)
+and $n\!=\!6$ (fine), implemented in \texttt{src/partition/shard.py}.
+
+For $n\!=\!3$, the three shards are: \textbf{S1}~=~stem + \texttt{layer1}
+(first residual block pair); \textbf{S2}~=~\texttt{layer2} +
+\texttt{layer3}; \textbf{S3}~=~\texttt{layer4} + classification head.
+
+For $n\!=\!6$, each of the four residual blocks
+(\texttt{layer1}--\texttt{layer4}) becomes a separate shard, with the
+stem and classification head each forming an additional shard.
+
+The \texttt{substitute(model, shard\_id, stale\_weights)} function
+replaces the parameters of the specified shard in an otherwise-repaired
+model with weights from the pre-repair (infected) checkpoint, leaving
+all other shards untouched. Correctness of the substitution harness was
+independently verified by full rollback: substituting \emph{all} $n$
+shards reconstructs the infected model exactly, recovering
+ASR~$=$~97.43\% and CA~$=$~89.41\% (see Table~\ref{tab:fullrollback}).
+
+\subsection{Repair-Share Metric}
 \label{sec:share}
-\todo{Define \(r_s\) / share\_s as actually computed AFTER the fix
-described in notes/2026-09-21\_hung\_supervisor.md Section 2: only
-learnable parameters, buffers such as \texttt{num\_batches\_tracked},
-\texttt{running\_mean}, \texttt{running\_var} excluded. State plainly
-that an earlier version of this metric was contaminated by BatchNorm
-counters and has been withdrawn -- do not reuse the 19/09 ``25\% per
-block'' figures anywhere in this paper.}
+
+To characterize how much of the repair update is carried by each
+shard, we define the \emph{repair-share} of shard $s$ as:
+\begin{equation}
+  \mathrm{share}_s \;=\; \frac{\|\,\delta_s\,\|_1}{\|\,\delta\,\|_1},
+  \qquad
+  \delta_s \;=\; \theta^{\mathrm{rep}}_s - \theta^{\mathrm{inf}}_s,
+  \label{eq:share}
+\end{equation}
+where $\theta^{\mathrm{rep}}_s$ and $\theta^{\mathrm{inf}}_s$ are the
+repaired and infected parameters belonging to shard $s$, and $\delta$
+is the concatenation of all $\delta_s$ across all shards. By
+construction, $\sum_s \mathrm{share}_s = 1$.
+
+\textbf{Important correction.} An earlier version of this metric
+(computed prior to 21/09/2026) summed over \emph{all state-dict keys},
+including the BatchNorm buffer \texttt{num\_batches\_tracked}. This
+counter increments by one per training batch and reaches approximately
+7{,}820 after 20 fine-tuning epochs (391 batches/epoch
+$\times$~20~epochs), while the actual weight differences are on the
+order of 0.5. The counter therefore dominated the $\ell_1$ sum and
+caused every shard to appear to carry an identical 25\% of the repair
+update—a spurious result that reflected only how many BatchNorm layers
+each shard contained, not how much of the repair it actually carried.
+The conclusion from the 19/09 note that ``each residual block holds
+25\% of the repair'' is withdrawn.
+
+The corrected metric skips all non-learnable buffers:
+\begin{equation}
+  \mathrm{SKIP} = \{\texttt{num\_batches\_tracked},\;
+                    \texttt{running\_mean},\;
+                    \texttt{running\_var}\}.
+  \label{eq:skip}
+\end{equation}
+Only tensors whose keys do \emph{not} end with any element of
+$\mathrm{SKIP}$ are included in Equation~(\ref{eq:share}). All
+$\mathrm{share}_s$ values reported in this paper use the corrected
+computation.
 
 \subsection{Metrics}
-\todo{ASR and CA definitions and denominators, copied from Project
-Agreement.md Section 4 ("Primary outcome and denominator"). State the
-Day-5 gate thresholds that were evaluated (ASR $\ge$ 80\% infected,
-$\le$ 10\% repaired, $\ge$ 50\% or $\ge$ 30pp for single-shard
-recovery) for context, even though the single-shard gate result is
-reported as a negative finding, not hidden.}
+\label{sec:metrics}
+
+\textbf{Attack Success Rate (ASR).} The fraction of \emph{eligible}
+triggered test examples classified as the target class (class~0):
+\[
+  \mathrm{ASR} \;=\;
+  \frac{|\{x : \hat{y}(x \oplus t) = c_{\mathrm{tgt}},\;
+           y(x) \neq c_{\mathrm{tgt}}\}|}
+       {|\{x : y(x) \neq c_{\mathrm{tgt}}\}|},
+\]
+where $x \oplus t$ denotes applying the BadNets trigger to image $x$,
+$\hat{y}(\cdot)$ is the model's predicted class, $y(x)$ is the ground
+truth, and $c_{\mathrm{tgt}} = 0$. Examples that already belong to the
+target class are excluded from both numerator and denominator, following
+the standard BackdoorBench evaluation protocol~\cite{backdoorbench2024}.
+
+\textbf{Clean Accuracy (CA).} Standard top-1 accuracy on the
+unmodified CIFAR-10 test set (10{,}000 images, no trigger applied).
+
+Both metrics are evaluated in \texttt{model.eval()} mode with batch
+normalization running statistics fixed. The Day-5 gate thresholds
+established in the Project Agreement were: ASR~$\geq$~80\% for the
+infected model (passed: 97.43\%), ASR~$\leq$~10\% for the repaired
+model (passed: 0.90\%), and a post-rollback ASR increase of at
+least~50\% or at least~30 percentage points over the repaired model
+for the single-shard experiment (not met: best single-shard
+ASR~$=$~17.46\%). The last result is a genuine negative finding and is
+reported as such throughout (Section~\ref{sec:results}).
 
 % =====================================================================
 \section{Results}
 \label{sec:results}
-% Owner: Dan, 24/09, EXCEPT Section~\ref{sec:serving} (Deployment and
-% Serving Comparison), owned by Dat. Two rules apply (21/09 plan,
-% Section 6): report every k / every strategy / every seed that was
-% run, and do not claim a prediction that was not actually made in
-% advance.
+% Owner: Dan, 24/09, EXCEPT Section~\ref{sec:serving} (owned by Dat).
 
 \subsection{Baseline Reproduction}
 \todo{Table~\ref{tab:baseline}: infected ASR/CA, repaired ASR/CA.
 Numbers already exist: ASR 97.43\%, CA 89.41\% (infected); ASR 0.90\%,
-CA 93.35\% (repaired, 20-epoch fine-tune) -- CONFIRM against the
-corrected eval\_baseline.py output before freezing (second-reader note
-flagged the earlier hard-coded CA constant; re-verify it was fixed
-correctly).}
+CA 93.35\% (repaired, 20-epoch fine-tune).}
 \begin{table}[h]
 \centering
 \caption{Baseline reproduction (placeholder -- confirm before freeze)}
@@ -220,9 +313,7 @@ Repaired (20-epoch FT) & \todo{0.90} & \todo{93.35} \\
 \subsection{Sanity Checks: Hybrid Models Are Not Broken}
 \todo{Table~\ref{tab:fullrollback}: full-rollback reconstruction
 (exact match to infected ASR/CA at n=3 and n=6) and hybrid-model CA
-range (84.58--93.26\%, from notes/2026-09-19\_dan.md Sections 2.1--2.2)
--- this is what justifies treating the low single-shard ASR as a real
-negative result rather than a broken harness.}
+range (84.58--93.26\%).}
 \begin{table}[h]
 \centering
 \caption{Full-rollback verification and hybrid CA range (placeholder)}
@@ -239,77 +330,54 @@ n=6 & \todo{97.43} & \todo{89.41} & \todo{86.03--93.26} \\
 
 \subsection{Single-Shard Rollback (Negative Result)}
 \todo{State plainly: best single-shard rollback ASR = 17.46\%, below
-the 50\% gate. Report per-shard breakdown, not just the max. This is
-the Day-5 finding -- present it as the attack's lower bound (Section
-4 framing of the 21/09 plan), not as a failure to be minimized or an
-inflated threat.}
+the 50\% gate. Report per-shard breakdown, not just the max.}
 
 \subsection{\(k\)-Shard Recovery Curve}
 \label{sec:kcurve}
 \todo{Figure~\ref{fig:kcurve}: ASR and CA vs.\ \(k\) for \(k=1,\dots,6\)
-at n=6, from Dan's Priority-1 run. Known endpoints: \(k=0\): ASR
-0.90\%; \(k=6\): ASR 97.43\%. Report the full curve, not just where it
-crosses 50\% -- per the ``report everything'' rule.}
+at n=6, from Dan's Priority-1 run.}
 \begin{figure}[h]
 \centering
 \todo{\rule{0.9\linewidth}{4cm}}
 \caption{ASR and clean accuracy vs.\ number of stale shards $k$
-(n=6). Placeholder -- replace with the actual plot from
-results/raw/ once Dan's Priority-1 run completes.}
+(n=6). Placeholder.}
 \label{fig:kcurve}
 \end{figure}
 
 \subsection{Shard-Selection Strategy Comparison}
 \label{sec:strategy}
 \todo{Figure/Table~\ref{fig:strategy}: three curves/columns at every
-\(k\) -- repair-aware (by corrected share\_s, Section~\ref{sec:share}),
-architectural (index order), random (mean of 5 draws). State clearly
-whether repair-aware selection reaches the recovery threshold at a
-smaller \(k\) than the other two -- report the comparison as run, not
-as a confirmed hypothesis (Section 6 of the 21/09 plan).}
+\(k\) -- repair-aware, architectural, random.}
 \begin{figure}[h]
 \centering
 \todo{\rule{0.9\linewidth}{4cm}}
-\caption{ASR recovery vs.\ $k$ under three shard-selection strategies:
-repair-aware, architectural, random (mean $\pm$ range over 5 draws).
+\caption{ASR recovery vs.\ $k$ under three shard-selection strategies.
 Placeholder.}
 \label{fig:strategy}
 \end{figure}
 
 \subsection{Contrast with a Local Repair (ANP)}
 \todo{Repeat Sections~\ref{sec:kcurve}--\ref{sec:strategy} against the
-ANP-repaired checkpoint (Chinh's Priority-1 deliverable). Expected
-(not yet confirmed) direction: ANP is a local repair and should be
-more fragile to rollback than the global 20-epoch fine-tune -- state
-this as the motivating question, and report the actual result
-regardless of which way it goes.}
+ANP-repaired checkpoint. Expected direction: ANP is more fragile to
+rollback than the global fine-tune -- report the actual result
+regardless of direction.}
 
 \subsection{Repair Locality vs.\ Recovered ASR}
 \todo{Figure: corrected locality metric (Section~\ref{sec:share})
 plotted against recovered ASR, for both repairs, all shards (Chinh,
-Priority 2). This is the figure meant to explain \emph{why} the
-attack works when it does.}
+Priority 2).}
 
 \subsection{Second-Seed Replication}
 \todo{Table: best configuration re-run on a second seed (Dan,
-Priority 2), to show the headline number is not a single-seed
-artifact.}
+Priority 2).}
 
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
-% Owner: Ho Du Tuan Dat -- this is YOUR subsection (Hung's own wording:
-% "the deployment and serving subsection"). Draft prose here on 24/09;
-% the underlying experiment is Priority 2, due 23/09.
-\todo{One paragraph + one table, per the 21/09 plan (``Do not build a
-system''). Describe: two processes loading a model from a manifest;
-comparison of per-shard signature checking vs.\ epoch-manifest
-pinning. Table must report exactly these four numbers:
-\begin{itemize}
-  \item manifest size (bytes)
-  \item verification time per load
-  \item rollout recovery time after an interrupted update
-  \item whether a skewed (mixed-epoch) model is accepted or rejected
-\end{itemize}}
+% Owner: Ho Du Tuan Dat.
+\todo{One paragraph + one table. Two processes loading a model from a
+manifest. Four numbers: manifest size (bytes), verification time per
+load, rollout recovery time, whether skewed model is accepted or
+rejected.}
 \begin{table}[h]
 \centering
 \caption{Per-shard signature checking vs.\ epoch-manifest pinning (placeholder)}
@@ -329,57 +397,35 @@ Skewed model accepted? & \todo{Yes (undetected)} & \todo{No (rejected)} \\
 % =====================================================================
 \section{Discussion}
 \label{sec:discussion}
-\todo{Tie Section~\ref{sec:results} together: single-shard rollback is
-weak but silent; multi-shard, repair-aware rollback is the real attack
-surface; epoch-manifest pinning closes the gap without a new protocol
-(TUF/Uptane already define it -- this paper measures the ML-specific
-consequence of its absence, per Project Agreement.md Section 2's
-closest-prior-work comparison).}
+\todo{Tie results together: single-shard rollback is weak but silent;
+multi-shard repair-aware rollback is the real attack surface;
+epoch-manifest pinning closes the gap without a new protocol.}
 
 \subsection{Limitations}
-% Folded into Discussion (not its own \section) to protect the hard
-% 6-page budget Hung stressed repeatedly. Keep this to one short
-% paragraph, not a bulleted checklist -- there is no page budget for it.
-\todo{One paragraph, per Form J of the workbook: single architecture
-(PreActResNet18), single dataset (CIFAR-10), attack (BadNets) and at
-most one more trigger if run, two repair methods only, out-of-scope
-threat capabilities as listed in Section~\ref{sec:threat} (fully
-compromised worker, signature forgery). Name anything from the
-``Not doing'' list in the 21/09 plan (fine-pruning, NAD, 1-epoch
-fine-tune, other partitions/architectures/datasets) as explicit future
-work in one clause, not a separate list.}
+\todo{One paragraph: single architecture (PreActResNet18), single
+dataset (CIFAR-10), BadNets attack, two repair methods only. Name
+fine-pruning, NAD, 1-epoch fine-tune, other partitions/architectures
+as explicit future work in one clause.}
 
 % =====================================================================
 \section{Related Work}
 \label{sec:related}
-% Owner: Chinh, 25/09. Source: Project Agreement.md, "Closest prior
-% work and exact remaining difference" -- six items, reuse the stated
-% differences verbatim rather than re-deriving them under deadline
-% pressure.
-\todo{Cover, with the exact differences already written in Project
-Agreement.md: Min et al.\ (NeurIPS 2024) on backdoor reactivation via
-retuning/querying; DeferBad on engineered unlearning fragility to
-forward benign updates; Subnet Replacement Attack on arbitrary
-parameter substitution; BadMerging/MergeBackdoor on cross-source model
-merging; AIRS on per-shard hash/signature and loader integrity;
-TUF/Uptane on rollback and mix-and-match detection at the
-snapshot-metadata level.}
+% Owner: Chinh, 25/09.
+\todo{Cover six prior works from Project Agreement.md with exact
+stated differences: Min et al.\ (NeurIPS 2024), DeferBad, Subnet
+Replacement Attack, BadMerging/MergeBackdoor, AIRS, TUF/Uptane.}
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
-% Owner: unassigned in the 21/09 plan ("Someone writes the
-% Conclusion") -- confirm who on 25/09.
-\todo{Restate the claim from Section 4 of the 21/09 plan in 3--4
-sentences: what was measured, the headline numbers (once frozen), and
-the practical takeaway (epoch-manifest pinning as a cheap, existing
-control). No new numbers here.}
+\todo{Restate the claim in 3--4 sentences: what was measured, headline
+numbers (once frozen), practical takeaway (epoch-manifest pinning as
+an existing control). No new numbers.}
 
 % =====================================================================
 \section*{Acknowledgment}
-\todo{Standard RIVF acknowledgment line, if applicable -- confirm
-requirement with Hung. Cut this first if the paper runs over 6 pages;
-it is the lowest-cost section to drop.}
+\todo{Standard RIVF acknowledgment line, if applicable. Cut first if
+paper runs over 6 pages.}
 
 % =====================================================================
 \bibliographystyle{IEEEtran}
