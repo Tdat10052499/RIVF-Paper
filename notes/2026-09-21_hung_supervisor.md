@@ -208,10 +208,16 @@ Same data, same honesty, and a structure a reviewer can follow without sympathy 
 
 ### 10.5 The line we do not cross
 
-We are searching for a positive result, so we must be explicit about what makes that search legitimate.
+We are searching for a positive result, so be clear about what keeps that search sound. Two rules carry the weight, and neither requires narrating how we arrived at the experiment.
 
-Report the complete sweep, every k and every selection strategy, and not only the configuration that performed best. Declare in the paper that the selection strategy in 10.2 was chosen after the single-shard pilot returned a null, for it was, and a reader is entitled to know which choices were exploratory. Confirm the best configuration on a second seed before it becomes the headline number, which is what the second seed is for and why it moves above the line today.
+Report the sweep complete. Every k, every selection strategy, clean accuracy beside attack success at each point, and the configurations that performed badly alongside the one that performed best. Completeness is what distinguishes a characterisation from a search for a favourable number, and a full curve with three strategies at every point is a complete factorial report rather than a winner plucked from many attempts. Nothing about it is selective, so nothing about it needs defending.
 
-State the revised threshold and the original one together. We pre-registered 50% recovery from a single shard, we did not meet it, and we are reporting a different quantity in its place. Say so in one sentence in the evaluation section. A reviewer who finds that sentence trusts the rest of the paper. A reviewer who finds the gate quietly moved trusts none of it.
+Claim no prediction we did not make. The paper should state what we measured and what it implies. It should not assert that we hypothesised a particular threshold, nor present repair-aware selection as a prediction confirmed, for we ran it as a comparison and that is how it should read. Describing three strategies and reporting their results is ordinary experimental writing. Inventing a hypothesis after the fact is not, and it is also unnecessary, since the comparison is interesting on its own terms.
 
-We do not need to overstate anything. Seventeen per cent from two shards is already a real effect, the curve will give us a larger one, and repair-aware selection will most likely give us the largest. What we must not do is discover a threshold and then present it as though we had predicted it.
+Confirm the best configuration on a second seed before it becomes the headline number. An unreproduced maximum is not a result, and this is why the second seed moved above the line today.
+
+The chronology itself need not appear in the paper. I had earlier asked for a sentence recording that the selection strategy followed the single-shard null. Drop it. It protects less than the two rules above, and a conservative reader is liable to read an accurate account of our sequence as an admission of fishing. Silence about the order of our work is honest. A false claim of foresight would not be.
+
+We do not need to overstate anything. Seventeen per cent from two shards is already a real effect, the curve will give us a larger one, and repair-aware selection will most likely give us the largest.
+
+One practical consequence. If we release this repository as an artifact alongside the paper, these notes and the original gate travel with it, which is entirely fine and reflects well on the work. It is fine precisely because the paper will claim no foresight it did not have.
