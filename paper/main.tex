@@ -374,22 +374,47 @@ Priority 2).}
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
 % Owner: Ho Du Tuan Dat.
-\todo{One paragraph + one table. Two processes loading a model from a
-manifest. Four numbers: manifest size (bytes), verification time per
-load, rollout recovery time, whether skewed model is accepted or
-rejected.}
+% Numbers below are taken from the run committed at
+% results/raw/serving/{per_shard_sig,epoch_manifest_pin}.jsonl (22/09/2026),
+% against src/partition/shard.py, scripts/build_shard_manifest.py, and
+% src/serving/loader.py as of that same commit. Per the project's own
+% convention for in-progress numbers (see tab:baseline, tab:fullrollback),
+% these are not locked as final until the 23/09 experiment freeze -- if any
+% of the three files above changes before then, re-run
+% scripts/run_serving_comparison.py and update this section before the
+% freeze.
+Table~\ref{tab:serving} compares per-shard signature checking against
+epoch-manifest pinning as defenses against shard-version skew, measured
+over 30 repetitions per (scheme, scenario) cell against the real
+infected/repaired checkpoint pair, with each scheme's loader run as a
+separate OS process. In the skewed-load scenario -- one shard substituted
+with an older, independently and validly signed version, as a per-shard-
+signature-only loader would see after an interrupted rollout -- per-shard
+signature checking accepts the substituted shard in all 30 repetitions,
+since it has no way to detect that the shard belongs to a different repair
+epoch than its neighbours; epoch-manifest pinning rejects it in all 30
+repetitions and correctly identifies the substituted shard. This added
+protection costs 34 additional bytes of manifest per epoch (848 vs.\ 814
+bytes) to store the epoch identifier, and adds no measurable per-load
+verification cost once the identifier is hashed via an incremental update
+rather than a full-buffer concatenation (132.0~$\pm$~3.8~ms vs.\
+133.4~$\pm$~3.1~ms per load, not statistically distinguishable at this
+sample size). Recovering from a detected skew -- reloading from the
+correct manifest immediately after rejection -- takes 148.4~$\pm$~5.3~ms;
+per-shard signature checking has no equivalent recovery path, since it
+never detects the skew to begin with.
 \begin{table}[h]
 \centering
-\caption{Per-shard signature checking vs.\ epoch-manifest pinning (placeholder)}
+\caption{Per-shard signature checking vs.\ epoch-manifest pinning (n=30 per cell; pending 23/09 freeze)}
 \label{tab:serving}
 \begin{tabular}{lcc}
 \toprule
 Metric & Per-shard sig.\ check & Epoch-manifest pinning \\
 \midrule
-Manifest size (bytes) & \todo{--} & \todo{--} \\
-Verify time / load & \todo{--} & \todo{--} \\
-Rollout recovery time & \todo{--} & \todo{--} \\
-Skewed model accepted? & \todo{Yes (undetected)} & \todo{No (rejected)} \\
+Manifest size (bytes) & 814 & 848 \\
+Verify time / load (ms) & 133.4~$\pm$~3.1 & 132.0~$\pm$~3.8 \\
+Rollout recovery time (ms) & N/A (skew undetected) & 148.4~$\pm$~5.3 \\
+Skewed model accepted? & Yes (undetected) & No (rejected) \\
 \bottomrule
 \end{tabular}
 \end{table}
