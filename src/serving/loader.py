@@ -35,6 +35,24 @@ also the safer order operationally: nothing is deserialized (i.e. unpickled
 -- pickle execution is not sandboxed) before its signature has been
 checked.
 
+Implementation note on load_epoch_pinned's payload construction (added after
+a diagnostic run requested by Dat, comparing this loader against
+per_shard_sig's timing): an earlier version built the signed payload as
+`raw + epoch_id.encode("utf-8")`. Python's `bytes.__add__` allocates a new
+buffer and copies the entire left-hand operand into it, so for a
+multi-megabyte shard this re-copied the whole shard just to append a few
+epoch_id bytes -- adding on the order of tens of milliseconds per load that
+came from memory-copy overhead, not from the epoch check itself. That is
+not the cost this experiment is meant to measure (see the experiment card's
+own hypothesis: "the added manifest/verification cost is small relative to
+load time"). Feeding the same bytes to hmac's incremental `.update()`
+instead avoids the copy and is mathematically identical: HMAC processes its
+input as a byte stream, so `hmac.new(key, a + b, ...).hexdigest()` and
+`hmac.new(key, ...).update(a); .update(b); .hexdigest()` produce the exact
+same digest for the same (a, b) in the same order -- verified directly
+before making this change. This is a pure performance fix with no effect on
+any signature, manifest, or accept/reject decision.
+
 A rejected/skewed load is an ordinary, expected measurement outcome, not
 raised as an exception. A malformed manifest, a manifest/loader scheme
 mismatch, or a missing shard file are setup bugs, not measurement
@@ -71,6 +89,16 @@ class LoadResult:
 
 def _sign(payload: bytes) -> str:
     return hmac.new(SIGNING_KEY, payload, hashlib.sha256).hexdigest()
+
+
+def _sign_stream(*parts: bytes) -> str:
+    """Same digest as _sign(b"".join(parts)), computed without ever
+    materializing that concatenation. See the module docstring's
+    implementation note on load_epoch_pinned's payload construction."""
+    h = hmac.new(SIGNING_KEY, digestmod=hashlib.sha256)
+    for part in parts:
+        h.update(part)
+    return h.hexdigest()
 
 
 def _read_manifest(manifest_path: str, expected_scheme: str) -> dict:
@@ -161,9 +189,10 @@ def load_epoch_pinned(manifest_path: str, base_dir: str = None) -> LoadResult:
         # manifest's declared epoch_id. A shard signed under a different
         # epoch_id -- e.g. substituted in from an older, still-validly-
         # signed build -- will not match, even though its bytes alone are
-        # unmodified.
-        payload = raw + epoch_id.encode("utf-8")
-        if _sign(payload) == entry["signature"]:
+        # unmodified. Signed via _sign_stream (see implementation note
+        # above) rather than concatenating raw + epoch_id into a new bytes
+        # object -- same digest, without copying the whole shard.
+        if _sign_stream(raw, epoch_id.encode("utf-8")) == entry["signature"]:
             shard_raw[entry["shard_idx"]] = raw
         else:
             failed.append(entry["shard_idx"])
