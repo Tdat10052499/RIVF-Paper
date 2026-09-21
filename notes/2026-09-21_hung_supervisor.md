@@ -89,14 +89,16 @@ Work strictly in this order. Anything below the line is discarded without discus
 
 **Today and tomorrow, 21 and 22 September.**
 
-- Fix `compute_share.py` per Section 2.1 and re-run both partitions. Owner: Dan. This blocks the central figure, so it comes before everything else.
-- Run the two-shard sweep at n=6 on the existing repaired model, recording ASR and clean accuracy together. Owner: Dan.
+- Fix `compute_share.py` per Section 2.1 and re-run both partitions. Owner: Dan. This blocks everything in Section 10, so it comes before all other work.
+- Run the k-shard recovery curve at n=6 for k from 1 to 6, recording ASR and clean accuracy at every point. Owner: Dan. See Section 10.1.
+- Run the three selection strategies at each k: repair-aware, architectural, and random averaged over five draws. Owner: Dan. See Section 10.2. This is the highest-value experiment remaining.
 - Produce the ANP checkpoint with BackdoorBench's own defense script. Owner: Chinh. Nothing downstream begins until this exists, which makes it the critical path.
 - Create the paper scaffold in `paper/`: the IEEE six-page template, every section heading, and a named placeholder for each figure and table. Owner: Dat. This takes an hour and it removes the blank page from the 24th.
 
 **23 September.**
 
-- Run single-shard and two-shard sweeps against the ANP model. Owner: Dan.
+- Repeat the curve and the selection strategies against the ANP model. Owner: Dan.
+- Confirm the best configuration on a second seed before it becomes the headline number. Owner: Dan. This has moved above the line, for an exploratory maximum that has not been reproduced is not a result.
 - Compute the corrected locality metric for the ANP model, and plot it against recovered ASR across both repairs. Owner: Chinh.
 - Build the two-process serving harness bounded to the four numbers in the 18/09 note, Section 4.5. Owner: Dat.
 
@@ -104,7 +106,6 @@ Work strictly in this order. Anything below the line is discarded without discus
 
 **Below the line, discarded by default.**
 
-- Repeat on a second seed, unless the best configuration is already written up and the day permits.
 - Fine-pruning, NAD, and the 1-epoch fine-tune.
 - Any partition other than n=3 and n=6.
 - Any architecture or dataset beyond PreActResNet18 and CIFAR-10.
@@ -174,3 +175,43 @@ In return, the week after the 29th is yours. No tasks from me, no meetings, noth
 One last thing, and I mean it as more than encouragement. Most students never finish a first paper. They stall at the point you reached last week, which is the point where the first hypothesis fails and the result is not what anybody hoped. You did not stall. You ran the controls, you found your own negative result, you reported it honestly, and you asked what to do next. That is the part of research that cannot be taught, and you already have it.
 
 Finish the paper.
+
+---
+
+## 10. Where the positive results are, and how to reach them honestly
+
+The study leans negative as it stands, and I agree that is a weakness with this reviewer pool. A conservative committee rewards an attack that works and a defense that stops it. It does not reward a careful null. Three positives are genuinely available in this problem, all of them inference-only, and none of them requires us to soften a number.
+
+### 10.1 Report the recovery curve, not the single-shard point
+
+Sweep k from one shard to all six and report ASR and clean accuracy at every k, anchored at 0.90% for k=0 and 97.43% for k=6. The curve is monotone in expectation and it must cross 50% somewhere below k=6. Wherever it crosses is a positive finding stated as a threshold: an adversary who controls k of n shards restores the backdoor, and k is smaller than the whole model.
+
+This is not a reframing of a null. It is the quantity we should have measured first, for the question was never whether one shard suffices. It was how much staleness a deployment can tolerate.
+
+### 10.2 Let the adversary choose shards by where the repair lives
+
+Our partitioning so far follows architectural boundaries and rolls back whichever shard the index happens to name. A real adversary does no such thing. The threat model already grants control of the artifact cache, so the adversary holds both the pre-repair and the post-repair artifacts, and both are signed. Diffing them is free.
+
+Rank shards by the corrected `share_s` and roll back the top-k first. Compare three selection strategies at each k: repair-aware selection, architectural order, and random selection averaged over several draws. If repair-aware selection reaches the threshold at a smaller k than the alternatives, that is the paper's strongest result, for it converts the contribution from a measurement into an attack with a stated optimization.
+
+I rate this the single most valuable experiment remaining. It costs the same inference budget as the sweep in 10.1, it uses the harness we have already verified, and it makes the corrected locality metric load-bearing rather than merely explanatory.
+
+### 10.3 State the stealth constraint, for it is already measured
+
+Every hybrid retained clean accuracy between 84.58% and 93.26% against a 93.35% baseline. That is the stealth result and we have it already. Report recovered ASR jointly with the clean-accuracy cost at every point, and identify the configurations that restore the backdoor while remaining within a few percentage points of the repaired baseline. An attack that is effective and undetectable by utility monitoring is a stronger claim than one that is merely effective.
+
+### 10.4 Restructure the paper accordingly
+
+Write it as an attack paper, which is the shape this committee reads fluently. Characterize the conditions under which shard-version skew restores a backdoor: how many shards, chosen how, at what cost to clean accuracy, and against which repair. The single-shard null then appears where it belongs, as the lower boundary of the attack's operating region rather than as the headline. Close with epoch-manifest pinning as the control that detects the skew at any k.
+
+Same data, same honesty, and a structure a reviewer can follow without sympathy for negative results.
+
+### 10.5 The line we do not cross
+
+We are searching for a positive result, so we must be explicit about what makes that search legitimate.
+
+Report the complete sweep, every k and every selection strategy, and not only the configuration that performed best. Declare in the paper that the selection strategy in 10.2 was chosen after the single-shard pilot returned a null, for it was, and a reader is entitled to know which choices were exploratory. Confirm the best configuration on a second seed before it becomes the headline number, which is what the second seed is for and why it moves above the line today.
+
+State the revised threshold and the original one together. We pre-registered 50% recovery from a single shard, we did not meet it, and we are reporting a different quantity in its place. Say so in one sentence in the evaluation section. A reviewer who finds that sentence trusts the rest of the paper. A reviewer who finds the gate quietly moved trusts none of it.
+
+We do not need to overstate anything. Seventeen per cent from two shards is already a real effect, the curve will give us a larger one, and repair-aware selection will most likely give us the largest. What we must not do is discover a threshold and then present it as though we had predicted it.
