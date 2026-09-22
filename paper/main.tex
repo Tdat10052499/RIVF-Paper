@@ -2,6 +2,7 @@
 % paper/main.tex — RIVF 2026 SS3 scaffold (v2)
 % Built 21/09/2026 by Ho Du Tuan Dat, per notes/2026-09-21_hung_supervisor.md
 % Method section filled 22/09/2026 by Nguyen Minh Chinh.
+% ANP results added 22/09/2026 by Nguyen Minh Chinh.
 % =====================================================================
 \documentclass[10pt,conference]{IEEEtran}
 \usepackage{cite}
@@ -169,6 +170,10 @@ Table~\ref{tab:anp_config}. ANP is the primary local-repair baseline
 against which the shard-rollback attack is evaluated; its locality
 makes it the expected worst-case repair from the attacker's perspective
 (Section~\ref{sec:results}).
+The ANP-repaired checkpoint achieves CA~$=$~84.22\% and ASR~$=$~0.00\%
+at pruning threshold~0.55 (404 of 3{,}392 neurons pruned;
+Table~\ref{tab:anp_baseline}). The infected model for this run
+(seed 42, same pipeline) yielded CA~$=$~91.71\% and ASR~$=$~94.26\%.
 
 \begin{table}[h]
 \centering
@@ -189,6 +194,20 @@ Pruning by      & threshold \\
 Pruning max     & 0.90 \\
 Pruning step    & 0.05 \\
 Random seed     & 42 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{ANP repair results on CIFAR-10 test set (threshold = 0.55, seed 42).}
+\label{tab:anp_baseline}
+\begin{tabular}{lcc}
+\toprule
+Model & ASR (\%) & CA (\%) \\
+\midrule
+Infected (BadNets, ANP run) & 94.26 & 91.71 \\
+ANP-repaired (threshold $= 0.55$) &  0.00 & 84.22 \\
 \bottomrule
 \end{tabular}
 \end{table}
