@@ -1,0 +1,60 @@
+{
+  "n_shards": 6,
+  "repair": "20epoch_clean_finetune",
+  "skipped_buffers": [
+    "num_batches_tracked",
+    "running_mean",
+    "running_var"
+  ],
+  "shards": [
+    {
+      "shard_idx": 0,
+      "r_s": 1.40014509,
+      "norm_delta": 5.090115,
+      "norm_delta_sq": 25.909267,
+      "norm_inf": 3.635419,
+      "share_s": 0.02022034
+    },
+    {
+      "shard_idx": 1,
+      "r_s": 1.09911396,
+      "norm_delta": 11.141164,
+      "norm_delta_sq": 124.125531,
+      "norm_inf": 10.136496,
+      "share_s": 0.09687113
+    },
+    {
+      "shard_idx": 2,
+      "r_s": 1.14783776,
+      "norm_delta": 15.730723,
+      "norm_delta_sq": 247.455658,
+      "norm_inf": 13.704658,
+      "share_s": 0.1931215
+    },
+    {
+      "shard_idx": 3,
+      "r_s": 1.12191549,
+      "norm_delta": 20.767279,
+      "norm_delta_sq": 431.279863,
+      "norm_inf": 18.510555,
+      "share_s": 0.33658318
+    },
+    {
+      "shard_idx": 4,
+      "r_s": 0.94421937,
+      "norm_delta": 20.374268,
+      "norm_delta_sq": 415.110779,
+      "norm_inf": 21.577896,
+      "share_s": 0.32396436
+    },
+    {
+      "shard_idx": 5,
+      "r_s": 1.41287804,
+      "norm_delta": 6.120943,
+      "norm_delta_sq": 37.465944,
+      "norm_inf": 4.332252,
+      "share_s": 0.0292395
+    }
+  ],
+  "total_norm_delta_sq": 1281.347043
+}

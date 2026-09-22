@@ -28,8 +28,8 @@ print(f"Device: {device}")
 
 infected = torch.load(args.infected_ckpt, map_location="cpu", weights_only=False)
 repaired = torch.load(args.repaired_ckpt, map_location="cpu", weights_only=False)
-infected_sd = infected["model"]
-repaired_sd = repaired["model"]
+infected_sd = infected.get("model") or infected.get("model_state_dict")
+repaired_sd = repaired.get("model") or repaired.get("model_state_dict")
 
 with open(args.share_json) as f:
     share_data = json.load(f)

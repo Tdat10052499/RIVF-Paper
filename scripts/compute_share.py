@@ -12,8 +12,8 @@ args = parser.parse_args()
 
 infected = torch.load(args.infected_ckpt, map_location="cpu", weights_only=False)
 repaired = torch.load(args.repaired_ckpt, map_location="cpu", weights_only=False)
-infected_sd = infected["model"]
-repaired_sd = repaired["model"]
+infected_sd = infected.get("model") or infected.get("model_state_dict")
+repaired_sd = repaired.get("model") or repaired.get("model_state_dict")
 
 # Skip non-learnable buffers (BatchNorm counters and running stats)
 SKIP = ("num_batches_tracked", "running_mean", "running_var")
