@@ -1,0 +1,694 @@
+/kaggle/working/BackdoorBench/defense/anp.py:266: SyntaxWarning: invalid escape sequence '\s'
+  tempt = pd.read_csv(file_name, sep='\s+', skiprows=1, header=None)
+WARNING:root:save_path MUST have 'record' in its abspath, and data_path in attack result MUST have 'data' in its path
+WARNING:root:save_path MUST have 'record' in its abspath, and data_path in attack result MUST have 'data' in its path
+INFO:root:{'acc_ratio': 0.1,
+ 'amp': False,
+ 'anp_alpha': 0.2,
+ 'anp_eps': 0.4,
+ 'anp_steps': 1,
+ 'batch_size': 256,
+ 'checkpoint_load': None,
+ 'checkpoint_save': 'record/badnet_anp_run/defense/anp/checkpoint/',
+ 'client_optimizer': 'sgd',
+ 'dataset': 'cifar10',
+ 'dataset_path': './data/cifar10',
+ 'device': 'cuda',
+ 'epochs': 100,
+ 'frequency_save': 0,
+ 'img_size': (32, 32, 3),
+ 'index': None,
+ 'input_channel': 3,
+ 'input_height': 32,
+ 'input_width': 32,
+ 'log': 'record/badnet_anp_run/defense/anp/log/',
+ 'lr': 0.01,
+ 'lr_scheduler': 'CosineAnnealingLR',
+ 'model': 'preactresnet18',
+ 'nb_iter': 2000,
+ 'non_blocking': True,
+ 'num_classes': 10,
+ 'num_workers': 4,
+ 'pin_memory': True,
+ 'prefetch': False,
+ 'print_every': 500,
+ 'pruning_by': 'threshold',
+ 'pruning_max': 0.9,
+ 'pruning_step': 0.05,
+ 'random_seed': 42,
+ 'ratio': 0.05,
+ 'result_file': 'badnet_anp_run',
+ 'save_path': 'record/badnet_anp_run/defense/anp/',
+ 'sgd_momentum': 0.9,
+ 'terminal_info': ['defense/anp.py',
+                   '--yaml_path',
+                   '/kaggle/working/BackdoorBench/config/defense/anp/cifar10.yaml',
+                   '--result_file',
+                   'badnet_anp_run',
+                   '--random_seed',
+                   '42',
+                   '--device',
+                   'cuda'],
+ 'wd': 0.0005,
+ 'yaml_path': '/kaggle/working/BackdoorBench/config/defense/anp/cifar10.yaml'}
+2026-09-22:07:28:42 [INFO    ] [anp.py:453] {'acc_ratio': 0.1,
+ 'amp': False,
+ 'anp_alpha': 0.2,
+ 'anp_eps': 0.4,
+ 'anp_steps': 1,
+ 'batch_size': 256,
+ 'checkpoint_load': None,
+ 'checkpoint_save': 'record/badnet_anp_run/defense/anp/checkpoint/',
+ 'client_optimizer': 'sgd',
+ 'dataset': 'cifar10',
+ 'dataset_path': './data/cifar10',
+ 'device': 'cuda',
+ 'epochs': 100,
+ 'frequency_save': 0,
+ 'img_size': (32, 32, 3),
+ 'index': None,
+ 'input_channel': 3,
+ 'input_height': 32,
+ 'input_width': 32,
+ 'log': 'record/badnet_anp_run/defense/anp/log/',
+ 'lr': 0.01,
+ 'lr_scheduler': 'CosineAnnealingLR',
+ 'model': 'preactresnet18',
+ 'nb_iter': 2000,
+ 'non_blocking': True,
+ 'num_classes': 10,
+ 'num_workers': 4,
+ 'pin_memory': True,
+ 'prefetch': False,
+ 'print_every': 500,
+ 'pruning_by': 'threshold',
+ 'pruning_max': 0.9,
+ 'pruning_step': 0.05,
+ 'random_seed': 42,
+ 'ratio': 0.05,
+ 'result_file': 'badnet_anp_run',
+ 'save_path': 'record/badnet_anp_run/defense/anp/',
+ 'sgd_momentum': 0.9,
+ 'terminal_info': ['defense/anp.py',
+                   '--yaml_path',
+                   '/kaggle/working/BackdoorBench/config/defense/anp/cifar10.yaml',
+                   '--result_file',
+                   'badnet_anp_run',
+                   '--random_seed',
+                   '42',
+                   '--device',
+                   'cuda'],
+ 'wd': 0.0005,
+ 'yaml_path': '/kaggle/working/BackdoorBench/config/defense/anp/cifar10.yaml'}
+INFO:root:{'git hash': None,
+ 'last 3 log': 'commit f02e3534645f0ee63d6848653062cd6c0d6c400d\n'
+               'Author: SCLBD <90437772+SCLBD@users.noreply.github.com>\n'
+               'Date:   Fri Jul 4 16:28:38 2025 +0800\n'
+               '\n'
+               '    Update README.md\n'
+               '\n'
+               'commit b54631eb8884abc4e6c4653a579eddd6161c7ab5\n'
+               'Author: Hongrui CHEN '
+               '<75762846+CHR-ray@users.noreply.github.com>\n'
+               'Date:   Thu Mar 27 15:35:44 2025 +0800\n'
+               '\n'
+               '    Update install.sh\n'
+               '\n'
+               'commit 990c17304ef40b33e5193dd0c6adc964d6f8b077\n'
+               'Author: SCLBD <90437772+SCLBD@users.noreply.github.com>\n'
+               'Date:   Thu Mar 20 10:36:56 2025 +0800\n'
+               '\n'
+               '    Update README.md\n'
+               '    \n'
+               '    update web link',
+ 'status': 'On branch main\n'
+           "Your branch is up to date with 'origin/main'.\n"
+           '\n'
+           'Changes not staged for commit:\n'
+           '  (use "git add <file>..." to update what will be committed)\n'
+           '  (use "git restore <file>..." to discard changes in working '
+           'directory)\n'
+           '\tmodified:   utils/save_load_attack.py\n'
+           '\n'
+           'Untracked files:\n'
+           '  (use "git add <file>..." to include in what will be committed)\n'
+           '\tanp_defense.log\n'
+           '\tattack/__pycache__/\n'
+           '\tbadnet.log\n'
+           '\tconfig/attack/badnet/cifar10.yaml\n'
+           '\tdata/\n'
+           '\tdefense/__pycache__/\n'
+           '\tmodels/__pycache__/\n'
+           '\trecord/badnet_anp_run/\n'
+           '\tutils/__pycache__/\n'
+           '\tutils/aggregate_block/__pycache__/\n'
+           '\tutils/bd_img_transform/__pycache__/\n'
+           '\tutils/bd_label_transform/__pycache__/\n'
+           '\tutils/defense_utils/anp/__pycache__/\n'
+           '\tutils/defense_utils/anp/anp_model/__pycache__/\n'
+           '\n'
+           'no changes added to commit (use "git add" and/or "git commit -a")'}
+2026-09-22:07:28:42 [INFO    ] [anp.py:456] {'git hash': None,
+ 'last 3 log': 'commit f02e3534645f0ee63d6848653062cd6c0d6c400d\n'
+               'Author: SCLBD <90437772+SCLBD@users.noreply.github.com>\n'
+               'Date:   Fri Jul 4 16:28:38 2025 +0800\n'
+               '\n'
+               '    Update README.md\n'
+               '\n'
+               'commit b54631eb8884abc4e6c4653a579eddd6161c7ab5\n'
+               'Author: Hongrui CHEN '
+               '<75762846+CHR-ray@users.noreply.github.com>\n'
+               'Date:   Thu Mar 27 15:35:44 2025 +0800\n'
+               '\n'
+               '    Update install.sh\n'
+               '\n'
+               'commit 990c17304ef40b33e5193dd0c6adc964d6f8b077\n'
+               'Author: SCLBD <90437772+SCLBD@users.noreply.github.com>\n'
+               'Date:   Thu Mar 20 10:36:56 2025 +0800\n'
+               '\n'
+               '    Update README.md\n'
+               '    \n'
+               '    update web link',
+ 'status': 'On branch main\n'
+           "Your branch is up to date with 'origin/main'.\n"
+           '\n'
+           'Changes not staged for commit:\n'
+           '  (use "git add <file>..." to update what will be committed)\n'
+           '  (use "git restore <file>..." to discard changes in working '
+           'directory)\n'
+           '\tmodified:   utils/save_load_attack.py\n'
+           '\n'
+           'Untracked files:\n'
+           '  (use "git add <file>..." to include in what will be committed)\n'
+           '\tanp_defense.log\n'
+           '\tattack/__pycache__/\n'
+           '\tbadnet.log\n'
+           '\tconfig/attack/badnet/cifar10.yaml\n'
+           '\tdata/\n'
+           '\tdefense/__pycache__/\n'
+           '\tmodels/__pycache__/\n'
+           '\trecord/badnet_anp_run/\n'
+           '\tutils/__pycache__/\n'
+           '\tutils/aggregate_block/__pycache__/\n'
+           '\tutils/bd_img_transform/__pycache__/\n'
+           '\tutils/bd_label_transform/__pycache__/\n'
+           '\tutils/defense_utils/anp/__pycache__/\n'
+           '\tutils/defense_utils/anp/anp_model/__pycache__/\n'
+           '\n'
+           'no changes added to commit (use "git add" and/or "git commit -a")'}
+INFO:root:save file format is .png
+2026-09-22:07:28:42 [INFO    ] [bd_dataset_v2.py:133] save file format is .png
+INFO:root:Iter 	 lr 	 Time 	 TrainLoss 	 TrainACC 	 PoisonLoss 	 PoisonACC 	 CleanLoss 	 CleanACC
+2026-09-22:07:28:42 [INFO    ] [anp.py:740] Iter 	 lr 	 Time 	 TrainLoss 	 TrainACC 	 PoisonLoss 	 PoisonACC 	 CleanLoss 	 CleanACC
+loading...
+loading...
+INFO:root:500 	 0.010 	 324.5 	 4.4599 	 0.9730 	 3.4353 	 0.1026 	 0.3579 	 0.8987
+2026-09-22:07:34:07 [INFO    ] [anp.py:750] 500 	 0.010 	 324.5 	 4.4599 	 0.9730 	 3.4353 	 0.1026 	 0.3579 	 0.8987
+INFO:root:1000 	 0.010 	 323.5 	 2.6005 	 0.9755 	 3.4700 	 0.0413 	 0.3107 	 0.9035
+2026-09-22:07:39:30 [INFO    ] [anp.py:750] 1000 	 0.010 	 323.5 	 2.6005 	 0.9755 	 3.4700 	 0.0413 	 0.3107 	 0.9035
+INFO:root:1500 	 0.010 	 323.3 	 2.1948 	 0.9778 	 4.5454 	 0.0060 	 0.3134 	 0.8983
+2026-09-22:07:44:53 [INFO    ] [anp.py:750] 1500 	 0.010 	 323.3 	 2.1948 	 0.9778 	 4.5454 	 0.0060 	 0.3134 	 0.8983
+INFO:root:2000 	 0.010 	 323.3 	 2.1624 	 0.9794 	 4.5138 	 0.0097 	 0.2919 	 0.9031
+2026-09-22:07:50:17 [INFO    ] [anp.py:750] 2000 	 0.010 	 323.3 	 2.1624 	 0.9794 	 4.5138 	 0.0097 	 0.2919 	 0.9031
+INFO:root:No. 	 Layer Name 	 Neuron Idx 	 Mask 	 PoisonLoss 	 PoisonACC 	 CleanLoss 	 CleanACC
+2026-09-22:07:50:17 [INFO    ] [anp.py:762] No. 	 Layer Name 	 Neuron Idx 	 Mask 	 PoisonLoss 	 PoisonACC 	 CleanLoss 	 CleanACC
+INFO:root:0 	 None     	 None     	 0.2924 	 0.9426 	 0.4193 	 0.9171
+2026-09-22:07:50:22 [INFO    ] [anp.py:765] 0 	 None     	 None     	 0.2924 	 0.9426 	 0.4193 	 0.9171
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:22 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:22 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 0.25506210575501126,
+ 'clean_test_loss_avg_over_batch': 0.41277825376018884,
+ 'test_acc': 0.9142,
+ 'test_asr': 0.9457777777777778,
+ 'test_ra': 0.051333333333333335,
+ 'threshold': 0.0,
+ 'value': 0.0001}
+2026-09-22:07:50:27 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 0.25506210575501126,
+ 'clean_test_loss_avg_over_batch': 0.41277825376018884,
+ 'test_acc': 0.9142,
+ 'test_asr': 0.9457777777777778,
+ 'test_ra': 0.051333333333333335,
+ 'threshold': 0.0,
+ 'value': 0.0001}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:28 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:28 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 0.3155149523582723,
+ 'clean_test_loss_avg_over_batch': 0.4112869963049889,
+ 'test_acc': 0.9147,
+ 'test_asr': 0.9232222222222223,
+ 'test_ra': 0.07366666666666667,
+ 'threshold': 0.05,
+ 'value': 0.0561}
+2026-09-22:07:50:33 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 0.3155149523582723,
+ 'clean_test_loss_avg_over_batch': 0.4112869963049889,
+ 'test_acc': 0.9147,
+ 'test_asr': 0.9232222222222223,
+ 'test_ra': 0.07366666666666667,
+ 'threshold': 0.05,
+ 'value': 0.0561}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:34 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:34 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 0.42437413665983414,
+ 'clean_test_loss_avg_over_batch': 0.37012961457949134,
+ 'test_acc': 0.9172,
+ 'test_asr': 0.8863333333333333,
+ 'test_ra': 0.11011111111111112,
+ 'threshold': 0.1,
+ 'value': 0.1011}
+2026-09-22:07:50:39 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 0.42437413665983414,
+ 'clean_test_loss_avg_over_batch': 0.37012961457949134,
+ 'test_acc': 0.9172,
+ 'test_asr': 0.8863333333333333,
+ 'test_ra': 0.11011111111111112,
+ 'threshold': 0.1,
+ 'value': 0.1011}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:40 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:40 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 0.6768021393153403,
+ 'clean_test_loss_avg_over_batch': 0.34200708866119384,
+ 'test_acc': 0.9183,
+ 'test_asr': 0.7851111111111111,
+ 'test_ra': 0.21033333333333334,
+ 'threshold': 0.15000000000000002,
+ 'value': 0.1503}
+2026-09-22:07:50:45 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 0.6768021393153403,
+ 'clean_test_loss_avg_over_batch': 0.34200708866119384,
+ 'test_acc': 0.9183,
+ 'test_asr': 0.7851111111111111,
+ 'test_ra': 0.21033333333333334,
+ 'threshold': 0.15000000000000002,
+ 'value': 0.1503}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:46 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:46 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 1.1083344982730017,
+ 'clean_test_loss_avg_over_batch': 0.3029074942693114,
+ 'test_acc': 0.9194,
+ 'test_asr': 0.6072222222222222,
+ 'test_ra': 0.384,
+ 'threshold': 0.2,
+ 'value': 0.2013}
+2026-09-22:07:50:51 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 1.1083344982730017,
+ 'clean_test_loss_avg_over_batch': 0.3029074942693114,
+ 'test_acc': 0.9194,
+ 'test_asr': 0.6072222222222222,
+ 'test_ra': 0.384,
+ 'threshold': 0.2,
+ 'value': 0.2013}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:52 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:52 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 2.3100490834977894,
+ 'clean_test_loss_avg_over_batch': 0.2786150759086013,
+ 'test_acc': 0.9204,
+ 'test_asr': 0.2358888888888889,
+ 'test_ra': 0.7298888888888889,
+ 'threshold': 0.25,
+ 'value': 0.2506}
+2026-09-22:07:50:58 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 2.3100490834977894,
+ 'clean_test_loss_avg_over_batch': 0.2786150759086013,
+ 'test_acc': 0.9204,
+ 'test_asr': 0.2358888888888889,
+ 'test_ra': 0.7298888888888889,
+ 'threshold': 0.25,
+ 'value': 0.2506}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:50:58 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:50:59 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 2.9104444914393954,
+ 'clean_test_loss_avg_over_batch': 0.2681351792067289,
+ 'test_acc': 0.916,
+ 'test_asr': 0.12144444444444444,
+ 'test_ra': 0.8206666666666667,
+ 'threshold': 0.30000000000000004,
+ 'value': 0.3014}
+2026-09-22:07:51:04 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 2.9104444914393954,
+ 'clean_test_loss_avg_over_batch': 0.2681351792067289,
+ 'test_acc': 0.916,
+ 'test_asr': 0.12144444444444444,
+ 'test_ra': 0.8206666666666667,
+ 'threshold': 0.30000000000000004,
+ 'value': 0.3014}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:04 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:05 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 3.8963827557033963,
+ 'clean_test_loss_avg_over_batch': 0.26835051104426383,
+ 'test_acc': 0.9171,
+ 'test_asr': 0.03744444444444445,
+ 'test_ra': 0.8873333333333333,
+ 'threshold': 0.35000000000000003,
+ 'value': 0.3546}
+2026-09-22:07:51:10 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 3.8963827557033963,
+ 'clean_test_loss_avg_over_batch': 0.26835051104426383,
+ 'test_acc': 0.9171,
+ 'test_asr': 0.03744444444444445,
+ 'test_ra': 0.8873333333333333,
+ 'threshold': 0.35000000000000003,
+ 'value': 0.3546}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:10 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:11 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 4.172716200351715,
+ 'clean_test_loss_avg_over_batch': 0.2772929325699806,
+ 'test_acc': 0.9144,
+ 'test_asr': 0.018222222222222223,
+ 'test_ra': 0.9013333333333333,
+ 'threshold': 0.4,
+ 'value': 0.4018}
+2026-09-22:07:51:16 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 4.172716200351715,
+ 'clean_test_loss_avg_over_batch': 0.2772929325699806,
+ 'test_acc': 0.9144,
+ 'test_asr': 0.018222222222222223,
+ 'test_ra': 0.9013333333333333,
+ 'threshold': 0.4,
+ 'value': 0.4018}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:16 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:16 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 4.704485985967848,
+ 'clean_test_loss_avg_over_batch': 0.29236125349998476,
+ 'test_acc': 0.9094,
+ 'test_asr': 0.006666666666666667,
+ 'test_ra': 0.9084444444444445,
+ 'threshold': 0.45,
+ 'value': 0.4516}
+2026-09-22:07:51:22 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 4.704485985967848,
+ 'clean_test_loss_avg_over_batch': 0.29236125349998476,
+ 'test_acc': 0.9094,
+ 'test_asr': 0.006666666666666667,
+ 'test_ra': 0.9084444444444445,
+ 'threshold': 0.45,
+ 'value': 0.4516}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:23 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:23 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 5.639937109417385,
+ 'clean_test_loss_avg_over_batch': 0.3708327881991863,
+ 'test_acc': 0.8857,
+ 'test_asr': 0.0008888888888888889,
+ 'test_ra': 0.8986666666666666,
+ 'threshold': 0.5,
+ 'value': 0.5006}
+2026-09-22:07:51:28 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 5.639937109417385,
+ 'clean_test_loss_avg_over_batch': 0.3708327881991863,
+ 'test_acc': 0.8857,
+ 'test_asr': 0.0008888888888888889,
+ 'test_ra': 0.8986666666666666,
+ 'threshold': 0.5,
+ 'value': 0.5006}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:29 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:29 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 6.440204170015123,
+ 'clean_test_loss_avg_over_batch': 0.5208821393549442,
+ 'test_acc': 0.8422,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8917777777777778,
+ 'threshold': 0.55,
+ 'value': 0.5502}
+2026-09-22:07:51:34 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 6.440204170015123,
+ 'clean_test_loss_avg_over_batch': 0.5208821393549442,
+ 'test_acc': 0.8422,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8917777777777778,
+ 'threshold': 0.55,
+ 'value': 0.5502}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:35 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:35 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 7.158666279580858,
+ 'clean_test_loss_avg_over_batch': 0.6793526113033295,
+ 'test_acc': 0.8065,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8787777777777778,
+ 'threshold': 0.6000000000000001,
+ 'value': 0.601}
+2026-09-22:07:51:40 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 7.158666279580858,
+ 'clean_test_loss_avg_over_batch': 0.6793526113033295,
+ 'test_acc': 0.8065,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8787777777777778,
+ 'threshold': 0.6000000000000001,
+ 'value': 0.601}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:41 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:41 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 7.541894978947109,
+ 'clean_test_loss_avg_over_batch': 0.83039113804698,
+ 'test_acc': 0.7886,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8604444444444445,
+ 'threshold': 0.65,
+ 'value': 0.6504}
+2026-09-22:07:51:46 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 7.541894978947109,
+ 'clean_test_loss_avg_over_batch': 0.83039113804698,
+ 'test_acc': 0.7886,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8604444444444445,
+ 'threshold': 0.65,
+ 'value': 0.6504}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:47 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:47 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 7.618233667479621,
+ 'clean_test_loss_avg_over_batch': 0.9634185522794724,
+ 'test_acc': 0.7805,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8557777777777777,
+ 'threshold': 0.7000000000000001,
+ 'value': 0.7001}
+2026-09-22:07:51:52 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 7.618233667479621,
+ 'clean_test_loss_avg_over_batch': 0.9634185522794724,
+ 'test_acc': 0.7805,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8557777777777777,
+ 'threshold': 0.7000000000000001,
+ 'value': 0.7001}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:53 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:53 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 7.42490828037262,
+ 'clean_test_loss_avg_over_batch': 1.142187698185444,
+ 'test_acc': 0.7479,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8224444444444444,
+ 'threshold': 0.75,
+ 'value': 0.7502}
+2026-09-22:07:51:58 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 7.42490828037262,
+ 'clean_test_loss_avg_over_batch': 1.142187698185444,
+ 'test_acc': 0.7479,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8224444444444444,
+ 'threshold': 0.75,
+ 'value': 0.7502}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:51:59 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:51:59 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 6.9760249853134155,
+ 'clean_test_loss_avg_over_batch': 1.2697831362485885,
+ 'test_acc': 0.7071,
+ 'test_asr': 0.0,
+ 'test_ra': 0.7835555555555556,
+ 'threshold': 0.8,
+ 'value': 0.8004}
+2026-09-22:07:52:05 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 6.9760249853134155,
+ 'clean_test_loss_avg_over_batch': 1.2697831362485885,
+ 'test_acc': 0.7071,
+ 'test_asr': 0.0,
+ 'test_ra': 0.7835555555555556,
+ 'threshold': 0.8,
+ 'value': 0.8004}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:52:06 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:52:06 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 6.994620508617825,
+ 'clean_test_loss_avg_over_batch': 1.5404088526964188,
+ 'test_acc': 0.615,
+ 'test_asr': 0.0,
+ 'test_ra': 0.6817777777777778,
+ 'threshold': 0.8500000000000001,
+ 'value': 0.8501}
+2026-09-22:07:52:11 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 6.994620508617825,
+ 'clean_test_loss_avg_over_batch': 1.5404088526964188,
+ 'test_acc': 0.615,
+ 'test_asr': 0.0,
+ 'test_ra': 0.6817777777777778,
+ 'threshold': 0.8500000000000001,
+ 'value': 0.8501}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:52:12 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:52:12 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 6.245039807425605,
+ 'clean_test_loss_avg_over_batch': 1.714975330233574,
+ 'test_acc': 0.5584,
+ 'test_asr': 0.0,
+ 'test_ra': 0.6161111111111112,
+ 'threshold': 0.9,
+ 'value': 0.9006}
+2026-09-22:07:52:17 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 6.245039807425605,
+ 'clean_test_loss_avg_over_batch': 1.714975330233574,
+ 'test_acc': 0.5584,
+ 'test_asr': 0.0,
+ 'test_ra': 0.6161111111111112,
+ 'threshold': 0.9,
+ 'value': 0.9006}
+INFO:root:Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+2026-09-22:07:52:18 [INFO    ] [trainer_cls.py:972] Do NOT set the settings/parameters attr manually after you start training!
+You may break the relationship between them.
+/kaggle/working/BackdoorBench/utils/trainer_cls.py:990: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(enabled=self.amp)
+INFO:root:('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+2026-09-22:07:52:18 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
+ 'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
+INFO:root:{'bd_test_loss_avg_over_batch': 6.422454555829366,
+ 'clean_test_loss_avg_over_batch': 0.5168251879513264,
+ 'test_acc': 0.8422,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8917777777777778}
+2026-09-22:07:52:23 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 6.422454555829366,
+ 'clean_test_loss_avg_over_batch': 0.5168251879513264,
+ 'test_acc': 0.8422,
+ 'test_asr': 0.0,
+ 'test_ra': 0.8917777777777778}
+INFO:root:saving...
+2026-09-22:07:52:23 [INFO    ] [save_load_attack.py:176] saving...
