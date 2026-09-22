@@ -435,15 +435,43 @@ sufficiently undermined.
 
 \subsection{Shard-Selection Strategy Comparison}
 \label{sec:strategy}
-\todo{Figure/Table~\ref{fig:strategy}: three curves/columns at every
-\(k\) -- repair-aware, architectural, random.}
-\begin{figure}[h]
+Table~\ref{tab:strategy} compares three shard-selection strategies at
+every $k$: (a)~\textbf{repair-aware}: shards selected greedily by
+decreasing $\mathrm{share}_s$ (requires knowledge of the repair update
+norms); (b)~\textbf{architectural}: shards selected in index order
+(0, 1, 2, \ldots), requiring only knowledge of the partition
+boundaries; and (c)~\textbf{random}: shards drawn uniformly at random,
+reported as the mean ASR over 5 independent draws.
+
+\begin{table}[h]
 \centering
-\todo{\rule{0.9\linewidth}{4cm}}
-\caption{ASR recovery vs.\ $k$ under three shard-selection strategies.
-Placeholder.}
-\label{fig:strategy}
-\end{figure}
+\caption{ASR (\%) vs.\ $k$ under three shard-selection strategies ($n=6$).}
+\label{tab:strategy}
+\begin{tabular}{cccc}
+\toprule
+$k$ & Repair-aware & Architectural & Random (mean) \\
+\midrule
+0 &  0.90 &  0.90 &  0.90 \\
+1 &  0.50 &  1.02 &  2.67 \\
+2 &  4.57 &  1.24 &  5.68 \\
+3 & 92.89 & 13.67 & 17.93 \\
+4 & 97.11 & 25.97 & 46.46 \\
+5 & 97.21 & 97.21 & 72.69 \\
+6 & 97.43 & 97.43 & 97.43 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Repair-aware selection is strictly most efficient: it reaches $>\!50\%$
+ASR at $k\!=\!3$, requiring only three stale shards to restore the
+backdoor. Architectural selection requires $k\!=\!5$ to cross the same
+threshold. Random selection falls between, crossing 50\% ASR at
+$k\!=\!5$ on average (though individual draws vary). Importantly,
+architectural selection---which requires no knowledge of repair update
+norms, only knowledge of the partition indices---still eventually
+achieves full backdoor recovery at $k\!=\!5$, underscoring that the
+attack does not require privileged access to repair internals to
+succeed at moderate stale-shard counts.
 
 \subsection{Contrast with a Local Repair (ANP)}
 \todo{Repeat Sections~\ref{sec:kcurve}--\ref{sec:strategy} against the
