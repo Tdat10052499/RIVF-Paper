@@ -349,8 +349,53 @@ $n=6$ & 97.43 & 89.41 & 86.03--93.26 \\
 \end{table}
 
 \subsection{Single-Shard Rollback (Negative Result)}
-\todo{State plainly: best single-shard rollback ASR = 17.46\%, below
-the 50\% gate. Report per-shard breakdown, not just the max.}
+\label{sec:singleshard}
+We first evaluate whether substituting a single stale shard is sufficient
+to restore the backdoor. Table~\ref{tab:singleshard} reports, for each
+$n\!=\!6$ shard, its repair-share $\mathrm{share}_s$, relative update
+norm $r_s$, and the ASR when that shard alone is rolled back.
+ASR values for shards~1 and~4 are not directly available because no
+random $k\!=\!1$ draw selected those shards in isolation; the remaining
+four shards were each isolated in at least one draw.
+
+\begin{table}[h]
+\centering
+\caption{Per-shard metrics and single-shard rollback ASR ($n=6$, global fine-tune, seed 42).
+Shards 1 and 4 were not isolated in any $k=1$ draw (n.t.\ = not tested).}
+\label{tab:singleshard}
+\begin{tabular}{clccr}
+\toprule
+Shard & Layer(s) & $\mathrm{share}_s$ & $r_s$ & ASR (\%) \\
+\midrule
+0 & conv1 (stem)  & 0.003 & 0.158 &  1.02 \\
+1 & layer1        & 0.064 & 0.265 &  n.t. \\
+2 & layer2        & 0.211 & 0.355 &  8.94 \\
+3 & layer3        & 0.477 & 0.395 &  0.50 \\
+4 & layer4        & 0.243 & 0.242 &  n.t. \\
+5 & linear (head) & 0.001 & 0.086 &  1.18 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No individual shard rollback restores the backdoor above the 50\%
+threshold. Among the four shards tested in isolation, the highest ASR
+is 8.94\% (shard~2, \texttt{layer2}), despite shard~3 carrying the
+largest repair share (47.7\%). Counterintuitively, the shard with the
+most repair update (shard~3, $\mathrm{share}_3=0.477$) yields the
+\emph{lowest} single-shard ASR (0.50\%), suggesting that the repair is
+distributed across multiple shards in a way that no single shard can
+undo. At the coarser $n\!=\!3$ partition, where shard~S2
+(\texttt{layer2}$+$\texttt{layer3}) combines a share of 68.8\%, the
+best single-shard ASR reaches only 17.46\%---still well below the
+50-percentage-point gate.
+
+This is a genuine negative finding. We report it as such rather than
+cherry-picking configurations. However, we emphasize the stealth
+implication: the hybrid model's clean accuracy
+(Table~\ref{tab:fullrollback}) remains indistinguishable from a normal
+repaired model at typical monitoring thresholds. The threat surface
+exists; it simply requires multiple stale shards, as
+Section~\ref{sec:kcurve} shows.
 
 \subsection{\(k\)-Shard Recovery Curve}
 \label{sec:kcurve}
