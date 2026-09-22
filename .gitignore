@@ -5,25 +5,24 @@ __pycache__/
 venv/
 .env
 
-# Checkpoints & large data (track by manifest, not by content)
-data/checkpoints/
-data/datasets/
+# Large binary checkpoint files (ignored by extension; specific files can be
+# force-added with git add -f when they need to be tracked)
 *.pth
-*.pt
 *.ckpt
 *.h5
+# NOTE: *.pt is intentionally NOT ignored here so that named checkpoint files
+# (e.g. resnet18_cifar10_badnets_anp.pt) can be tracked directly.
 
-# Serving-comparison shard artifacts (DAT-SERVING-01): regenerable from
-# data/checkpoints/ by scripts/build_shard_manifest.py, same size class as
-# the checkpoints themselves -- not tracked by content, same rule as above.
+# Large datasets — never commit raw data
+data/datasets/
+data/cifar10/
+
+# Serving-comparison shard artifacts: regenerable from
+# data/checkpoints/ by scripts/build_shard_manifest.py
 data/serving_manifests/
 
 # Raw results (keep in git — immutable record)
 # results/raw/ is intentionally NOT ignored
-
-# Figures (regenerated from scripts)
-figures/*.png
-figures/*.pdf
 
 # Paper build artifacts
 paper/*.aux
@@ -40,5 +39,3 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-
-data/cifar10/
