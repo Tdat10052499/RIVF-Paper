@@ -315,19 +315,35 @@ Repaired (20-epoch clean fine-tune) &  0.90 & 93.35 \\
 \end{table}
 
 \subsection{Sanity Checks: Hybrid Models Are Not Broken}
-\todo{Table~\ref{tab:fullrollback}: full-rollback reconstruction
-(exact match to infected ASR/CA at n=3 and n=6) and hybrid-model CA
-range (84.58--93.26\%).}
+
+Before evaluating partial rollbacks, we verify that the substitution
+harness is correct and that the resulting hybrid models remain functional.
+
+\textbf{Full-rollback reconstruction.} Substituting all $n$ shards with
+their pre-repair counterparts should exactly reconstruct the infected model.
+Table~\ref{tab:fullrollback} confirms this at both granularities: the
+recovered ASR and CA match the infected baseline exactly, ruling out any
+bug in the substitution code.
+
+\textbf{Hybrid models are not broken.} Across all partial rollback
+configurations evaluated in this paper (one to five shards substituted,
+both $n=3$ and $n=6$), the hybrid models achieve clean accuracies
+between 84.58\% and 93.26\%. No hybrid model degrades to random-chance
+accuracy ($\approx$10\%). This is important: it means a deployment
+that monitors only clean accuracy would observe nothing unusual when a
+stale shard is silently accepted.
+
 \begin{table}[h]
 \centering
-\caption{Full-rollback verification and hybrid CA range (placeholder)}
+\caption{Full-rollback verification. Substituting all $n$ shards
+exactly reproduces the infected model.}
 \label{tab:fullrollback}
 \begin{tabular}{lccc}
 \toprule
 Config & Rollback ASR (\%) & Rollback CA (\%) & Hybrid CA range (\%) \\
 \midrule
-n=3 & \todo{97.43} & \todo{89.41} & \todo{84.58--90.98} \\
-n=6 & \todo{97.43} & \todo{89.41} & \todo{86.03--93.26} \\
+$n=3$ & 97.43 & 89.41 & 84.58--90.98 \\
+$n=6$ & 97.43 & 89.41 & 86.03--93.26 \\
 \bottomrule
 \end{tabular}
 \end{table}
