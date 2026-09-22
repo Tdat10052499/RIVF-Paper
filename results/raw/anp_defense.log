@@ -305,7 +305,7 @@ INFO:root:{'bd_test_loss_avg_over_batch': 0.6768021393153403,
  'value': 0.1503}
 2026-09-22:07:50:45 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 0.6768021393153403,
  'clean_test_loss_avg_over_batch': 0.34200708866119384,
- 'test_acc': 0.9183,
+ 'test_acc': 0.9172,
  'test_asr': 0.7851111111111111,
  'test_ra': 0.21033333333333334,
  'threshold': 0.15000000000000002,
@@ -321,17 +321,17 @@ INFO:root:('epoch_now:0, '
 2026-09-22:07:50:46 [INFO    ] [trainer_cls.py:1030] ('epoch_now:0, '
  'batch_now:0self.amp:False,self.criterion:CrossEntropyLoss(),self.optimizer:None,self.scheduler:None,self.scaler:{})')
 INFO:root:{'bd_test_loss_avg_over_batch': 1.1083344982730017,
- 'clean_test_loss_avg_over_batch': 0.3029074942693114,
- 'test_acc': 0.9194,
- 'test_asr': 0.6072222222222222,
- 'test_ra': 0.384,
+ 'clean_test_loss_avg_over_batch': 0.2786150759086013,
+ 'test_acc': 0.9204,
+ 'test_asr': 0.2358888888888889,
+ 'test_ra': 0.7298888888888889,
  'threshold': 0.2,
  'value': 0.2013}
 2026-09-22:07:50:51 [INFO    ] [trainer_cls.py:65] {'bd_test_loss_avg_over_batch': 1.1083344982730017,
- 'clean_test_loss_avg_over_batch': 0.3029074942693114,
- 'test_acc': 0.9194,
- 'test_asr': 0.6072222222222222,
- 'test_ra': 0.384,
+ 'clean_test_loss_avg_over_batch': 0.2786150759086013,
+ 'test_acc': 0.9204,
+ 'test_asr': 0.2358888888888889,
+ 'test_ra': 0.7298888888888889,
  'threshold': 0.2,
  'value': 0.2013}
 INFO:root:Do NOT set the settings/parameters attr manually after you start training!
