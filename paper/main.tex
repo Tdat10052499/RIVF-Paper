@@ -399,15 +399,39 @@ Section~\ref{sec:kcurve} shows.
 
 \subsection{\(k\)-Shard Recovery Curve}
 \label{sec:kcurve}
-\todo{Figure~\ref{fig:kcurve}: ASR and CA vs.\ \(k\) for \(k=1,\dots,6\)
-at n=6, from Dan's Priority-1 run.}
-\begin{figure}[h]
+Table~\ref{tab:kcurve} shows ASR as $k$ shards are cumulatively rolled
+back under the repair-aware strategy ($n\!=\!6$), where shards are
+selected greedily in decreasing order of $\mathrm{share}_s$ (i.e.,
+shard~3 first, then shard~4, then shard~2, and so on). The cumulative
+repair share covered by the first $k$ shards is shown alongside ASR and CA.
+
+\begin{table}[h]
 \centering
-\todo{\rule{0.9\linewidth}{4cm}}
-\caption{ASR and clean accuracy vs.\ number of stale shards $k$
-(n=6). Placeholder.}
-\label{fig:kcurve}
-\end{figure}
+\caption{ASR and CA vs.\ $k$ stale shards under repair-aware strategy ($n=6$, greedy by $\mathrm{share}_s$).}
+\label{tab:kcurve}
+\begin{tabular}{ccccc}
+\toprule
+$k$ & Shards rolled back & Cumul.\ $\mathrm{share}$ & ASR (\%) & CA (\%) \\
+\midrule
+0 & -- (repaired)        & 0.000 &  0.90 & 93.35 \\
+1 & 3                    & 0.477 &  0.50 & 87.09 \\
+2 & 3, 4                 & 0.720 &  4.57 & 91.06 \\
+3 & 3, 4, 2              & 0.931 & 92.89 & 87.38 \\
+4 & 3, 4, 2, 1           & 0.994 & 97.11 & 89.56 \\
+5 & 3, 4, 2, 1, 0        & 0.997 & 97.21 & 90.18 \\
+6 & 3, 4, 2, 1, 0, 5     & 1.000 & 97.43 & 89.41 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The curve reveals a sharp threshold at $k\!=\!3$: rolling back three
+shards (shards 3, 4, and 2)---which together cover 93.1\% of the total
+repair update---causes ASR to jump from 4.57\% to 92.89\%. Beyond this
+point ($k\!\geq\!4$), ASR saturates near the fully infected model's
+97.43\%. The relationship between cumulative repair share and ASR is
+thus non-linear: the backdoor is not gradually restored proportionally
+to coverage, but exhibits a sharp recovery once the repair is
+sufficiently undermined.
 
 \subsection{Shard-Selection Strategy Comparison}
 \label{sec:strategy}
