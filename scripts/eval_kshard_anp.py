@@ -52,7 +52,8 @@ infected_sd = infected.get("model") or infected.get("model_state_dict")
 # Repaired: ANP-fixed format with "state_dict" key (saved from our Kaggle notebook)
 repaired_sd = (repaired.get("state_dict")
                or repaired.get("model")
-               or repaired.get("model_state_dict"))
+               or repaired.get("model_state_dict")
+               or repaired)
 
 if infected_sd is None:
     raise ValueError("Could not find state dict in infected checkpoint. "
