@@ -1,68 +1,126 @@
 % =====================================================================
-% paper/references.bib — scaffold, 21/09/2026
+% paper/references.bib — updated 23/09/2026 by Nguyen Minh Chinh
 %
-% Only fields actually confirmed in this repo's own documents are
-% filled in. Every other field is a TODO placeholder — do NOT guess
-% author names, page numbers, or exact venues; look each one up before
-% the 26/09 freeze. The six entries below correspond 1:1 to the
-% "Closest prior work" list in Project Agreement.md, Section 2, plus
-% the BackdoorBench toolkit citation (source confirmed in
-% data/checkpoint_manifest.md and Project Agreement.md Section 5).
+% All six prior-work entries now have confirmed author/title/venue/year
+% from arXiv, ACM DL, and IEEE Xplore (search date: 23/09/2026).
+%
+% Fields still marked TODO need final verification before 26/09 freeze.
+% AIRS: no paper with this exact acronym confirmed -- see note below.
 % =====================================================================
 
 @misc{backdoorbench2024,
   title        = {BackdoorBench: A Comprehensive Benchmark of Backdoor Learning},
-  author       = {TODO: confirm full author list from arXiv:2401.15002},
-  year         = {TODO: confirm},
-  note         = {arXiv:2401.15002; toolkit: \url{https://github.com/SCLBD/BackdoorBench}},
+  author       = {Wu, Baoyuan and Chen, Hongrui and Zhang, Mingda and Zhu, Zihao
+                  and Wei, Shaokui and Yuan, Danni and Shen, Li and Cheng, Ruichao},
+  year         = {2022},
+  note         = {arXiv:2206.12654; toolkit: \url{https://github.com/SCLBD/BackdoorBench}},
 }
 
-@inproceedings{min2024reactivation,
-  title        = {TODO: exact title of the reactivation-via-retuning/querying paper},
-  author       = {Min and others},
-  booktitle    = {NeurIPS},
+% -- Repair-fragility papers ------------------------------------------
+
+@inproceedings{min2024uncovering,
+  title        = {Uncovering, Explaining, and Mitigating the Superficial Safety
+                  of Backdoor Defense},
+  author       = {Min, Rui and Qin, Zeyu and Zhang, Nevin L. and Shen, Li
+                  and Cheng, Minhao},
+  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
   year         = {2024},
-  note         = {Cited in Project Agreement.md as "Min et al. (NeurIPS 2024) -- shows purified backdoors can reactivate via retuning or querying." Difference used in this paper: we test reactivation via rollback of a historically valid shard, not via retuning.},
+  note         = {Spotlight. arXiv:2410.09838.
+                  Shows that purified/defended models retain latent backdoor
+                  behavior reactivatable via fine-tuning or querying.
+                  Difference from this paper: we test reactivation via rollback
+                  of a historically valid signed shard, not via retuning.},
 }
 
-@misc{deferbad,
-  title        = {TODO: exact title and venue for DeferBad},
-  author       = {TODO},
-  year         = {TODO},
-  note         = {Deliberately engineers unlearning to be fragile to subsequent benign updates. Difference used in this paper: we examine fragility to rollback toward a prior historical state, not forward benign updates.},
+@misc{shin2024deferbad,
+  title        = {Unlearn to Relearn Backdoors: Deferred Backdoor Functionality
+                  Attacks on Deep Learning Models},
+  author       = {Shin, Jeongjin and Park, Sangdon},
+  year         = {2024},
+  note         = {arXiv:2411.14449. OpenReview: S5JCqTJyKj.
+                  TODO: confirm acceptance venue before 26/09 freeze
+                  (submitted to ICLR-family venue; status unconfirmed 23/09/2026).
+                  Deliberately engineers unlearning to be fragile to subsequent
+                  benign updates. Difference from this paper: we examine fragility
+                  to rollback toward a prior historical state, not forward benign
+                  updates.},
 }
 
-@misc{subnetreplacement,
-  title        = {Subnet Replacement Attack},
-  author       = {TODO: exact title/author/venue},
-  year         = {TODO},
-  note         = {Allows the attacker to freely select replacement parameters. Difference used in this paper: we restrict the attacker to shards that were historically valid and signed, not arbitrary parameter substitution.},
+% -- Weight-substitution papers ---------------------------------------
+
+@inproceedings{qi2022subnet,
+  title        = {Towards Practical Deployment-Stage Backdoor Attack on Deep
+                  Neural Networks},
+  author       = {Qi, Xiangyu and Xie, Tinghao and Pan, Ruizhe and Zhu, Jifeng
+                  and Yang, Yong and Bu, Kai},
+  booktitle    = {IEEE/CVF Conference on Computer Vision and Pattern Recognition
+                  (CVPR)},
+  year         = {2022},
+  note         = {Oral. arXiv:2111.12965.
+                  Subnet Replacement Attack: attacker freely selects replacement
+                  parameters and runs a dedicated backdoor-training step.
+                  Difference from this paper: our attacker is restricted to shards
+                  that were historically valid and signed.},
 }
 
-@misc{badmerging,
-  title        = {TODO: exact title -- BadMerging / MergeBackdoor},
-  author       = {TODO},
-  year         = {TODO},
-  note         = {Addresses deliberate merging across distinct model sources. Difference used in this paper: we concern partial rollback within a single, known model lineage, not merging across sources.},
+@inproceedings{zhang2024badmerging,
+  title        = {BadMerging: Backdoor Attacks Against Model Merging},
+  author       = {Zhang, Jinghuai and Chi, Jianfeng and Li, Zheng and Cai, Kunlin
+                  and Zhang, Yang and Tian, Yuan},
+  booktitle    = {ACM SIGSAC Conference on Computer and Communications Security
+                  (CCS)},
+  year         = {2024},
+  doi          = {10.1145/3658644.3690284},
+  note         = {arXiv:2408.07362.
+                  Backdoor injection via model merging across distinct model sources.
+                  Difference from this paper: we concern partial rollback within a
+                  single, known model lineage, not merging across sources.},
 }
 
+% -- Artifact integrity / deployment security -------------------------
+
+% AIRS: A paper with the acronym "AIRS" matching the Project Agreement
+%   description (per-shard hash/signature + loader integrity, distributed
+%   ML serving) was NOT found in the literature search (23/09/2026).
+%   Closest functional match: Sentry (Gan & Ghodsi, CCS 2025,
+%   arXiv:2510.00554, doi:10.1145/3719027.3765070), which performs
+%   GPU-accelerated cryptographic integrity verification of ML artifacts
+%   during loading/serving.
+%   ACTION REQUIRED: verify with Dr. Hung which paper "AIRS" refers to
+%   before the 26/09 freeze, then update this entry.
 @misc{airs,
-  title        = {TODO: exact title -- AIRS},
+  title        = {TODO: verify exact title/authors/venue for AIRS.
+                  Closest confirmed match: Sentry -- Authenticating Machine
+                  Learning Artifacts on the Fly
+                  (Gan \& Ghodsi, CCS 2025, arXiv:2510.00554,
+                  doi:10.1145/3719027.3765070)},
   author       = {TODO},
   year         = {TODO},
-  note         = {Narrows to per-shard hash/signature and loader integrity checks. Difference used in this paper: AIRS does not address a shard that is valid in hash/signature but belongs to a stale epoch -- precisely the gap this paper addresses.},
+  note         = {ACTION: confirm with Dr. Hung before 26/09 freeze.},
 }
 
-@misc{tuf,
-  title        = {The Update Framework (TUF)},
-  author       = {TODO: confirm citation form (spec vs. paper)},
-  year         = {TODO},
-  note         = {Establishes rollback and mix-and-match detection at the snapshot-metadata level. This paper does not propose a new protocol; epoch pinning is used as an existing control.},
+@inproceedings{tuf,
+  title        = {Survivable Key Compromise in Software Update Systems},
+  author       = {Samuel, Justin and Mathewson, Nick and Cappos, Justin
+                  and Dingledine, Roger},
+  booktitle    = {17th ACM Conference on Computer and Communications Security
+                  (CCS)},
+  year         = {2010},
+  doi          = {10.1145/1866307.1866315},
+  note         = {Canonical academic citation for The Update Framework (TUF).},
 }
 
-@misc{uptane,
-  title        = {Uptane: Securing Software Updates for Automobiles},
-  author       = {TODO: confirm citation form},
-  year         = {TODO},
-  note         = {Same role as TUF above, cited alongside it in Project Agreement.md.},
+@article{uptane,
+  title        = {Uptane: Security and Customizability of Software Updates
+                  for Vehicles},
+  author       = {Kuppusamy, Trishank Karthik and DeLong, Lois Anne
+                  and Cappos, Justin},
+  journal      = {IEEE Security \& Privacy},
+  volume       = {16},
+  number       = {1},
+  year         = {2018},
+  doi          = {10.1109/MSP.2018.1081083},
+  note         = {TODO: confirm full author list from IEEE Xplore before freeze
+                  (earlier ESCAR EU 2016 version lists 9 authors).
+                  IEEE Standard 2900-2023 also exists as an alternative citation.},
 }
