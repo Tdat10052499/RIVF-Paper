@@ -3,6 +3,7 @@
 % Built 21/09/2026 by Ho Du Tuan Dat, per notes/2026-09-21_hung_supervisor.md
 % Method section filled 22/09/2026 by Nguyen Minh Chinh.
 % ANP results added 22/09/2026 by Nguyen Minh Chinh.
+% Related Work filled 23/09/2026 by Nguyen Minh Chinh.
 % =====================================================================
 \documentclass[10pt,conference]{IEEEtran}
 \usepackage{cite}
@@ -89,8 +90,8 @@ notes/2026-09-21\_hung\_supervisor.md Section 4.}
 We consider an adversary whose sole point of control is the artifact
 cache or model-update distribution path of an edge inference service.
 The attacker's objective is to cause at least one worker to serve a
-\emph{hybrid} model—one composed of a mix of repaired shards and a
-historically valid but pre-repair shard—thereby restoring backdoor
+\emph{hybrid} model---one composed of a mix of repaired shards and a
+historically valid but pre-repair shard---thereby restoring backdoor
 behavior without triggering per-shard signature checks.
 
 \textbf{Attacker knowledge.} The adversary knows the model architecture
@@ -102,7 +103,7 @@ before the repair was deployed.
 
 \textbf{Attacker control.} The attacker controls only the artifact cache
 or update path. They can supply a historically valid, correctly signed
-shard to a worker during an interrupted rollout—for instance, when
+shard to a worker during an interrupted rollout---for instance, when
 intermittent connectivity causes some workers to receive newly repaired
 shards while others receive cached, pre-repair copies.
 
@@ -261,7 +262,7 @@ counter increments by one per training batch and reaches approximately
 $\times$~20~epochs), while the actual weight differences are on the
 order of 0.5. The counter therefore dominated the $\ell_1$ sum and
 caused every shard to appear to carry an identical 25\% of the repair
-update—a spurious result that reflected only how many BatchNorm layers
+update---a spurious result that reflected only how many BatchNorm layers
 each shard contained, not how much of the repair it actually carried.
 The conclusion from the 19/09 note that ``each residual block holds
 25\% of the repair'' is withdrawn.
@@ -629,10 +630,71 @@ as explicit future work in one clause.}
 % =====================================================================
 \section{Related Work}
 \label{sec:related}
-% Owner: Chinh, 25/09.
-\todo{Cover six prior works from Project Agreement.md with exact
-stated differences: Min et al.\ (NeurIPS 2024), DeferBad, Subnet
-Replacement Attack, BadMerging/MergeBackdoor, AIRS, TUF/Uptane.}
+% Owner: Chinh. Filled 23/09/2026.
+% NOTE: \cite{airs} identity unconfirmed -- see references.bib comment.
+%   Verify with Dr. Hung before the 26/09 freeze.
+
+Our work sits at the intersection of backdoor repair fragility,
+weight-level substitution attacks, and artifact supply-chain security.
+We survey the six closest lines of prior work and state precisely where
+each differs from our contribution.
+
+\textbf{Backdoor repair fragility.}
+Min et al.~\cite{min2024uncovering} demonstrate that state-of-the-art
+backdoor defenses---including fine-pruning, Neural Cleanse, and
+SCALE-UP---leave a latent backdoor signal in the repaired model that
+can be reactivated by adversarial retuning or by querying the model
+with carefully chosen inputs.
+Our work is complementary but distinct: we do not retune or query the
+repaired model; instead, we substitute a historically valid, correctly
+signed shard from the pre-repair checkpoint, testing whether
+\emph{rollback} alone---with no access to training data or
+gradients---suffices to reactivate the backdoor.
+Shin and Park~\cite{shin2024deferbad} (DeferBad) take a different angle
+by engineering the backdoor injection itself so that the unlearning step
+leaves a fragile residual that a subsequent \emph{benign} fine-tune
+can reactivate, thereby defeating the defense after it has been applied.
+Our attack does not require any forward update: the stale shard is a
+historically valid artifact that pre-dates the repair, so no
+fine-tuning---benign or adversarial---is involved.
+
+\textbf{Weight-level substitution attacks.}
+Qi et al.~\cite{qi2022subnet} introduce the Subnet Replacement Attack
+(SRA), in which a gray-box attacker freely replaces a contiguous
+subnetwork of a victim model with backdoored weights crafted for that
+purpose.
+The key distinction is attacker freedom: SRA allows arbitrary parameter
+selection and a dedicated backdoor-training step, whereas our attacker
+is restricted to shards that were already produced, validly signed, and
+archived before the repair---a strictly weaker capability that reflects
+realistic artifact-cache compromise.
+Zhang et al.~\cite{zhang2024badmerging} (BadMerging) show that backdoors
+can survive or be injected through model merging across \emph{distinct}
+model lineages using task-vector arithmetic.
+Our setting concerns partial rollback \emph{within a single, known model
+lineage}, not merging across sources; the merged model in BadMerging
+need not ever have passed a repair, whereas our hybrid is constructed
+from the repair's own two endpoints.
+
+\textbf{Artifact integrity and deployment security.}
+\cite{airs} addresses per-shard hash and signature verification and
+loader integrity in distributed ML serving, establishing that each
+loaded shard is authentic.
+However, per-shard signature verification proves only that a shard
+matches a known signed binary; it does not prove that all shards belong
+to the \emph{same repair epoch}.
+A pre-repair shard that was validly signed before the repair is accepted
+by per-shard checking without any indication of version skew---precisely
+the gap our work quantifies.
+TUF~\cite{tuf} and Uptane~\cite{uptane} address rollback and
+mix-and-match attacks at the snapshot-metadata level in software update
+systems, and epoch-manifest pinning---as applied in our serving
+comparison (Section~\ref{sec:serving})---is a direct application of
+these existing controls.
+Our contribution is not a new protocol: we measure the ML-specific
+consequence of the absence of epoch pinning in a model-shard deployment,
+providing the empirical justification for applying TUF/Uptane-style
+controls to this setting.
 
 % =====================================================================
 \section{Conclusion}
