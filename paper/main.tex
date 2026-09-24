@@ -257,15 +257,18 @@ ASR~$=$~97.43\% and CA~$=$~89.41\% (see Table~\ref{tab:fullrollback}).
 To characterize how much of the repair update is carried by each
 shard, we define the \emph{repair-share} of shard $s$ as:
 \begin{equation}
-  \mathrm{share}_s \;=\; \frac{\|\,\delta_s\,\|_1}{\|\,\delta\,\|_1},
+  \mathrm{share}_s \;=\; \frac{\|\,\delta_s\,\|_2^2}{\|\,\delta\,\|_2^2},
   \qquad
   \delta_s \;=\; \theta^{\mathrm{rep}}_s - \theta^{\mathrm{inf}}_s,
   \label{eq:share}
 \end{equation}
 where $\theta^{\mathrm{rep}}_s$ and $\theta^{\mathrm{inf}}_s$ are the
 repaired and infected parameters belonging to shard $s$, and $\delta$
-is the concatenation of all $\delta_s$ across all shards. By
-construction, $\sum_s \mathrm{share}_s = 1$.
+is the concatenation of all $\delta_s$ across all shards.
+Because the squared $\ell_2$ norm of a concatenation equals the sum of
+squared $\ell_2$ norms of its parts, we have
+$\|\delta\|_2^2 = \sum_s \|\delta_s\|_2^2$, so by construction
+$\sum_s \mathrm{share}_s = 1$.
 
 \textbf{Important correction.} An earlier version of this metric
 (computed prior to 21/09/2026) summed over \emph{all state-dict keys},
@@ -273,7 +276,7 @@ including the BatchNorm buffer \texttt{num\_batches\_tracked}. This
 counter increments by one per training batch and reaches approximately
 7{,}820 after 20 fine-tuning epochs (391 batches/epoch
 $\times$~20~epochs), while the actual weight differences are on the
-order of 0.5. The counter therefore dominated the $\ell_1$ sum and
+order of 0.5. The counter therefore dominated the squared-norm sum and
 caused every shard to appear to carry an identical 25\% of the repair
 update---a spurious result that reflected only how many BatchNorm layers
 each shard contained, not how much of the repair it actually carried.
@@ -282,8 +285,8 @@ The conclusion from the 19/09 note that ``each residual block holds
 
 The corrected metric skips all non-learnable buffers:
 \begin{equation}
-  \mathrm{SKIP} = \{\texttt{num\_batches\_tracked},\;
-                    \texttt{running\_mean},\;
+  \mathrm{SKIP} = \{\texttt{num\_batches\_tracked},\;\
+                    \texttt{running\_mean},\;\
                     \texttt{running\_var}\}.
   \label{eq:skip}
 \end{equation}
