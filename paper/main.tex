@@ -389,28 +389,94 @@ $n=6$ & 97.43 & 89.41 & 86.03--93.26 \\
 \subsection{Single-Shard Rollback (Negative Result)}
 \label{sec:singleshard}
 We first evaluate whether substituting a single stale shard is sufficient
-to restore the backdoor. Table~\ref{tab:singleshard} reports, for each
-$n\!=\!6$ shard, its repair-share $\mathrm{share}_s$, relative update
-norm $r_s$, and the ASR when that shard alone is rolled back.
-ASR values for shards~1 and~4 are not directly available because no
-random $k\!=\!1$ draw selected those shards in isolation; the remaining
-four shards were each isolated in at least one draw.
+to restore the backdoor. Fig.~\ref{fig:singleshard} shows, for each
+$n\!=\!6$ shard, its repair-share $\mathrm{share}_s \times 100$ (blue)
+alongside the ASR when that shard alone is rolled back (red).
+Shards~1 and~4 were not isolated in any $k\!=\!1$ draw and are marked
+n.t.\ (not tested); the relative update norm $r_s$ for each shard is
+given in Table~\ref{tab:singleshard_rs}.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    bar width=6pt,
+    width=\columnwidth,
+    height=6cm,
+    xlabel={Shard index},
+    ylabel={\%},
+    xtick={0,1,2,3,4,5},
+    xticklabels={
+        \shortstack{0\\\scriptsize conv1},
+        \shortstack{1\\\scriptsize layer1},
+        \shortstack{2\\\scriptsize layer2},
+        \shortstack{3\\\scriptsize layer3},
+        \shortstack{4\\\scriptsize layer4},
+        \shortstack{5\\\scriptsize linear}
+    },
+    xmin=-0.6, xmax=5.6,
+    ymin=0, ymax=55,
+    ytick={0,10,20,30,40,50},
+    tick label style={font=\small},
+    label style={font=\small},
+    legend style={at={(0.97,0.97)}, anchor=north east, font=\small},
+    grid=major,
+    grid style={dashed, gray!30},
+    every axis plot/.append style={thick},
+]
+
+% share_s x 100 (blue bars, all 6 shards)
+\addplot[fill=blue!40!white, draw=blue!70!black] coordinates {
+    (0,  0.3)
+    (1,  6.4)
+    (2, 21.1)
+    (3, 47.7)
+    (4, 24.3)
+    (5,  0.1)
+};
+\addlegendentry{$\mathrm{share}_s \times 100$}
+
+% Single-shard ASR (red bars; shards 1,4 = 0 and labelled n.t.)
+\addplot[fill=red!40!white, draw=red!70!black] coordinates {
+    (0, 1.02)
+    (1, 0)
+    (2, 8.94)
+    (3, 0.50)
+    (4, 0)
+    (5, 1.18)
+};
+\addlegendentry{Single-shard ASR}
+
+% n.t. labels above shards 1 and 4
+\node[font=\scriptsize, gray] at (axis cs:1, 2.5) {n.t.};
+\node[font=\scriptsize, gray] at (axis cs:4, 2.5) {n.t.};
+
+\end{axis}
+\end{tikzpicture}
+\caption{Per-shard repair share ($\mathrm{share}_s \times 100$, blue) vs.\
+single-shard rollback ASR (red), $n=6$, global fine-tune, seed~42.
+Shards~1 and~4 were not isolated in any $k=1$ draw (n.t.).
+Shard~3 carries the largest share (47.7\%) yet yields the \emph{lowest}
+tested ASR (0.50\%), confirming that repair-share concentration does not
+predict single-shard rollback efficacy.}
+\label{fig:singleshard}
+\end{figure}
 
 \begin{table}[h]
 \centering
-\caption{Per-shard metrics and single-shard rollback ASR ($n=6$, global fine-tune, seed 42).
-Shards 1 and 4 were not isolated in any $k=1$ draw (n.t.\ = not tested).}
-\label{tab:singleshard}
-\begin{tabular}{clccr}
+\caption{Relative update norm $r_s$ per shard ($n=6$, seed~42).}
+\label{tab:singleshard_rs}
+\begin{tabular}{clc}
 \toprule
-Shard & Layer(s) & $\mathrm{share}_s$ & $r_s$ & ASR (\%) \\
+Shard & Layer(s) & $r_s$ \\
 \midrule
-0 & conv1 (stem)  & 0.003 & 0.158 &  1.02 \\
-1 & layer1        & 0.064 & 0.265 &  n.t. \\
-2 & layer2        & 0.211 & 0.355 &  8.94 \\
-3 & layer3        & 0.477 & 0.395 &  0.50 \\
-4 & layer4        & 0.243 & 0.242 &  n.t. \\
-5 & linear (head) & 0.001 & 0.086 &  1.18 \\
+0 & conv1 (stem)  & 0.158 \\
+1 & layer1        & 0.265 \\
+2 & layer2        & 0.355 \\
+3 & layer3        & 0.395 \\
+4 & layer4        & 0.242 \\
+5 & linear (head) & 0.086 \\
 \bottomrule
 \end{tabular}
 \end{table}
