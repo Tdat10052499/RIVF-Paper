@@ -529,7 +529,7 @@ sufficiently undermined.
 
 \subsection{Shard-Selection Strategy Comparison}
 \label{sec:strategy}
-Table~\ref{tab:strategy} compares three shard-selection strategies at
+Fig.~\ref{fig:strategy} compares three shard-selection strategies at
 every $k$: (a)~\textbf{repair-aware}: shards selected greedily by
 decreasing $\mathrm{share}_s$ (requires knowledge of the repair update
 norms); (b)~\textbf{architectural}: shards selected in index order
@@ -537,24 +537,77 @@ norms); (b)~\textbf{architectural}: shards selected in index order
 boundaries; and (c)~\textbf{random}: shards drawn uniformly at random,
 reported as the mean ASR over 5 independent draws.
 
-\begin{table}[h]
+\begin{figure}[h]
 \centering
-\caption{ASR (\%) vs.\ $k$ under three shard-selection strategies ($n=6$).}
-\label{tab:strategy}
-\begin{tabular}{cccc}
-\toprule
-$k$ & Repair-aware & Architectural & Random (mean) \\
-\midrule
-0 &  0.90 &  0.90 &  0.90 \\
-1 &  0.50 &  1.02 &  2.67 \\
-2 &  4.57 &  1.24 &  5.68 \\
-3 & 92.89 & 13.67 & 17.93 \\
-4 & 97.11 & 25.97 & 46.46 \\
-5 & 97.21 & 97.21 & 72.69 \\
-6 & 97.43 & 97.43 & 97.43 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=6.5cm,
+    xlabel={Number of stale shards $k$},
+    ylabel={ASR (\%)},
+    xmin=-0.3, xmax=6.3,
+    ymin=-5, ymax=105,
+    xtick={0,1,2,3,4,5,6},
+    ytick={0,20,40,60,80,100},
+    tick label style={font=\small},
+    label style={font=\small},
+    legend style={at={(0.05,0.97)}, anchor=north west,
+                  font=\small, cells={anchor=west}},
+    grid=major,
+    grid style={dashed, gray!30},
+    every axis plot/.append style={thick},
+]
+% Vertical threshold line at k=3
+\draw[dashed, gray!60, line width=0.8pt]
+    (axis cs:3,-5) -- (axis cs:3,105);
+\node[font=\scriptsize, gray, anchor=south west]
+    at (axis cs:3.1, 55) {$k{=}3$ threshold};
+
+% Repair-aware
+\addplot[color=red!80!black, mark=*, mark size=2.5pt, solid] coordinates {
+    (0,  0.90)
+    (1,  0.50)
+    (2,  4.57)
+    (3, 92.89)
+    (4, 97.11)
+    (5, 97.21)
+    (6, 97.43)
+};
+\addlegendentry{Repair-aware}
+
+% Architectural
+\addplot[color=blue!70!black, mark=square*, mark size=2.5pt, dashed] coordinates {
+    (0,  0.90)
+    (1,  1.02)
+    (2,  1.24)
+    (3, 13.67)
+    (4, 25.97)
+    (5, 97.21)
+    (6, 97.43)
+};
+\addlegendentry{Architectural}
+
+% Random (mean of 5 draws)
+\addplot[color=orange!80!black, mark=triangle*, mark size=2.5pt, dotted] coordinates {
+    (0,  0.90)
+    (1,  2.67)
+    (2,  5.68)
+    (3, 17.93)
+    (4, 46.46)
+    (5, 72.69)
+    (6, 97.43)
+};
+\addlegendentry{Random (mean of 5)}
+
+\end{axis}
+\end{tikzpicture}
+\caption{ASR (\%) vs.\ $k$ stale shards under three selection strategies
+($n=6$, global fine-tune, seed~42). Repair-aware reaches
+$>$50\% ASR at $k=3$; architectural requires $k=5$; random falls
+between, with high variance across draws
+(Section~\ref{sec:secondseed}).}
+\label{fig:strategy}
+\end{figure}
 
 Repair-aware selection is strictly most efficient: it reaches $>\!50\%$
 ASR at $k\!=\!3$, requiring only three stale shards to restore the
@@ -566,7 +619,6 @@ norms, only knowledge of the partition indices---still eventually
 achieves full backdoor recovery at $k\!=\!5$, underscoring that the
 attack does not require privileged access to repair internals to
 succeed at moderate stale-shard counts.
-
 \subsection{Contrast with a Local Repair (ANP)}
 \label{sec:anp}
 
