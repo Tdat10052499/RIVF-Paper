@@ -9,6 +9,7 @@
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
+\graphicspath{{../figures/}{figures/}}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{pgfplots}
@@ -600,7 +601,7 @@ is substituted.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\columnwidth]{figures/locality_vs_asr.pdf}
+  \includegraphics[width=\columnwidth]{locality_vs_asr.pdf}
   \caption{Repair locality vs.\ rollback vulnerability.
     Each marker is one shard.
     \emph{Fine-tune} (circles): the two highest-share shards
