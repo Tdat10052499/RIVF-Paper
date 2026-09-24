@@ -54,23 +54,35 @@ chinh.2275106050051@vanlanguni.vn}
 
 % =====================================================================
 \begin{abstract}
-\todo{Write LAST, on 26/09, after every number below is frozen (23/09
-freeze). Should state: (1) the setting -- distributed edge inference
-with independently-signed model shards; (2) the attack -- an artifact
-cache that can serve a mix of repaired and historically-valid
-(pre-repair) shards; (3) the headline empirical result -- single-shard
-rollback alone is weak (max ASR 17.46\% vs.\ 97.43\% for the fully
-infected model) but is invisible to utility monitoring (clean accuracy
-stays within a few points of normal), and recovery grows with the
-number of stale shards and with how much of the repair update they
-carry; (4) the defense -- epoch-manifest pinning, framed as applying
-existing supply-chain controls (TUF/Uptane) to this ML-specific gap,
-not as a new protocol.}
+We study shard-version skew as an attack surface in distributed edge
+inference: a setting in which a model is partitioned into independently
+signed shards that may be cached and served by separate workers during
+a rolling update.
+An attacker who retains a validly signed but pre-repair shard can
+silently introduce it into an otherwise-repaired deployment, producing
+a hybrid model without triggering per-shard signature checks.
+We measure the ML-specific consequence of this gap using BadNets on
+CIFAR-10 with PreActResNet18, partitioned into six shards, after two
+representative repairs: global clean fine-tuning and Adversarial
+Neuron Pruning (ANP).
+Under fine-tuning, single-shard rollback is weak---the highest
+single-shard attack success rate (ASR) is 8.94\%---yet completely
+invisible to utility monitoring: clean accuracy stays above 86\% in
+all hybrid configurations.
+A repair-aware attacker substituting the three highest-share shards
+restores ASR to 92.89\% while maintaining CA~$=$~87.38\%, a result
+that replicates exactly across two independent random seeds.
+Under ANP, any single-shard substitution causes utility collapse
+(CA~$\approx$~10\%) rather than backdoor recovery, making tampering
+detectable through standard accuracy monitoring.
+Epoch-manifest pinning---already specified in TUF and Uptane---closes
+the attack surface with 34 additional bytes of manifest overhead and
+no measurable per-load verification cost.
 \end{abstract}
 
 \begin{IEEEkeywords}
-\todo{4--6 keywords, e.g.\ backdoor attacks, model partitioning, edge
-inference, supply-chain security, version skew.}
+backdoor attacks, model partitioning, distributed edge inference,
+supply-chain security, version skew, shard rollback
 \end{IEEEkeywords}
 
 % =====================================================================
@@ -729,15 +741,67 @@ Skewed model accepted? & Yes (undetected) & No (rejected) \\
 % =====================================================================
 \section{Discussion}
 \label{sec:discussion}
-\todo{Tie results together: single-shard rollback is weak but silent;
-multi-shard repair-aware rollback is the real attack surface;
-epoch-manifest pinning closes the gap without a new protocol.}
+
+Our results reveal two qualitatively distinct vulnerability regimes
+under shard-version skew, determined by the repair method.
+
+\paragraph{Single-shard rollback is weak but silent.}
+Under global fine-tuning, no individual shard rollback restores the
+backdoor above 9\% ASR, even when the substituted shard carries nearly
+half of the total repair update ($\sigma_3{=}47.74\%$,
+ASR~$=$~0.50\%).
+The repair is distributed across the network in a way that no single
+shard can undo.
+Critically, this weakness does not make the threat benign: hybrid
+models retain CA above 86\% throughout, so standard utility monitoring
+provides no signal that a stale shard has been accepted.
+The threat requires detection at the artifact layer, not the inference
+layer.
+
+\paragraph{Coordinated multi-shard rollback is the real attack
+surface.}
+A repair-aware attacker who substitutes the three highest-share shards
+crosses a sharp threshold (ASR~$=$~92.89\% at $k{=}3$, up from
+4.57\% at $k{=}2$), matching the fully infected model's 97.43\%
+within one further shard.
+Architectural selection---requiring only knowledge of the partition
+boundaries, not of the repair update---crosses the same threshold at
+$k{=}5$, confirming that the attack does not require privileged
+knowledge of repair internals.
+
+\paragraph{ANP creates a self-revealing collapse regime.}
+Shard substitution on an ANP-repaired model destroys utility before
+the backdoor can recover.
+The architectural incompatibility between the baked-in pruning mask
+and the full weights of a pre-repair shard makes tampering immediately
+detectable through CA monitoring alone---a favorable signal for
+defenders---but both repair strategies are fully vulnerable to
+complete rollback at $k{=}6$.
+
+\paragraph{Epoch-manifest pinning closes the gap.}
+Both vulnerability regimes share the same root cause: the artifact
+pipeline enforces that each shard is authentic but not that all shards
+belong to the same repair epoch.
+Epoch-manifest pinning, as defined in TUF~\cite{tuf} and
+Uptane~\cite{uptane}, binds each shard to a per-epoch identifier in
+the signed snapshot metadata; a loader that checks this identifier
+rejects a stale shard as epoch-mismatched rather than accepting it as
+individually valid.
+Our serving comparison (Section~\ref{sec:serving}) confirms that this
+protection adds 34 bytes of manifest overhead and no measurable
+per-load verification cost.
+The defense is an application of existing supply-chain controls to a
+previously unmeasured ML-specific gap.
 
 \subsection{Limitations}
-\todo{One paragraph: single architecture (PreActResNet18), single
-dataset (CIFAR-10), BadNets attack, two repair methods only. Name
-fine-pruning, NAD, 1-epoch fine-tune, other partitions/architectures
-as explicit future work in one clause.}
+
+This study evaluates a single architecture (PreActResNet18) on a
+single dataset (CIFAR-10) with a single attack pattern (BadNets,
+visible patch trigger, 10\% poison rate) and two repair methods;
+fine-pruning, Neural Attention Distillation, short-epoch fine-tuning,
+other architectures (ResNet-50, ViT), larger datasets, non-patch
+triggers (blended, WaNet), and non-block-aligned shard partitions
+are left as explicit future work.
 
 % =====================================================================
 \section{Related Work}
@@ -811,14 +875,29 @@ controls to this setting.
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
-\todo{Restate the claim in 3--4 sentences: what was measured, headline
-numbers (once frozen), practical takeaway (epoch-manifest pinning as
-an existing control). No new numbers.}
+
+We measured the attack surface created by shard-version skew in
+distributed edge inference, where a validly signed but pre-repair
+shard can be silently introduced into an otherwise-repaired deployment.
+Against a globally fine-tuned model partitioned into six shards,
+single-shard rollback is too weak to restore the backdoor
+(max ASR~$=$~8.94\%) yet completely invisible to utility monitoring,
+while repair-aware three-shard rollback recovers
+ASR~$=$~92.89\% at CA~$=$~87.38\%---a result that replicates exactly
+across two random seeds.
+Against an ANP-repaired model, any single-shard substitution causes
+utility collapse (CA~$\approx$~10\%) before the backdoor can recover,
+making tampering detectable through standard accuracy monitoring.
+Epoch-manifest pinning---already specified in TUF and Uptane---eliminates
+the attack surface by binding each shard to a repair epoch, adding
+only 34 bytes of manifest overhead and no measurable per-load cost,
+and should be adopted as a baseline control wherever model shards are
+distributed through artifact caches.
 
 % =====================================================================
 \section*{Acknowledgment}
-\todo{Standard RIVF acknowledgment line, if applicable. Cut first if
-paper runs over 6 pages.}
+The authors thank Dr.\ Dang Khanh Hung for supervision and guidance
+throughout this project.
 
 % =====================================================================
 \bibliographystyle{IEEEtran}
