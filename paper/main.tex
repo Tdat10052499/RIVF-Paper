@@ -552,15 +552,80 @@ attack does not require privileged access to repair internals to
 succeed at moderate stale-shard counts.
 
 \subsection{Contrast with a Local Repair (ANP)}
-\todo{Repeat Sections~\ref{sec:kcurve}--\ref{sec:strategy} against the
-ANP-repaired checkpoint. Expected direction: ANP is more fragile to
-rollback than the global fine-tune -- report the actual result
-regardless of direction.}
+\label{sec:anp}
+
+The ANP-repaired checkpoint achieves $\text{CA}=83.03\%$ and
+$\text{ASR}=0.00\%$ at $k=0$, a stronger initial repair than global
+fine-tuning ($\text{ASR}=0.90\%$).
+However, the $k$-shard rollback behaviour is qualitatively different.
+
+\paragraph{Utility collapse at $k=1$.}
+Any single-shard substitution drops clean accuracy to approximately
+$10\%$---the level expected from a uniformly random classifier on
+CIFAR-10---regardless of which shard is substituted.
+The mechanism is architectural: ANP bakes its pruning mask into the
+weight tensors by zeroing pruned neurons in the checkpoint.
+When an infected shard carrying full weights is spliced next to
+ANP shards whose neurons are zeroed, the activation signal becomes
+incompatible with the remainder of the network, causing the model
+to collapse to a single predicted class.
+
+\paragraph{High ASR as a measurement artifact.}
+At $k=1$ when shard~5 (the linear classification head) is substituted,
+we observe $\text{ASR}=81.10\%$ alongside $\text{CA}=10.01\%$.
+This is not evidence of backdoor reactivation.
+The collapsed model predicts class~0 (the attack target,
+\textit{airplane}) for every input; the ASR metric registers high
+success because the trigger also targets class~0.
+Unlike fine-tuned hybrids, which retain high clean accuracy while
+recovering ASR proportionally to the number of substituted shards,
+ANP hybrids collapse to random-chance clean accuracy at $k=1$.
+This utility collapse precedes any potential backdoor recovery,
+making shard substitution on ANP-defended models detectable through
+standard accuracy monitoring rather than trigger-based evaluation.
+
+\paragraph{Harness verification.}
+At $k=6$ (full rollback), both repair strategies correctly reconstruct
+the original infected model: $\text{ASR}=97.43\%$, $\text{CA}=89.41\%$.
+This confirms that the evaluation harness is correct and that the
+collapse at $k<6$ is caused by the hybrid architecture, not by a
+pipeline error.
 
 \subsection{Repair Locality vs.\ Recovered ASR}
-\todo{Figure: corrected locality metric (Section~\ref{sec:share})
-plotted against recovered ASR, for both repairs, all shards (Chinh,
-Priority 2).}
+\label{sec:locality}
+
+Figure~\ref{fig:locality_asr} plots each shard's repair share
+$\sigma_s$ against the single-shard rollback ASR when that shard
+is substituted.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/locality_vs_asr.pdf}
+  \caption{Repair locality vs.\ rollback vulnerability.
+    Each marker is one shard.
+    \emph{Fine-tune} (circles): the two highest-share shards
+    ($\sigma_3{=}47.74\%$, $\sigma_4{=}24.29\%$) produce
+    single-shard ASRs of $0.50\%$ and below; three shards must be
+    substituted together to cross the $90\%$ ASR threshold
+    (Section~\ref{sec:kcurve}).
+    \emph{ANP} (triangles): shard~5 ($\sigma_5{=}2.92\%$) registers
+    $\text{ASR}=81.10\%$, but this is a utility-collapse artifact
+    ($\text{CA}=10\%$) rather than genuine backdoor recovery
+    (Section~\ref{sec:anp}).}
+  \label{fig:locality_asr}
+\end{figure}
+
+For the fine-tuned model, repair share concentrates in shards~3 and~4
+yet their individual rollback ASRs remain below $9\%$.
+No single shard, even the one absorbing nearly half the repair change,
+suffices to reactivate the backdoor.
+For the ANP-repaired model, all non-artifact ASR values are $0.00\%$,
+not because the model is more robust but because utility collapses
+before any backdoor can surface.
+The figure therefore shows two distinct vulnerability regimes:
+a \emph{threshold regime} under fine-tuning (requiring coordinated
+multi-shard substitution) and a \emph{collapse regime} under ANP
+(detectable via clean-accuracy monitoring alone).
 
 \subsection{Second-Seed Replication}
 \todo{Table: best configuration re-run on a second seed (Dan,
