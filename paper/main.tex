@@ -629,8 +629,54 @@ multi-shard substitution) and a \emph{collapse regime} under ANP
 (detectable via clean-accuracy monitoring alone).
 
 \subsection{Second-Seed Replication}
-\todo{Table: best configuration re-run on a second seed (Dan,
-Priority 2).}
+\label{sec:seed}
+
+To verify that the headline result is not an artifact of the random
+seed used during training and evaluation, we re-run the best
+configuration (repair-aware strategy, $n=6$, all $k$) under a second
+seed (seed~$=0$) and compare against the primary results
+(seed~$=42$).
+
+\paragraph{Repair-aware strategy.}
+The repair-aware strategy is deterministic given the shard partition
+and per-shard repair shares: shards are selected in decreasing order
+of $\mathrm{share}_s$, so the same sequence (shards 3, 4, 2, 1, 0,~5)
+is produced for both seeds.
+Table~\ref{tab:seed_repaware} confirms that ASR and CA are identical
+across seeds for every $k$.
+The headline result---ASR~$=$~92.89\% at $k=3$,
+CA~$=$~87.38\%---is fully reproducible.
+
+\begin{table}[h]
+\centering
+\caption{Repair-aware strategy: seed~$=42$ vs.\ seed~$=0$ ($n=6$).
+Results are identical because the strategy is deterministic.}
+\label{tab:seed_repaware}
+\begin{tabular}{ccccc}
+\toprule
+$k$ & ASR s42 (\%) & CA s42 (\%) & ASR s0 (\%) & CA s0 (\%) \\
+\midrule
+0 &  0.90 & 93.35 &  0.90 & 93.35 \\
+1 &  0.50 & 87.09 &  0.50 & 87.09 \\
+2 &  4.57 & 91.06 &  4.57 & 91.06 \\
+3 & 92.89 & 87.38 & 92.89 & 87.38 \\
+4 & 97.11 & 89.56 & 97.11 & 89.56 \\
+5 & 97.21 & 90.18 & 97.21 & 90.18 \\
+6 & 97.43 & 89.41 & 97.43 & 89.41 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Random strategy variance.}
+Because the random strategy draws shards uniformly without
+replacement, results vary between seeds.
+At $k=3$, the mean ASR across 5 draws is 17.93\% under seed~42 and
+44.07\% under seed~0, confirming the high variance noted in
+Section~\ref{sec:strategy}.
+This variance further underscores that repair-aware selection is the
+more reliable attacker strategy: it achieves 92.89\% ASR at $k=3$
+regardless of seed, while random selection may or may not cross any
+meaningful threshold depending on which shards happen to be drawn.
 
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
