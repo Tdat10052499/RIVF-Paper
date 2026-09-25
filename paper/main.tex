@@ -360,9 +360,9 @@ The conclusion from the 19/09 note that ``each residual block holds
 
 The corrected metric skips all non-learnable buffers:
 \begin{equation}
-  \mathrm{SKIP} = \{\texttt{num\_batches\_tracked},\;\
-                    \texttt{running\_mean},\;\
-                    \texttt{running\_var}\}.
+  \mathrm{SKIP} = \{\,
+    \texttt{num\_batches\_tracked},\ \texttt{running\_mean},\\
+    \texttt{running\_var}\,\}.
   \label{eq:skip}
 \end{equation}
 Only tensors whose keys do \emph{not} end with any element of
