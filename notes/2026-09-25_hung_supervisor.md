@@ -90,9 +90,13 @@ One rule for the whole schedule. Push as you finish, not at the end of the day. 
 
 ## 5. Authorship and front matter
 
-Remove the line "Supervised by Dr. Dang Khanh Hung" from the author block. IEEEtran has no such field, it prints as a stray line under the affiliations, and supervision is already credited in the Acknowledgment, which stays.
+Decided: I join as the fourth and corresponding author. The block is already in `main.tex`, marked with a `%%Hung:` comment. Do not edit it.
 
-Whether I join the author list is my decision and I will tell you by noon on 26 September. If you have not heard from me by then, submit with the three of you as authors and the Acknowledgment as written.
+- Author 4: Dang Khanh Hung, Faculty of Information Technology, Van Lang School of Technology, Van Lang University, Ho Chi Minh City, Vietnam, hung.dk@vlu.edu.vn, corresponding author.
+- The "Supervised by" line is gone; it is replaced by the author block.
+- The Acknowledgment now thanks an author. Delete it, or thank the university or faculty for support if that is true. Do not thank me.
+- Check your own affiliation wording against the official faculty name; see the comment in the author block.
+- On EDAS, enter all four authors and mark me as corresponding. Use hung.dk@vlu.edu.vn, not my Cogent address.
 
 RIVF does not state a blind-review policy, so the paper is submitted with names and affiliations as they are.
 
