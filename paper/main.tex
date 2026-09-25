@@ -89,8 +89,84 @@ supply-chain security, version skew, shard rollback
 \section{Introduction}
 \label{sec:intro}
 % Owner: Dan + Dat, together, 25/09.
-\todo{Introduction -- follow the attack-paper shape from
-notes/2026-09-21\_hung\_supervisor.md Section 4.}
+
+Backdoor repair is not the end of a model's lifecycle; the repaired
+model still has to be distributed, cached, and served. Edge inference
+deployments increasingly partition a model into independently signed
+shards so that workers can cache, update, and verify them separately
+during a rolling update, rather than replacing the entire model
+atomically. This partitioning is attractive precisely because it makes
+rollout incremental: a repair can reach some workers before others,
+and an interrupted or partial rollout is treated as an ordinary
+operational condition rather than a failure. Existing supply-chain
+protections for this setting verify that each shard is authentically
+signed, but per-shard signature verification proves only that a shard
+is a genuine artifact, not that it belongs to the same repair epoch as
+the shards around it. An adversary who controls the artifact cache or
+the update distribution path -- without forging any signature or
+compromising the loader -- can exploit exactly this gap, supplying a
+validly signed, pre-repair shard to a worker during an interrupted
+rollout and causing it to serve a hybrid model that mixes repaired and
+stale weights.
+
+We measure the ML-specific consequence of this gap rather than propose
+a new protocol. Using BadNets on CIFAR-10 with PreActResNet18,
+partitioned into six shards, we ask when a hybrid model assembled this
+way restores backdoor behavior, and whether that restoration is
+visible to standard utility monitoring. The answer depends sharply on
+the repair method. Under global clean fine-tuning, rolling back any
+single shard is weak: the highest single-shard attack success rate
+(ASR) we observe is 8.94\%, and the repair is distributed across
+shards in a way that no individual shard can undo. This weakness is
+not benign, however, because it is also silent -- clean accuracy (CA)
+stays above 86\% in every hybrid configuration we test, so utility
+monitoring gives a defender no signal that a stale shard has been
+accepted. We report this single-shard result plainly as the lower
+bound of the attack, not as its headline, and place its practical
+implication first: detection has to happen at the artifact layer,
+where shard provenance is checked, not at the inference layer, where
+only aggregate accuracy is visible. The real attack surface appears
+once an adversary substitutes multiple shards. A repair-aware attacker
+who targets the shards carrying the largest share of the repair update
+crosses a sharp threshold at three substituted shards, restoring
+ASR to 92.89\% while maintaining CA at 87.38\%, a result that
+replicates exactly across two independent random seeds; an attacker
+with no knowledge of the repair internals, selecting shards by
+architectural position alone, reaches the same threshold with only
+two additional shards. Under Adversarial Neuron Pruning (ANP), the
+picture reverses: any single-shard substitution collapses utility
+(CA~$\approx$~10\%) before the backdoor can recover, because the
+pruning mask ANP bakes into the retained shards is architecturally
+incompatible with the full weights of a pre-repair shard. This makes
+tampering self-revealing under an ANP repair, in contrast to the
+fine-tuned case.
+
+The defense we evaluate is deliberately not novel. Epoch-manifest
+pinning -- binding each shard to a per-epoch identifier in signed
+snapshot metadata, so that a loader can reject a shard as
+epoch-mismatched rather than accept it as individually valid -- is
+already specified in update frameworks such as TUF~\cite{tuf} and
+Uptane~\cite{uptane} for exactly this class of problem. Our
+contribution is to show that this gap exists, unaddressed, in
+model-shard distribution, and to measure what closing it costs: our
+serving comparison (Section~\ref{sec:serving}) finds 34 additional
+bytes of manifest overhead and no measurable per-load verification
+cost, making adoption a low-cost baseline control rather than a
+design trade-off.
+
+The remainder of this paper is organized as follows.
+Section~\ref{sec:threat} formalizes the threat model.
+Section~\ref{sec:setup} describes the dataset, architecture, attack,
+repairs, and partitioning scheme.
+Section~\ref{sec:results} reports the single-shard, multi-shard, and
+ANP-contrast results together with a second-seed replication and the
+serving comparison.
+Section~\ref{sec:discussion} interprets these results as two distinct
+vulnerability regimes and situates epoch-manifest pinning as their
+common remedy, and states the scope limitations of our measurements.
+Section~\ref{sec:related} relates this work to prior model
+partitioning, backdoor, and supply-chain security literature, and
+Section~\ref{sec:conclusion} concludes.
 
 % =====================================================================
 \section{Method and Experimental Setup}
