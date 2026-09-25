@@ -767,22 +767,16 @@ restores \todo{ASR}\% ASR at \todo{CA}\% CA.
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
 % Owner: Ho Du Tuan Dat.
-%%Hung: Delete this stale comment block (lines down to 'freeze.') before submission.
-% Numbers below are taken from the run committed at
-% results/raw/serving/{per_shard_sig,epoch_manifest_pin}.jsonl (22/09/2026),
-% against src/partition/shard.py, scripts/build_shard_manifest.py, and
-% src/serving/loader.py as of that same commit. Per the project's own
-% convention for in-progress numbers (see tab:baseline, tab:fullrollback),
-% these are not locked as final until the 23/09 experiment freeze -- if any
-% of the three files above changes before then, re-run
-% scripts/run_serving_comparison.py and update this section before the
-% freeze.
-%%Hung: Dat, three things in this paragraph: (1) state the hardware the timings were taken on in the first sentence (M2 MacBook, CPU, single process each); timings without hardware are not reportable. (2) Say once that 'signature' here is an HMAC-SHA256 keyed-hash stand-in; Limitations says it, this section must too. (3) One clause noting this run used n=3 while the rest of the paper is n=6.
-Table~\ref{tab:serving} compares per-shard signature checking against
-epoch-manifest pinning as defenses against shard-version skew, measured
-over 30 repetitions per (scheme, scenario) cell against the real
-infected/repaired checkpoint pair, with each scheme's loader run as a
-separate OS process. In the skewed-load scenario -- one shard substituted
+All timings below were measured on a single M2 MacBook (CPU only, no
+GPU), with each scheme's loader run as a separate OS process; this
+comparison uses the $n=3$ shard partition, unlike the $n=6$ partition
+used elsewhere in the paper. Table~\ref{tab:serving} compares
+per-shard signature checking---where ``signature'' denotes
+HMAC-SHA256 used here as a stand-in for a production signing
+scheme---against epoch-manifest pinning as defenses against
+shard-version skew, measured over 30 repetitions per (scheme,
+scenario) cell against the real infected/repaired checkpoint pair,
+with each scheme's loader run as a separate OS process. In the skewed-load scenario -- one shard substituted
 with an older, independently and validly signed version, as a per-shard-
 signature-only loader would see after an interrupted rollout -- per-shard
 signature checking accepts the substituted shard in all 30 repetitions,
@@ -801,7 +795,7 @@ never detects the skew to begin with.
 \begin{table}[h]
 \centering
 %%Hung: Delete '; pending 23/09 freeze' from this caption. It is in the compiled PDF in capitals.
-\caption{Per-shard signature checking vs.\ epoch-manifest pinning (n=30 per cell; pending 23/09 freeze)}
+\caption{Per-shard signature checking vs.\ epoch-manifest pinning ($n=30$ per cell).}
 \label{tab:serving}
 \begin{tabular}{lcc}
 \toprule
