@@ -916,21 +916,20 @@ substitution is immediately detectable through clean-accuracy monitoring.
 \subsection{Second-Seed Replication}
 \label{sec:seed}
 
-To verify that the headline result is not an artifact of the random
-seed used during training and evaluation, we re-run the best
-configuration (repair-aware strategy, $n=6$, all $k$) under a second
-seed (seed~$=0$) and compare against the primary results
-(seed~$=42$).
+To verify that the headline result is not an artifact of the random seed
+used during training and evaluation, we re-run the full $k$-shard
+experiment under a second seed (seed~$=0$) and compare against the
+primary results (seed~$=42$).
 
 \paragraph{Repair-aware strategy.}
-The repair-aware strategy is deterministic given the shard partition
-and per-shard repair shares: shards are selected in decreasing order
-of $\mathrm{share}_s$, so the same sequence (shards 3, 4, 2, 1, 0,~5)
-is produced for both seeds.
-Table~\ref{tab:seed_repaware} confirms that ASR and CA are identical
+The repair-aware strategy selects shards in decreasing order of
+$\mathrm{share}_s$ and is therefore deterministic given the shard
+partition: both seeds produce the same selection sequence
+(shards~3, 4, 2, 1, 0, and~5).
+Table~\ref{tab:seed_repaware} shows that ASR and CA are identical
 across seeds for every $k$.
 The headline result---ASR~$=$~92.89\% at $k=3$,
-CA~$=$~87.38\%---is fully reproducible.
+CA~$=$~87.38\%---replicates exactly under the second seed.
 
 \begin{table}[h]
 \centering
@@ -953,15 +952,15 @@ $k$ & ASR s42 (\%) & CA s42 (\%) & ASR s0 (\%) & CA s0 (\%) \\
 \end{table}
 
 \paragraph{Random strategy variance.}
-Because the random strategy draws shards uniformly without
-replacement, results vary between seeds.
+Because the random strategy draws shards uniformly without replacement,
+results vary between seeds.
 At $k=3$, the mean ASR across 5 draws is 17.93\% under seed~42 and
 44.07\% under seed~0, confirming the high variance noted in
 Section~\ref{sec:strategy}.
-This variance further underscores that repair-aware selection is the
-more reliable attacker strategy: it achieves 92.89\% ASR at $k=3$
-regardless of seed, while random selection may or may not cross any
-meaningful threshold depending on which shards happen to be drawn.
+This variance underscores that repair-aware selection is the more
+reliable attacker strategy: it achieves 92.89\% ASR at $k=3$
+regardless of seed, while a random attacker's outcome depends on which
+shards happen to be drawn.
 
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
