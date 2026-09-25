@@ -133,3 +133,19 @@ You have done the hard part. The harness is verified, the result is real, and th
 Chinh, the audit you ran on your own work this week is the best thing anyone on this project has done. Finding your own invalid result before a reviewer does is the whole discipline in one act. Dan, your results sections are clear and your numbers are right; the errors I found are in sentences that outran the data, and they are quick to fix. Dat, the serving table is exactly the bounded artifact I asked for, and the EDAS registration on the 26th is now the single most important thing you own.
 
 Keep pushing as you go. The week after the 30th is still yours.
+
+---
+
+## 9. Corrections to Chinh's 26/09 action items for Dan and Dat
+
+Chinh's two action-item notes (`2026-09-26_dan.md`, `2026-09-26_dat.md`) are good and agree with this plan. Three details in them would introduce a new error if followed literally. Use these instead.
+
+- **D3, suggested wording.** It says repair-aware selection "achieves the lowest ASR at each k". That is inverted. Repair-aware is the attacker's best ordered strategy, so it achieves the **highest** ASR at each k. Write "highest". The rest of the D3 fix, including the {2,4} example at 74.76%, is right.
+- **T2, "n=3".** The n=3 in my comment means the serving run used the **three-shard partition**, while the rest of the paper uses six shards. It does not mean "averaged over n=3 forward passes". The run had 30 repetitions per cell, which the text already states. Add one clause saying the serving test used n=3 shards; do not add a sentence about three forward passes.
+- **T1, hardware.** The template names an NVIDIA GPU. The serving timings were taken on the M2 MacBook, on CPU, one OS process per loader, exactly as the measurement rule required. State that. Do not name a GPU.
+- **T2, Sigstore.** No new reference. Cite TUF and OMS, which are already in the bibliography, and say HMAC-SHA256 stands in for a production signing scheme.
+- **T4.** Both questions are answered in Section 5 above: the paper is not blind, and I am the fourth and corresponding author. Do not wait on me for these; set up EDAS today.
+- **T5.** Already resolved; the label is `sec:variance` and the PDF has no `??`.
+- **D4.** Chinh is right that the Introduction's "CA stays above 86% in every hybrid configuration we test" is also false. I have marked that line inline.
+
+Chinh, thank you for writing these. This is what a first author does.

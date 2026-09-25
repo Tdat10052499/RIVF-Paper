@@ -136,6 +136,7 @@ single shard is weak: the highest single-shard attack success rate
 (ASR) we observe is 8.94\%, and the repair is distributed across
 shards in a way that no individual shard can undo. This weakness is
 not benign, however, because it is also silent -- clean accuracy (CA)
+%%Hung: FALSE as written: hybrids go down to 73.55% CA ({0,2,4}). Either scope to 'every single-shard hybrid' (true: min 86.03%) or state the real range. Same fix as III-B.
 stays above 86\% in every hybrid configuration we test, so utility
 monitoring gives a defender no signal that a stale shard has been
 accepted. We report this single-shard result plainly as the lower
