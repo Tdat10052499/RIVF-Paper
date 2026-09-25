@@ -4,6 +4,8 @@
 **To:** Dan, Chinh, Dat
 **Ready version:** 29 September. **Official deadline:** 30 September, EDAS track SS3 (139851).
 
+> **DECISION, 26 September (read Section 10 first).** The normalization check found a real problem and Chinh stopped, exactly as asked. Decision: **BackdoorBench normalization for every number in the paper.** No retraining of the seed-42 repair. Every result is re-evaluated under the new normalization today, and every number in the draft is provisional until those JSON files exist. Details, order of work, and the revised timeline are in Section 10.
+
 This note replaces the 21 September plan. Read it in full once, then work from Sections 3 and 4. My line-by-line comments on the draft are inside `paper/main.tex` as lines beginning `%%Hung:`. Each one tells you what to change and why.
 
 ---
@@ -149,3 +151,67 @@ Chinh's two action-item notes (`2026-09-26_dan.md`, `2026-09-26_dat.md`) are goo
 - **D4.** Chinh is right that the Introduction's "CA stays above 86% in every hybrid configuration we test" is also false. I have marked that line inline.
 
 Chinh, thank you for writing these. This is what a first author does.
+
+---
+
+## 10. Normalization: the decision and what changes
+
+### 10.1 What Chinh found
+
+The repaired model is insensitive to the choice of normalization (ASR moves 0.09 points, CA 0.17). The infected model is not: under the standard deviation our scripts have always used, (0.2023, 0.1994, 0.2010), it reads ASR 97.43% and CA 89.41%; under the one BackdoorBench trained it with, (0.247, 0.243, 0.261), it reads ASR 95.06% and CA 91.33%. Those are differences of 2.37 and 1.92 points, well past the 0.5 threshold.
+
+Chinh stopped and reported instead of choosing on his own. That was the correct call, and it is why this problem is now a half-day of scripted work rather than a retraction.
+
+### 10.2 The decision
+
+Use BackdoorBench's normalization, (0.247, 0.243, 0.261), for every number in the paper. Three reasons, in order of weight.
+
+First, the infected model is the published artifact, and its native normalization is the one under which its published numbers hold. Evaluated that way it reads 91.33% CA and 95.06% ASR, which is what BackdoorBench reports for this checkpoint. Section III-A can then say that we reproduce the published numbers, which is true and which a reviewer can check. Evaluated the other way we are reporting a slightly damaged version of someone else's model and calling it the baseline.
+
+Second, the repaired model does not care. A 0.17-point change is inside the confidence half-width we already state in Metrics. So switching costs us nothing on the repaired side, whereas staying costs two points of distortion on the infected side. There is no trade-off here.
+
+Third, it removes a confound from every hybrid. Each hybrid mixes infected shards with repaired shards. Under the old normalization the infected shards were being fed inputs scaled about twenty percent away from what they were trained on. Under the new one they are not, and the repaired shards are insensitive either way. The hybrids are therefore cleaner under the new normalization, not merely re-labelled.
+
+We do not retrain the seed-42 repair. Its insensitivity is the evidence that retraining would change nothing measurable, and we do not have the day.
+
+### 10.3 What to do, in order
+
+**Chinh, first.** Open the 14 September Kaggle notebook and read which `Normalize` it used for the fine-tune. Write the answer, with the exact standard deviation, into `data/checkpoint_manifest.md` under the repaired checkpoint. Push it with the two normcheck JSON files, which are not in the repository yet; raw results are append-only and they must be committed. Ten minutes.
+
+**Chinh, second.** Re-evaluate everything under `--norm backdoorbench`: all 63 subsets for the seed-42 repair, into `results/raw/all_subsets/finetune_s42_bb_n6.json`. Check the sanity rows before trusting it: full rollback must read 95.06 and 91.33, and k=0 must read the repaired model within 0.2 of 0.90 and 93.35. Push it the moment it passes. This unblocks Dan and it is the single most urgent file of the day.
+
+**Chinh, third.** Train the seed-0 repair with `--norm backdoorbench`, as `finetune_repair.py` already expects. This was already the plan; it now also serves as the clean-normalization control. Then evaluate its 63 subsets the same way. If seed 0, trained and evaluated under the native normalization, reproduces the k=3 threshold and the layer2-plus-layer4 rule that seed 42 shows, we have replicated across repair seeds and shown the training normalization does not drive the result in one run.
+
+**Chinh, last, only if the above is done and pushed before 18:00.** ANP, per your own step 3, evaluated under the same normalization. Same stop rule as before.
+
+**Dan.** Do not touch any sentence that carries a number until `finetune_s42_bb_n6.json` is pushed. Work on the non-numeric items from Section 3 in the meantime: the deleted Introduction sentences, the roadmap, the wording fixes, the acronyms. When the file lands, regenerate every figure and re-derive every number from it. Figures 1, 2 and 3 have coordinates typed by hand into `main.tex`. Do not retype them. Write a short script in the pattern of `make_locality_pgf.py` that emits the three coordinate blocks from the JSON, and `\input` them. We have typed numbers by hand four times in this project and been wrong three of those times.
+
+**Dat.** Nothing changes for you. The serving numbers do not depend on normalization. Finish EDAS registration today.
+
+### 10.4 What the paper says about it
+
+One sentence in Metrics: "All models are evaluated with BackdoorBench's input normalization (per-channel standard deviation 0.247, 0.243, 0.261)."
+
+Then one of two sentences in Setup, depending on what Chinh finds in the notebook.
+
+- If the fine-tune used BackdoorBench's normalization: nothing more. Training and evaluation match.
+- If it used the other one: "The seed-42 repair was fine-tuned under a slightly different input scaling (standard deviation 0.2023, 0.1994, 0.2010); the repaired model's accuracy changes by less than 0.2 points between the two, so all evaluation uses the checkpoint's native normalization." That is the whole disclosure. It is honest, it is one sentence, and the seed-0 repair then demonstrates the point empirically.
+
+Remove "CA even rises by 3.94 points" and let the new numbers say what they say; the gain against 91.33% will be about two points.
+
+### 10.5 Timeline
+
+Every number in the draft is provisional until the new JSON exists, so the complete-draft target moves by half a day.
+
+| When (Vietnam time) | What |
+|---|---|
+| 26/09, by 10:00 | Chinh: notebook answer, manifest, normcheck JSONs pushed. |
+| 26/09, by 12:00 | Chinh: `finetune_s42_bb_n6.json` pushed and sanity-checked. Dan starts re-deriving. |
+| 26/09, by 18:00 | Chinh: seed-0 repair trained and its 63 subsets pushed. ANP only after this. |
+| 26/09, by 23:00 | Dan: all figures regenerated by script, all numbers re-derived, second reader (Chinh) has re-checked ten numbers at random against the JSON. |
+| 27/09, by 10:00 | Complete draft pushed. Every `%%Hung:` comment resolved or replied to. |
+| 27/09, afternoon | My editing pass one. |
+| 28/09 | My pass two in the morning; your final revisions by 20:00. |
+| 29/09, by 20:00 | Final PDF on EDAS. Unchanged. |
+
+If the seed-42 re-evaluation moves the headline, for example the threshold shifts from k=3 to k=2 or k=4, that is the result and we report it. Do not go looking for the normalization that gives the nicer number. We chose the normalization on principle in 10.2, before seeing the hybrid numbers, and that is the only order in which this choice is defensible.

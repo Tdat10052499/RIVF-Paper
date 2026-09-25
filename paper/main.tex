@@ -776,6 +776,7 @@ HMAC-SHA256 used here as a stand-in for a production signing
 scheme---against epoch-manifest pinning as defenses against
 shard-version skew, measured over 30 repetitions per (scheme,
 scenario) cell against the real infected/repaired checkpoint pair,
+%%Hung: Dat, good fix. One redundancy: 'each scheme's loader run as one OS process' now appears in your new first sentence AND here; drop it here.
 with each scheme's loader run as a separate OS process. In the skewed-load scenario -- one shard substituted
 with an older, independently and validly signed version, as a per-shard-
 signature-only loader would see after an interrupted rollout -- per-shard
