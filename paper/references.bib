@@ -1,153 +1,197 @@
 % =====================================================================
-% paper/references.bib — updated 23/09/2026 by Nguyen Minh Chinh
+% paper/references.bib -- cleaned 26/09/2026 (Chinh)
 %
-% All six prior-work entries now have confirmed author/title/venue/year
-% from arXiv, ACM DL, and IEEE Xplore (search date: 23/09/2026).
+% RULE: no `note` field may contain internal commentary. IEEEtran PRINTS
+% every `note` field in the reference list. Keep working notes in % comments.
 %
-% Fields still marked TODO need final verification before 26/09 freeze.
-% AIRS: no paper with this exact acronym confirmed -- see note below.
+% Verification status (checked 25-26/09/2026):
+%   [v] = checked against publisher / arXiv / DOI landing page
+%   [!] = re-check volume/pages on IEEE Xplore / DL before camera-ready
 % =====================================================================
 
-@misc{backdoorbench2024,
-  title        = {BackdoorBench: A Comprehensive Benchmark of Backdoor Learning},
-  author       = {Wu, Baoyuan and Chen, Hongrui and Zhang, Mingda and Zhu, Zihao
-                  and Wei, Shaokui and Yuan, Danni and Shen, Li and Cheng, Ruichao},
-  year         = {2022},
-  note         = {arXiv:2206.12654; toolkit: \url{https://github.com/SCLBD/BackdoorBench}},
+% ---- Datasets, models, benchmark ------------------------------------
+
+% [v] NeurIPS 2022 Datasets & Benchmarks Track (proceedings.neurips.cc);
+%     the old entry had two wrong authors (Li Shen, Ruichao Cheng).
+@inproceedings{backdoorbench2024,
+  title     = {{BackdoorBench}: A Comprehensive Benchmark of Backdoor Learning},
+  author    = {Wu, Baoyuan and Chen, Hongrui and Zhang, Mingda and Zhu, Zihao
+               and Wei, Shaokui and Yuan, Danni and Shen, Chao},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS),
+               Datasets and Benchmarks Track},
+  volume    = {35},
+  pages     = {10546--10559},
+  year      = {2022},
 }
 
-% -- Repair-fragility papers ------------------------------------------
+@techreport{krizhevsky2009cifar,
+  title       = {Learning Multiple Layers of Features from Tiny Images},
+  author      = {Krizhevsky, Alex and Hinton, Geoffrey},
+  institution = {University of Toronto},
+  year        = {2009},
+}
 
+@article{gu2019badnets,
+  title   = {{BadNets}: Evaluating Backdooring Attacks on Deep Neural Networks},
+  author  = {Gu, Tianyu and Liu, Kang and Dolan-Gavitt, Brendan and Garg, Siddharth},
+  journal = {IEEE Access},
+  volume  = {7},
+  pages   = {47230--47244},
+  year    = {2019},
+  doi     = {10.1109/ACCESS.2019.2909068},
+}
+% NOTE (Chinh): the old entry mixed the arXiv title "Identifying Vulnerabilities
+% in the Machine Learning Model Supply Chain" (arXiv:1708.06733, 2017, 3 authors)
+% with the IEEE Access venue. The IEEE Access version above is the published one
+% (4 authors). [!] confirm pages/doi on IEEE Xplore.
+
+@inproceedings{he2016identity,
+  title     = {Identity Mappings in Deep Residual Networks},
+  author    = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  pages     = {630--645},
+  year      = {2016},
+}
+
+% ---- Repairs / defenses -----------------------------------------------
+
+% [v] NeurIPS 2021 (proceedings.neurips.cc), arXiv:2110.14430
+@inproceedings{wu2021anp,
+  title     = {Adversarial Neuron Pruning Purifies Backdoored Deep Models},
+  author    = {Wu, Dongxian and Wang, Yisen},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {34},
+  year      = {2021},
+}
+
+@inproceedings{liu2018fineprune,
+  title     = {Fine-Pruning: Defending Against Backdooring Attacks on Deep
+               Neural Networks},
+  author    = {Liu, Kang and Dolan-Gavitt, Brendan and Garg, Siddharth},
+  booktitle = {Research in Attacks, Intrusions, and Defenses (RAID)},
+  series    = {LNCS},
+  volume    = {11050},
+  pages     = {273--294},
+  year      = {2018},
+}
+
+% ---- Repair fragility ---------------------------------------------------
+
+% [v] NeurIPS 2024 (spotlight), arXiv:2410.09838. Evaluates EP, ANP, BAU,
+%     SAM, FST, BTI against a retuning attack and a query-based reactivation
+%     attack; proposes Path-Aware Minimization (PAM).
 @inproceedings{min2024uncovering,
-  title        = {Uncovering, Explaining, and Mitigating the Superficial Safety
-                  of Backdoor Defense},
-  author       = {Min, Rui and Qin, Zeyu and Zhang, Nevin L. and Shen, Li
-                  and Cheng, Minhao},
-  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year         = {2024},
-  note         = {Spotlight. arXiv:2410.09838.
-                  Shows that purified/defended models retain latent backdoor
-                  behavior reactivatable via fine-tuning or querying.
-                  Difference from this paper: we test reactivation via rollback
-                  of a historically valid signed shard, not via retuning.},
+  title     = {Uncovering, Explaining, and Mitigating the Superficial Safety
+               of Backdoor Defense},
+  author    = {Min, Rui and Qin, Zeyu and Zhang, Nevin L. and Shen, Li
+               and Cheng, Minhao},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2024},
 }
 
+% [!] venue still unconfirmed -> cite as arXiv preprint (safe).
 @misc{shin2024deferbad,
   title        = {Unlearn to Relearn Backdoors: Deferred Backdoor Functionality
                   Attacks on Deep Learning Models},
   author       = {Shin, Jeongjin and Park, Sangdon},
+  howpublished = {arXiv:2411.14449},
   year         = {2024},
-  note         = {arXiv:2411.14449. OpenReview: S5JCqTJyKj.
-                  TODO: confirm acceptance venue before 26/09 freeze
-                  (submitted to ICLR-family venue; status unconfirmed 23/09/2026).
-                  Deliberately engineers unlearning to be fragile to subsequent
-                  benign updates. Difference from this paper: we examine fragility
-                  to rollback toward a prior historical state, not forward benign
-                  updates.},
 }
 
-% -- Weight-substitution papers ---------------------------------------
+% ---- Weight-level substitution / merging --------------------------------
 
 @inproceedings{qi2022subnet,
-  title        = {Towards Practical Deployment-Stage Backdoor Attack on Deep
-                  Neural Networks},
-  author       = {Qi, Xiangyu and Xie, Tinghao and Pan, Ruizhe and Zhu, Jifeng
-                  and Yang, Yong and Bu, Kai},
-  booktitle    = {IEEE/CVF Conference on Computer Vision and Pattern Recognition
-                  (CVPR)},
-  year         = {2022},
-  note         = {Oral. arXiv:2111.12965.
-                  Subnet Replacement Attack: attacker freely selects replacement
-                  parameters and runs a dedicated backdoor-training step.
-                  Difference from this paper: our attacker is restricted to shards
-                  that were historically valid and signed.},
+  title     = {Towards Practical Deployment-Stage Backdoor Attack on Deep
+               Neural Networks},
+  author    = {Qi, Xiangyu and Xie, Tinghao and Pan, Ruizhe and Zhu, Jifeng
+               and Yang, Yong and Bu, Kai},
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition
+               (CVPR)},
+  year      = {2022},
 }
 
 @inproceedings{zhang2024badmerging,
-  title        = {BadMerging: Backdoor Attacks Against Model Merging},
-  author       = {Zhang, Jinghuai and Chi, Jianfeng and Li, Zheng and Cai, Kunlin
-                  and Zhang, Yang and Tian, Yuan},
-  booktitle    = {ACM SIGSAC Conference on Computer and Communications Security
-                  (CCS)},
-  year         = {2024},
-  doi          = {10.1145/3658644.3690284},
-  note         = {arXiv:2408.07362.
-                  Backdoor injection via model merging across distinct model sources.
-                  Difference from this paper: we concern partial rollback within a
-                  single, known model lineage, not merging across sources.},
+  title     = {{BadMerging}: Backdoor Attacks Against Model Merging},
+  author    = {Zhang, Jinghuai and Chi, Jianfeng and Li, Zheng and Cai, Kunlin
+               and Zhang, Yang and Tian, Yuan},
+  booktitle = {ACM SIGSAC Conference on Computer and Communications Security
+               (CCS)},
+  year      = {2024},
+  doi       = {10.1145/3658644.3690284},
 }
 
-% -- Artifact integrity / deployment security -------------------------
+% ---- Artifact integrity / update security --------------------------------
 
-% AIRS: A paper with the acronym "AIRS" matching the Project Agreement
-%   description (per-shard hash/signature + loader integrity, distributed
-%   ML serving) was NOT found in the literature search (23/09/2026).
-%   Closest functional match: Sentry (Gan & Ghodsi, CCS 2025,
-%   arXiv:2510.00554, doi:10.1145/3719027.3765070), which performs
-%   GPU-accelerated cryptographic integrity verification of ML artifacts
-%   during loading/serving.
-%   ACTION REQUIRED: verify with Dr. Hung which paper "AIRS" refers to
-%   before the 26/09 freeze, then update this entry.
-@misc{airs,
-  title        = {TODO: verify exact title/authors/venue for AIRS.
-                  Closest confirmed match: Sentry -- Authenticating Machine
-                  Learning Artifacts on the Fly
-                  (Gan \& Ghodsi, CCS 2025, arXiv:2510.00554,
-                  doi:10.1145/3719027.3765070)},
-  author       = {TODO},
-  year         = {TODO},
-  note         = {ACTION: confirm with Dr. Hung before 26/09 freeze.},
+% [v] CCS 2025, doi 10.1145/3719027.3765070, arXiv:2510.00554.
+%     Replaces the unresolved "AIRS" placeholder (no paper by that name found;
+%     confirm with Dr. Hung -- if he meant a different paper, swap it here).
+@inproceedings{gan2025sentry,
+  title     = {Sentry: Authenticating Machine Learning Artifacts on the Fly},
+  author    = {Gan, Andrew and Ghodsi, Zahra},
+  booktitle = {ACM SIGSAC Conference on Computer and Communications Security
+               (CCS)},
+  year      = {2025},
+  doi       = {10.1145/3719027.3765070},
+}
+
+% [v] One signature over a manifest of per-file SHA-256 digests.
+@misc{oms2025,
+  title        = {{OpenSSF} Model Signing ({OMS}) Specification},
+  author       = {{OpenSSF AI/ML Security Working Group}},
+  howpublished = {\url{https://github.com/ossf/model-signing-spec}},
+  year         = {2025},
 }
 
 @inproceedings{tuf,
-  title        = {Survivable Key Compromise in Software Update Systems},
-  author       = {Samuel, Justin and Mathewson, Nick and Cappos, Justin
-                  and Dingledine, Roger},
-  booktitle    = {17th ACM Conference on Computer and Communications Security
-                  (CCS)},
-  year         = {2010},
-  doi          = {10.1145/1866307.1866315},
-  note         = {Canonical academic citation for The Update Framework (TUF).},
+  title     = {Survivable Key Compromise in Software Update Systems},
+  author    = {Samuel, Justin and Mathewson, Nick and Cappos, Justin
+               and Dingledine, Roger},
+  booktitle = {ACM Conference on Computer and Communications Security (CCS)},
+  pages     = {61--72},
+  year      = {2010},
+  doi       = {10.1145/1866307.1866315},
 }
 
+% [v] venue: IEEE Vehicular Technology Magazine, March 2018 (uptane.org
+%     publications page; IEEE Xplore doc 8278174). The old entry said
+%     "IEEE Security & Privacy" -- that was wrong.
+%     [!] confirm volume/issue/pages/doi on IEEE Xplore 8278174.
 @article{uptane,
-  title        = {Uptane: Security and Customizability of Software Updates
-                  for Vehicles},
-  author       = {Kuppusamy, Trishank Karthik and DeLong, Lois Anne
-                  and Cappos, Justin},
-  journal      = {IEEE Security \& Privacy},
-  volume       = {16},
-  number       = {1},
-  year         = {2018},
-  doi          = {10.1109/MSP.2018.1081083},
-  note         = {TODO: confirm full author list from IEEE Xplore before freeze
-                  (earlier ESCAR EU 2016 version lists 9 authors).
-                  IEEE Standard 2900-2023 also exists as an alternative citation.},
+  title   = {Uptane: Security and Customizability of Software Updates for
+             Vehicles},
+  author  = {Kuppusamy, Trishank Karthik and DeLong, Lois Anne
+             and Cappos, Justin},
+  journal = {IEEE Vehicular Technology Magazine},
+  volume  = {13},
+  number  = {1},
+  pages   = {66--73},
+  year    = {2018},
+  doi     = {10.1109/MVT.2017.2778751},
 }
 
-% -- Original-source citations added 25/09/2026 (Chinh, per Dat review) --
+% ---- Edge / 6G / partitioned inference (session fit for SS3) --------------
 
-@techreport{krizhevsky2009cifar,
-  title        = {Learning Multiple Layers of Features from Tiny Images},
-  author       = {Krizhevsky, Alex and Hinton, Geoffrey},
-  institution  = {University of Toronto},
-  year         = {2009},
-  note         = {Available at \url{https://www.cs.toronto.edu/~kriz/cifar.html}},
+% [v] IEEE JSAC 2022, doi 10.1109/JSAC.2021.3126076, arXiv:2111.12444
+@article{letaief2022edgeai6g,
+  title   = {Edge Artificial Intelligence for {6G}: Vision, Enabling
+             Technologies, and Applications},
+  author  = {Letaief, Khaled B. and Shi, Yuanming and Lu, Jianmin and Lu, Jianhua},
+  journal = {IEEE Journal on Selected Areas in Communications},
+  volume  = {40},
+  number  = {1},
+  pages   = {5--36},
+  year    = {2022},
+  doi     = {10.1109/JSAC.2021.3126076},
 }
 
-@article{gu2019badnets,
-  title        = {{BadNets}: Identifying Vulnerabilities in the Machine
-                  Learning Model Supply Chain},
-  author       = {Gu, Tianyu and Dolan-Gavitt, Brendan and Garg, Siddharth},
-  journal      = {IEEE Access},
-  year         = {2019},
-  note         = {arXiv:1708.06733},
-}
-
-@inproceedings{he2016identity,
-  title        = {Identity Mappings in Deep Residual Networks},
-  author       = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
-  booktitle    = {European Conference on Computer Vision (ECCV)},
-  year         = {2016},
-  note         = {arXiv:1603.05027},
+@inproceedings{kang2017neurosurgeon,
+  title     = {Neurosurgeon: Collaborative Intelligence Between the Cloud and
+               Mobile Edge},
+  author    = {Kang, Yiping and Hauswald, Johann and Gao, Cao and Rovinski, Austin
+               and Mudge, Trevor and Mars, Jason and Tang, Lingjia},
+  booktitle = {International Conference on Architectural Support for Programming
+               Languages and Operating Systems (ASPLOS)},
+  pages     = {615--629},
+  year      = {2017},
+  doi       = {10.1145/3037697.3037698},
 }

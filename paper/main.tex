@@ -5,7 +5,8 @@
 % ANP results added 22/09/2026 by Nguyen Minh Chinh.
 % Related Work filled 23/09/2026 by Nguyen Minh Chinh.
 % =====================================================================
-\documentclass[10pt,conference]{IEEEtran}
+\pdfminorversion=6
+\documentclass[conference,a4paper]{IEEEtran}  % RIVF 2026 required class options
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
@@ -20,6 +21,18 @@
 % --- Convenience macro to flag unfilled content. Search "TODO" before
 %     the 26/09 draft freeze; nothing with a TODO should remain by then.
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+% --- Result switches (Chinh, 26/09). Flip to \...true ONLY after the new
+%     results exist in results/raw/ and pass scripts/check_lineage.py.
+%     See notes/2026-09-26_chinh_fix_guide.md.
+\newif\ifincludeanp      \includeanpfalse   % ANP re-run on OUR infected model (C1)
+\newif\ifrepairseed      \repairseedfalse   % second fine-tune repair seed (C2)
+% ANP numbers: fill from data/checkpoints/*_anp_v2_meta.json and
+% results/raw/all_subsets/anp_v2_n6.json. Red = not yet filled.
+\newcommand{\ANPthr}{\todo{thr}}        % selected pruning threshold
+\newcommand{\ANPpruned}{\todo{N}}       % number of pruned BN neurons (of 3,392)
+\newcommand{\ANPca}{\todo{CA}}          % ANP-repaired clean accuracy (%)
+\newcommand{\ANPasr}{\todo{ASR}}        % ANP-repaired ASR (%)
 
 \begin{document}
 
@@ -54,35 +67,31 @@ chinh.2275106050051@vanlanguni.vn}
 
 % =====================================================================
 \begin{abstract}
-We study shard-version skew as an attack surface in distributed edge
-inference: a setting in which a model is partitioned into independently
-signed shards that may be cached and served by separate workers during
-a rolling update.
-An attacker who retains a validly signed but pre-repair shard can
-silently introduce it into an otherwise-repaired deployment, producing
-a hybrid model without triggering per-shard signature checks.
-We measure the ML-specific consequence of this gap using BadNets on
-CIFAR-10 with PreActResNet18, partitioned into six shards, after two
-representative repairs: global clean fine-tuning and Adversarial
-Neuron Pruning (ANP).
-Under fine-tuning, single-shard rollback is weak---the highest
-single-shard attack success rate (ASR) is 8.94\%---yet completely
-invisible to utility monitoring: clean accuracy stays above 86\% in
-all hybrid configurations.
-A repair-aware attacker substituting the three highest-share shards
-restores ASR to 92.89\% while maintaining CA~$=$~87.38\%, a result
-that replicates exactly across two independent random seeds.
-Under ANP, any single-shard substitution causes utility collapse
-(CA~$\approx$~10\%) rather than backdoor recovery, making tampering
-detectable through standard accuracy monitoring.
-Epoch-manifest pinning---already specified in TUF and Uptane---closes
-the attack surface with 34 additional bytes of manifest overhead and
-no measurable per-load verification cost.
+Edge intelligence in 6G networks distributes deep models to edge nodes as
+independently signed shards that are cached and updated in stages over
+intermittent links. Per-shard signatures prove that each shard is authentic,
+not that all shards belong to the same model version. We measure what this
+gap means after a backdoor has been repaired: an adversary controlling the
+artifact cache re-introduces validly signed, pre-repair shards into an
+otherwise-repaired model. Using BadNets on CIFAR-10 with PreActResNet18
+partitioned into six shards and repaired by clean fine-tuning, rolling back
+any single shard is weak (at most 8.94\% attack success rate, ASR) and keeps
+clean accuracy (CA) between 86.0\% and 93.3\%. Rolling back several shards
+is not: every evaluated subset that contains both \texttt{layer2} and
+\texttt{layer4} restores at least 74.8\% ASR, and the three shards carrying
+the largest share of the repair restore 92.89\% ASR at 87.38\% CA,
+5.97 percentage points below the repaired model.
+\ifincludeanp
+Under Adversarial Neuron Pruning, a local repair, \todo{one-sentence ANP result}.
+\fi
+Epoch-manifest pinning, as already specified by TUF and Uptane, rejects
+every skewed load at a cost of 34 bytes per manifest and no measurable
+verification overhead.
 \end{abstract}
 
 \begin{IEEEkeywords}
-backdoor attacks, model partitioning, distributed edge inference,
-supply-chain security, version skew, shard rollback
+6G edge intelligence, distributed edge inference, backdoor attacks,
+model supply-chain security, version skew, over-the-air model updates
 \end{IEEEkeywords}
 
 % =====================================================================
@@ -176,231 +185,126 @@ Section~\ref{sec:conclusion} concludes.
 \subsection{Threat Model}
 \label{sec:threat}
 
-We consider an adversary whose sole point of control is the artifact
-cache or model-update distribution path of an edge inference service.
-The attacker's objective is to cause at least one worker to serve a
-\emph{hybrid} model---one composed of a mix of repaired shards and a
-historically valid but pre-repair shard---thereby restoring backdoor
-behavior without triggering per-shard signature checks.
+\textbf{Setting.} A model is partitioned into $n$ contiguous shards that
+are hosted by different edge nodes (split or partitioned
+inference~\cite{kang2017neurosurgeon}), a deployment pattern envisioned for
+6G edge intelligence~\cite{letaief2022edgeai6g}. Each shard is signed
+individually and delivered through an artifact cache, and each node
+verifies only the shard it hosts. Repairs are rolled out in stages, so
+an interrupted rollout caused by a link outage or handover is a normal
+operating condition.
 
-\textbf{Attacker knowledge.} The adversary knows the model architecture
-and the shard partition boundaries. Critically, the attacker possesses
-at least one shard that was validly signed under a prior, pre-repair
-version of the model. Such a shard is trivially available to any
-participant in the artifact pipeline who recorded the signed binaries
-before the repair was deployed.
+\textbf{Adversary.} The adversary controls only the artifact cache or
+update path. Its goal is to make the deployment serve a \emph{hybrid}
+model that mixes repaired shards with validly signed pre-repair shards,
+restoring the backdoor without failing any per-shard check. It knows the
+architecture and partition boundaries and holds both signed versions of
+every shard, which any party that cached the pre-repair artifacts has.
+It can therefore compute, offline, how much of the repair each shard
+carries (Section~\ref{sec:share}). It needs no queries to the model and
+no training data.
 
-\textbf{Attacker control.} The attacker controls only the artifact cache
-or update path. They can supply a historically valid, correctly signed
-shard to a worker during an interrupted rollout---for instance, when
-intermittent connectivity causes some workers to receive newly repaired
-shards while others receive cached, pre-repair copies.
+\textbf{Trust assumptions.} The coordinator, loader, runtime and any
+stored minimum-epoch state are trusted; signatures cannot be forged.
+A fully compromised worker that misreports its loaded weights is out of
+scope, since it requires attestation.
 
-\textbf{Attacker budget.} No query budget or byte budget applies; the
-attack requires only a single well-timed shard substitution during
-rollout interruption. The attacker does not need to interact with the
-model at inference time.
-
-\textbf{Trusted components.} The coordinator, loader, runtime, and any
-persistently stored minimum-epoch state are trusted. The attacker
-cannot forge shard signatures or cause the loader to execute
-undeclared weights.
-
-\textbf{Out of scope.} We do not consider a fully compromised worker
-that misrepresents its currently loaded weights (that requires
-verifiable computation or attestation and is orthogonal to our
-setting), nor do we consider forgery of signatures or compromise of
-the trusted loader or runtime.
-
-This threat model captures a realistic gap in current deployment
-practice: per-shard signature verification proves that each shard is
-authentic, but does not prove that all shards belong to the same model
-epoch. Epoch-manifest pinning, as defined in TUF~\cite{tuf} and
-Uptane~\cite{uptane}, closes this gap without requiring a new protocol.
-The contribution of this paper is to measure the ML-specific
-consequence of its absence.
+Per-shard verification proves that each shard is authentic, not that
+all shards belong to the same epoch. Epoch-manifest pinning, as defined
+in TUF~\cite{tuf} and Uptane~\cite{uptane}, closes this gap without a new
+protocol. We measure the ML-specific consequence of its absence.
 
 \subsection{Models, Attack, and Repairs}
 \label{sec:setup}
 
-\textbf{Dataset.} We use CIFAR-10~\cite{krizhevsky2009cifar,backdoorbench2024}, comprising
-50{,}000 training images and 10{,}000 test images across 10 classes
-(32$\times$32 pixels, RGB). All experiments use the standard train/test
-split with no additional augmentation beyond what BackdoorBench's
-preprocessing pipeline applies.
+\textbf{Data, model and attack.} We use CIFAR-10~\cite{krizhevsky2009cifar}
+(50{,}000 training and 10{,}000 test images) and
+PreActResNet18~\cite{he2016identity}. The infected model is the publicly
+released BackdoorBench~\cite{backdoorbench2024} BadNets~\cite{gu2019badnets}
+checkpoint for this pair (poisoning ratio 10\%, 3$\times$3 white patch in the
+bottom-right corner, target class~0); we do not retrain it. On our
+evaluation pipeline it reaches CA~$=$~89.41\% and ASR~$=$~97.43\%.
 
-\textbf{Model.} We use PreActResNet18~\cite{he2016identity,backdoorbench2024}, a
-variant of ResNet-18 with pre-activation residual blocks, as our
-target architecture ($\approx$11M parameters). This is the standard
-CIFAR-10 benchmark model in BackdoorBench and admits a natural shard
-partition along residual block boundaries.
+\textbf{Repair~(a): global clean fine-tuning.} The infected model is
+fine-tuned for 20 epochs on the full clean training set (SGD, momentum 0.9,
+weight decay $5\!\times\!10^{-4}$, learning rate 0.01 with cosine annealing,
+batch 128, seed 42), updating every parameter. This yields CA~$=$~93.35\%
+and ASR~$=$~0.90\%. Giving the defender the full clean training set makes
+this a strong, global repair; CA even rises by 3.94 points.
+\ifincludeanp
 
-\textbf{Backdoor attack.} We apply BadNets~\cite{gu2019badnets,backdoorbench2024}
-with a 3$\times$3 white-pixel trigger patch placed at the bottom-right
-corner of each poisoned image (pixels $[29{:}32,\,29{:}32,\,:]$ set
-to 255 in uint8 representation). The target class is 0 (``airplane'').
-The poison rate is 10\% of the training set. The infected checkpoint
-was produced using BackdoorBench's standard training pipeline
-(random seed 42), yielding an infected model with CA~$=$~89.41\% and
-ASR~$=$~97.43\% on the CIFAR-10 test set.
+\textbf{Repair~(b): Adversarial Neuron Pruning (ANP).} We apply
+ANP~\cite{wu2021anp} to the same infected checkpoint with BackdoorBench's
+reference implementation and default CIFAR-10 settings
+(Table~\ref{tab:anp_config}). ANP learns a mask score per BatchNorm
+neuron on 5\% of the clean training data and prunes (zeroes) every neuron
+whose score is at most the selected threshold, leaving all other weights
+unchanged. At threshold~\ANPthr{}, \ANPpruned{} of 3{,}392 neurons are
+pruned, giving CA~$=$~\ANPca\% and ASR~$=$~\ANPasr\%. We verified that
+every other parameter is bit-identical to the infected model, so the two
+checkpoints share one lineage, as the threat model requires.
 
-\textbf{Repair~(a): global clean fine-tune.} The infected model is
-fine-tuned for 20 epochs on the clean (unmodified) CIFAR-10 training
-set. Optimizer: SGD with momentum~0.9, weight decay~$5\!\times\!10^{-4}$,
-initial learning rate~0.01, schedule: CosineAnnealingLR with
-$T_{\max}=20$, random seed 42. This repair is global in the sense
-that every parameter is updated during fine-tuning. The resulting
-repaired model achieves CA~$=$~93.35\% and ASR~$=$~0.90\%.
-
-\textbf{Repair~(b): Adversarial Neuron Pruning (ANP).} We apply ANP
-using BackdoorBench's reference
-implementation~\cite{backdoorbench2024}, without modification. ANP is a \emph{local} repair: it prunes
-neurons identified as backdoor-sensitive by adversarial mask
-optimization, leaving the rest of the model's weights unchanged. The
-exact configuration used is given in
-Table~\ref{tab:anp_config}. ANP is the primary local-repair baseline
-against which the shard-rollback attack is evaluated; its locality
-makes it the expected worst-case repair from the attacker's perspective
-(Section~\ref{sec:results}).
-The ANP-repaired checkpoint achieves CA~$=$~84.22\% and ASR~$=$~0.00\%
-at pruning threshold~0.55 (404 of 3{,}392 neurons pruned;
-Table~\ref{tab:anp_baseline}). The infected model for this run
-(seed 42, same pipeline) yielded CA~$=$~91.71\% and ASR~$=$~94.26\%.
-
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\caption{ANP defense configuration, following BackdoorBench's default CIFAR-10 settings~\cite{backdoorbench2024}.}
+\caption{ANP settings (BackdoorBench defaults for CIFAR-10).}
 \label{tab:anp_config}
 \begin{tabular}{ll}
 \toprule
-Hyperparameter & Value \\
+Setting & Value \\
 \midrule
-Epochs          & 100 \\
-Batch size      & 256 \\
-Learning rate   & 0.01 (CosineAnnealingLR) \\
-Optimizer       & SGD, momentum~0.9, wd~$5\!\times\!10^{-4}$ \\
-Mask iterations & 2000 \\
-ANP $\epsilon$  & 0.4 \\
-ANP $\alpha$    & 0.2 \\
-Pruning by      & threshold \\
-Pruning max     & 0.90 \\
-Pruning step    & 0.05 \\
-Random seed     & 42 \\
+Clean data for mask search & 5\% of training set (2{,}500 images) \\
+Mask iterations            & 2{,}000 \\
+Perturbation $\epsilon$ / trade-off $\alpha$ & 0.4 / 0.2 \\
+Pruning                    & by threshold, step 0.05, max 0.90 \\
+Threshold selection        & lowest ASR with CA drop $<10\%$ \\
+Random seed                & 42 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{table}[h]
-\centering
-\caption{ANP repair results on CIFAR-10 test set (threshold = 0.55, seed 42).}
-\label{tab:anp_baseline}
-\begin{tabular}{lcc}
-\toprule
-Model & ASR (\%) & CA (\%) \\
-\midrule
-Infected (BadNets, ANP run) & 94.26 & 91.71 \\
-ANP-repaired (threshold $= 0.55$) &  0.00 & 84.22 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\fi
 
 \subsection{Partitioning and Substitution}
 \label{sec:partition}
 
-We partition PreActResNet18 into $n$ contiguous shards along residual
-block boundaries. We evaluate two granularities: $n\!=\!3$ (coarse)
-and $n\!=\!6$ (fine).
-
-For $n\!=\!3$, the three shards are: \textbf{S1}~=~stem + \texttt{layer1}
-(first residual block pair); \textbf{S2}~=~\texttt{layer2} +
-\texttt{layer3}; \textbf{S3}~=~\texttt{layer4} + classification head.
-
-For $n\!=\!6$, each of the four residual blocks
-(\texttt{layer1}--\texttt{layer4}) becomes a separate shard, with the
-stem and classification head each forming an additional shard.
-
-The substitution procedure replaces the parameters of the specified shard
-in an otherwise-repaired model with weights from the pre-repair (infected)
-checkpoint, leaving all other shards untouched. Correctness of the substitution harness was
-independently verified by full rollback: substituting \emph{all} $n$
-shards reconstructs the infected model exactly, recovering
-ASR~$=$~97.43\% and CA~$=$~89.41\% (see Table~\ref{tab:fullrollback}).
+We partition PreActResNet18 into $n$ contiguous shards along
+top-level module boundaries. At $n\!=\!6$ the shards are the stem
+(\texttt{conv1}), the four residual stages \texttt{layer1}--\texttt{layer4},
+and the classifier head (\texttt{linear}), indexed 0--5. At $n\!=\!3$ they
+are \{stem, \texttt{layer1}\}, \{\texttt{layer2}, \texttt{layer3}\} and
+\{\texttt{layer4}, head\}. Rolling back a set of shards replaces all of
+their tensors, including BatchNorm statistics, with the infected
+versions and leaves every other shard repaired. Rolling back all $n$
+shards reproduces the infected model exactly (ASR~$=$~97.43\%,
+CA~$=$~89.41\% at both granularities), which verifies the harness.
 
 \subsection{Repair-Share Metric}
 \label{sec:share}
 
-To characterize how much of the repair update is carried by each
-shard, we define the \emph{repair-share} of shard $s$ as:
+The \emph{repair share} of shard $s$ is the fraction of the squared
+repair update that it carries:
 \begin{equation}
-  \mathrm{share}_s \;=\; \frac{\|\,\delta_s\,\|_2^2}{\|\,\delta\,\|_2^2},
+  \mathrm{share}_s \;=\; \frac{\|\,\delta_s\,\|_2^2}{\sum_j \|\,\delta_j\,\|_2^2},
   \qquad
   \delta_s \;=\; \theta^{\mathrm{rep}}_s - \theta^{\mathrm{inf}}_s,
   \label{eq:share}
 \end{equation}
-where $\theta^{\mathrm{rep}}_s$ and $\theta^{\mathrm{inf}}_s$ are the
-repaired and infected parameters belonging to shard $s$, and $\delta$
-is the concatenation of all $\delta_s$ across all shards.
-Because the squared $\ell_2$ norm of a concatenation equals the sum of
-squared $\ell_2$ norms of its parts, we have
-$\|\delta\|_2^2 = \sum_s \|\delta_s\|_2^2$, so by construction
-$\sum_s \mathrm{share}_s = 1$.
-
-\textbf{Important correction.} An earlier version of this metric
-(computed prior to 21/09/2026) summed over \emph{all state-dict keys},
-including the BatchNorm buffer \texttt{num\_batches\_tracked}. This
-counter increments by one per training batch and reaches approximately
-7{,}820 after 20 fine-tuning epochs (391 batches/epoch
-$\times$~20~epochs), while the actual weight differences are on the
-order of 0.5. The counter therefore dominated the squared-norm sum and
-caused every shard to appear to carry an identical 25\% of the repair
-update---a spurious result that reflected only how many BatchNorm layers
-each shard contained, not how much of the repair it actually carried.
-The conclusion from the 19/09 note that ``each residual block holds
-25\% of the repair'' is withdrawn.
-
-The corrected metric skips all non-learnable buffers:
-\begin{equation}
-\begin{split}
-  \mathrm{SKIP} = \{\;&\texttt{num\_batches\_tracked},\;
-    \texttt{running\_mean},\\
-  &\texttt{running\_var}\;\}.
-\end{split}
-\label{eq:skip}
-\end{equation}
-Only tensors whose keys do \emph{not} end with any element of
-$\mathrm{SKIP}$ are included in Equation~(\ref{eq:share}). All
-$\mathrm{share}_s$ values reported in this paper use the corrected
-computation.
+where $\theta_s$ are the learnable parameters of shard $s$; BatchNorm
+buffers (\texttt{running\_mean}, \texttt{running\_var},
+\texttt{num\_batches\_tracked}) are excluded because they are not
+learned. By construction $\sum_s \mathrm{share}_s = 1$, and the share of
+a set of shards is the sum of their shares. The metric needs only the two
+signed checkpoints, so an attacker who holds both can compute it offline.
 
 \subsection{Metrics}
 \label{sec:metrics}
 
-\textbf{Attack Success Rate (ASR).} The fraction of \emph{eligible}
-triggered test examples classified as the target class (class~0):
-\[
-  \mathrm{ASR} \;=\;
-  \frac{|\{x : \hat{y}(x \oplus t) = c_{\mathrm{tgt}},\;
-           y(x) \neq c_{\mathrm{tgt}}\}|}
-       {|\{x : y(x) \neq c_{\mathrm{tgt}}\}|},
-\]
-where $x \oplus t$ denotes applying the BadNets trigger to image $x$,
-$\hat{y}(\cdot)$ is the model's predicted class, $y(x)$ is the ground
-truth, and $c_{\mathrm{tgt}} = 0$. Examples that already belong to the
-target class are excluded from both numerator and denominator, following
-the standard BackdoorBench evaluation protocol~\cite{backdoorbench2024}.
-
-\textbf{Clean Accuracy (CA).} Standard top-1 accuracy on the
-unmodified CIFAR-10 test set (10{,}000 images, no trigger applied).
-
-Both metrics are evaluated in \texttt{model.eval()} mode with batch
-normalization running statistics fixed. The Day-5 gate thresholds
-established in the Project Agreement were: ASR~$\geq$~80\% for the
-infected model (passed: 97.43\%), ASR~$\leq$~10\% for the repaired
-model (passed: 0.90\%), and a post-rollback ASR increase of at
-least~50\% or at least~30 percentage points over the repaired model
-for the single-shard experiment (not met: best single-shard
-ASR~$=$~17.46\%). The last result is a genuine negative finding and is
-reported as such throughout (Section~\ref{sec:results}).
+\textbf{ASR} is the fraction of triggered test images whose true class is
+not the target that are classified as the target class
+(9{,}000 images), following BackdoorBench~\cite{backdoorbench2024}.
+\textbf{CA} is top-1 accuracy on the 10{,}000 clean test images. Both are
+measured in evaluation mode. With these test-set sizes, the 95\%
+binomial confidence half-width is at most 1.0 percentage point for
+either metric, so we report differences below 1 point as ties.
 
 % =====================================================================
 \section{Results}
@@ -748,7 +652,7 @@ reported as the mean ASR over 5 independent draws.
 ($n=6$, global fine-tune, seed~42). Repair-aware reaches
 $>$50\% ASR at $k=3$; architectural requires $k=5$; random falls
 between, with high variance across draws
-(Section~\ref{sec:secondseed}).}
+(Section~\ref{sec:variance}).}
 \label{fig:strategy}
 \end{figure}
 
@@ -763,204 +667,76 @@ achieves full backdoor recovery at $k\!=\!5$, underscoring that the
 attack does not require privileged access to repair internals to
 succeed at moderate stale-shard counts.
 
+\subsection{What Drives Recovery: Repair Share and Shard Interaction}
+\label{sec:locality}
+
+Fig.~\ref{fig:locality_asr} plots, for every shard subset evaluated so
+far (41 of the 63 non-empty subsets at $n\!=\!6$), the repair share it
+covers against the ASR it restores. Share alone is a weak predictor
+(Spearman $\rho = 0.65$). A single shard never exceeds 8.94\% ASR, even
+shard~3, which carries 47.74\% of the repair and restores only 0.50\%.
+What separates success from failure is whether the rolled-back set
+contains both \texttt{layer2} and \texttt{layer4}: all 11 such subsets
+restore at least 74.76\% ASR, while none of the 30 other subsets exceeds
+57.41\%. The two shards act jointly: alone they restore 8.94\% and 8.08\%,
+together 74.76\%. The cheapest such subset, $\{2,4\}$, costs a visible CA
+drop (76.99\%); adding \texttt{layer3} restores CA to 87.38\% at 92.89\%
+ASR. The share-greedy attacker of Section~\ref{sec:strategy} finds this
+subset because \texttt{layer2}--\texttt{layer4} are also the three
+highest-share shards.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth, height=5.6cm,
+    xlabel={Repair share covered by rolled-back shards (\%)},
+    ylabel={ASR (\%)},
+    xmin=-3, xmax=103, ymin=-4, ymax=102,
+    xtick={0,20,40,60,80,100}, ytick={0,20,40,60,80,100},
+    tick label style={font=\small}, label style={font=\small},
+    legend style={at={(0.03,0.97)}, anchor=north west, font=\scriptsize},
+    grid=major, grid style={dashed, gray!30},
+]
+\input{fig_locality_data.tex}
+\end{axis}
+\end{tikzpicture}
+\caption{Repair share covered vs.\ restored ASR for every evaluated
+rollback subset (fine-tune repair, $n=6$). Filled markers: subsets that
+contain both \texttt{layer2} and \texttt{layer4}.}
+\label{fig:locality_asr}
+\end{figure}
+
+\ifincludeanp
 \subsection{Contrast with a Local Repair (ANP)}
 \label{sec:anp}
 
-We repeat the shard-rollback experiment on the ANP-repaired checkpoint
-(CA~$=$~83.03\%, ASR~$=$~0.00\%) to contrast with the fine-tune results
-in Section~\ref{sec:singleshard}.
+% TEMPLATE -- fill only from results/raw/all_subsets/anp_v2_n6.json after
+% scripts/check_lineage.py passes. Report ASR next to CA for every claim.
+ANP concentrates its update in \todo{shards}: \todo{X}\% of the pruned
+neurons lie in \texttt{layer4}. Rolling back a single shard restores up to
+\todo{ASR}\% ASR at \todo{CA}\% CA (shard \todo{s}), versus 8.94\% for the
+fine-tuned repair. \todo{Say plainly whether one or two shards are enough
+under ANP, and whether CA stays near the ANP model's \ANPca\%.}
+\fi
 
-\textbf{Utility collapse at $k=1$.}
-For each of the four shards tested individually (shards~0, 2, 3, and~5),
-substituting a single stale shard drops clean accuracy to approximately
-10\%---the level of a random classifier on CIFAR-10.
-This is qualitatively different from the fine-tune case, where all hybrid
-models retained CA above 86\% (Table~\ref{tab:fullrollback}).
-The mechanism is architectural: ANP zeroes pruned neurons directly in the
-weight tensors of the repaired checkpoint.
-When a pre-repair shard carrying full weights is placed next to ANP shards
-with zeroed neurons, the activation signal is incompatible with the rest of
-the network, causing all predictions to collapse to a single class.
+\subsection{Determinism and Sampling Variance}
+\label{sec:variance}
 
-\textbf{High ASR as a measurement artifact.}
-At $k=1$, shard~5 (the linear classification head) yields
-ASR~$=$~81.10\% alongside CA~$=$~10.01\%.
-This is not evidence of backdoor recovery.
-The collapsed model predicts class~0 (airplane, the attack target) for every
-input; since the ASR metric counts any triggered prediction of class~0 as a
-success, it registers high on a degenerate model regardless of whether the
-backdoor has actually been restored.
-We report this value for completeness and exclude it from any claim about
-backdoor reactivation.
-
-\textbf{Harness verification.}
-Full rollback at $k=6$ reconstructs the infected model exactly:
-ASR~$=$~97.43\%, CA~$=$~89.41\%, consistent with the fine-tune result in
-Table~\ref{tab:fullrollback}.
-This confirms the substitution harness is correct and that the utility
-collapse at $k<6$ is a property of the ANP hybrid architecture, not a
-pipeline bug.
-
-In contrast to the fine-tune case---where CA stays above 86\% and gives no
-monitoring signal---ANP hybrids collapse at $k=1$, making stale-shard
-substitution immediately detectable through standard accuracy monitoring.
-
-\subsection{Repair Locality vs.\ Recovered ASR}
-\label{sec:locality}
-
-Figure~\ref{fig:locality_asr} plots each shard's repair share
-$\mathrm{share}_s$ against the single-shard rollback ASR for both
-the fine-tuned and ANP-repaired models.
-Each point represents one tested shard; shards~1 and~4 are absent
-because they were not isolated in the $k\!=\!1$ single-shard runs.
-
-  \begin{figure}[t]
-  \centering
-  \begin{tikzpicture}
-  \begin{axis}[
-      width=\columnwidth,
-      height=5.8cm,
-      xlabel={Repair share $\sigma_s$ (\%)},
-      ylabel={Single-shard rollback ASR (\%)},
-      xmin=-5, xmax=55,
-      ymin=-8, ymax=95,
-      xtick={0,10,20,30,40,50},
-      ytick={0,20,40,60,80},
-      tick label style={font=\small},
-      label style={font=\small},
-      legend style={at={(0.97,0.97)}, anchor=north east, font=\small},
-      grid=major,
-      grid style={dashed, gray!30},
-      every axis plot/.append style={thick},
-  ]
-  %% Fine-tune (circles, blue): repair-share sigma vs single-shard ASR
-  %% s0: sigma=0.30, ASR=1.02 | s2: sigma=21.11, ASR=8.94
-  %% s3: sigma=47.74, ASR=0.50 | s5: sigma=0.13, ASR=1.18
-  \addplot[
-      only marks, mark=*, mark size=3pt,
-      color=blue!70!black,
-  ] coordinates {
-      (0.30,  1.02)
-      (21.11, 8.94)
-      (47.74, 0.50)
-      (0.13,  1.18)
-  };
-  \addlegendentry{Fine-tune}
-
-  %% ANP (triangles, red): repair-share sigma vs single-shard ASR
-  %% s0: sigma=2.02, ASR=0.00 | s2: sigma=19.31, ASR=0.00
-  %% s3: sigma=33.66, ASR=0.00 | s5: sigma=2.92, ASR=81.10 (utility-collapse artifact)
-  \addplot[
-      only marks, mark=triangle*, mark size=3pt,
-      color=red!70!black,
-  ] coordinates {
-      (2.02,  0.00)
-      (19.31, 0.00)
-      (33.66, 0.00)
-      (2.92, 81.10)
-  };
-  \addlegendentry{ANP}
-
-  %% Shard labels -- fine-tune
-  \node[font=\scriptsize, blue!70!black, anchor=south west]
-      at (axis cs:0.30,  1.02) {$s_0$};
-  \node[font=\scriptsize, blue!70!black, anchor=south west]
-      at (axis cs:21.11, 8.94) {$s_2$};
-  \node[font=\scriptsize, blue!70!black, anchor=south east]
-      at (axis cs:47.74, 0.50) {$s_3$};
-  \node[font=\scriptsize, blue!70!black, anchor=south east]
-      at (axis cs:0.13,  1.18) {$s_5$};
-
-  %% Shard labels -- ANP
-  \node[font=\scriptsize, red!70!black, anchor=north east]
-      at (axis cs:2.02,  0.01) {$s_0$};
-  \node[font=\scriptsize, red!70!black, anchor=north west]
-      at (axis cs:19.31, 0.01) {$s_2$};
-  \node[font=\scriptsize, red!70!black, anchor=north east]
-      at (axis cs:33.66, 0.01) {$s_3$};
-  \node[font=\scriptsize, red!70!black, anchor=west]
-      at (axis cs:2.92, 81.10) {\;$s_5$ (artifact)};
-
-  \end{axis}
-  \end{tikzpicture}
-  \caption{Repair locality vs.\ rollback vulnerability.
-    Each marker is one shard.
-    \emph{Fine-tune} (circles): even the highest-share shard
-    ($\sigma_3{=}47.74\%$) yields a single-shard ASR of only
-    $0.50\%$; three shards must be substituted together to
-    cross the $90\%$ ASR threshold (Section~\ref{sec:kcurve}).
-    \emph{ANP} (triangles): shard~5 ($\sigma_5{=}2.92\%$) registers
-    $\text{ASR}=81.10\%$, but this is a utility-collapse artifact
-    ($\text{CA}=10\%$) rather than genuine backdoor recovery
-    (Section~\ref{sec:anp}).}
-  \label{fig:locality_asr}
-\end{figure}
-
-For the fine-tuned model, repair share does not predict single-shard
-rollback efficacy.
-Shard~3 absorbs nearly half the repair update ($\mathrm{share}_3 =
-47.74\%$) yet yields the lowest tested ASR (0.50\%), while shard~2
-with a moderate share (21.11\%) yields the highest tested ASR (8.94\%).
-No individual shard, regardless of how much of the repair it carries,
-is sufficient to restore the backdoor on its own.
-For the ANP-repaired model, shards~0, 2, and~3 all yield
-ASR~$=$~0.00\%; shard~5 registers 81.10\% only as a utility-collapse
-artifact (CA~$=$~10.01\%), not genuine backdoor recovery
-(Section~\ref{sec:anp}).
-The two repair methods therefore define two distinct vulnerability
-regimes: a \emph{threshold regime} under fine-tuning, where
-coordinated multi-shard substitution is required to restore the
-backdoor, and a \emph{collapse regime} under ANP, where any single
-substitution is immediately detectable through clean-accuracy monitoring.
-
-\subsection{Second-Seed Replication}
-\label{sec:seed}
-
-To verify that the headline result is not an artifact of the random seed
-used during training and evaluation, we re-run the full $k$-shard
-experiment under a second seed (seed~$=0$) and compare against the
-primary results (seed~$=42$).
-
-\paragraph{Repair-aware strategy.}
-The repair-aware strategy selects shards in decreasing order of
-$\mathrm{share}_s$ and is therefore deterministic given the shard
-partition: both seeds produce the same selection sequence
-(shards~3, 4, 2, 1, 0, and~5).
-Table~\ref{tab:seed_repaware} shows that ASR and CA are identical
-across seeds for every $k$.
-The headline result---ASR~$=$~92.89\% at $k=3$,
-CA~$=$~87.38\%---replicates exactly under the second seed.
-
-\begin{table}[h]
-\centering
-\caption{Repair-aware strategy: seed~$=42$ vs.\ seed~$=0$ ($n=6$).
-Results are identical because the strategy is deterministic.}
-\label{tab:seed_repaware}
-\begin{tabular}{ccccc}
-\toprule
-$k$ & ASR s42 (\%) & CA s42 (\%) & ASR s0 (\%) & CA s0 (\%) \\
-\midrule
-0 &  0.90 & 93.35 &  0.90 & 93.35 \\
-1 &  0.50 & 87.09 &  0.50 & 87.09 \\
-2 &  4.57 & 91.06 &  4.57 & 91.06 \\
-3 & 92.89 & 87.38 & 92.89 & 87.38 \\
-4 & 97.11 & 89.56 & 97.11 & 89.56 \\
-5 & 97.21 & 90.18 & 97.21 & 90.18 \\
-6 & 97.43 & 89.41 & 97.43 & 89.41 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Random strategy variance.}
-Because the random strategy draws shards uniformly without replacement,
-results vary between seeds.
-At $k=3$, the mean ASR across 5 draws is 17.93\% under seed~42 and
-44.07\% under seed~0, confirming the high variance noted in
-Section~\ref{sec:strategy}.
-This variance underscores that repair-aware selection is the more
-reliable attacker strategy: it achieves 92.89\% ASR at $k=3$
-regardless of seed, while a random attacker's outcome depends on which
-shards happen to be drawn.
+The repair-aware and architectural orders are deterministic, and
+re-running the sweep under a second evaluation seed (0 instead of 42)
+reproduced all 49 repeated subset evaluations exactly, so the pipeline has
+no hidden randomness. This is a determinism check, not a replication over
+repair seeds. Only the random strategy depends on the seed: its mean ASR at
+$k=3$ over five draws is 17.93\% under seed~42 and 44.07\% under seed~0,
+because the draws do or do not happen to contain both \texttt{layer2} and
+\texttt{layer4} (Section~\ref{sec:locality}).
+\ifrepairseed
+To test whether the result depends on the repair itself, we fine-tuned a
+second repaired model with seed~0 (CA~$=$~\todo{CA}\%, ASR~$=$~\todo{ASR}\%).
+Its three highest-share shards are \todo{shards}, and rolling them back
+restores \todo{ASR}\% ASR at \todo{CA}\% CA.
+\fi
 
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
@@ -1014,166 +790,98 @@ Skewed model accepted? & Yes (undetected) & No (rejected) \\
 \section{Discussion}
 \label{sec:discussion}
 
-Our results reveal two qualitatively distinct vulnerability regimes
-under shard-version skew, determined by the repair method.
+\textbf{One stale shard is not enough; a few are.} Under a strong global
+repair, a single rolled-back shard restores at most 8.94\% ASR, so the
+single-shard case is the lower bound of the attack. Recovery is a
+threshold effect driven by an interaction between shards: the backdoor
+returns once \texttt{layer2} and \texttt{layer4} are both stale. An
+attacker holding both signed epochs can find these shards offline from
+the repair share, and needs three stale shards to restore 92.89\% ASR;
+an attacker who knows only the partition needs five.
 
-\paragraph{Single-shard rollback is weak but silent.}
-Under global fine-tuning, no individual shard rollback restores the
-backdoor above 9\% ASR, even when the substituted shard carries nearly
-half of the total repair update ($\sigma_3{=}47.74\%$,
-ASR~$=$~0.50\%).
-The repair is distributed across the network in a way that no single
-shard can undo.
-Critically, this weakness does not make the threat benign: hybrid
-models retain CA above 86\% throughout, so standard utility monitoring
-provides no signal that a stale shard has been accepted.
-The threat requires detection at the artifact layer, not the inference
-layer.
+\textbf{Utility monitoring is a weak signal.} The stealthiest successful
+hybrid loses 5.97 points of CA against the repaired model but stays
+within 2.03 points of the infected model that was deployed before the
+repair. Detecting it therefore requires labelled canary data and a
+tight alarm threshold; label-free monitoring would not see it. Other
+successful hybrids are cruder (e.g.\ $\{2,4\}$ at 76.99\% CA) and would be
+caught.
+\ifincludeanp
 
-\paragraph{Coordinated multi-shard rollback is the real attack
-surface.}
-A repair-aware attacker who substitutes the three highest-share shards
-crosses a sharp threshold (ASR~$=$~92.89\% at $k{=}3$, up from
-4.57\% at $k{=}2$), matching the fully infected model's 97.43\%
-within one further shard.
-Architectural selection---requiring only knowledge of the partition
-boundaries, not of the repair update---crosses the same threshold at
-$k{=}5$, confirming that the attack does not require privileged
-knowledge of repair internals.
+\textbf{Local repair.} \todo{One or two sentences comparing ANP with
+fine-tuning, from Section~\ref{sec:anp}.}
+\fi
 
-\paragraph{ANP creates a self-revealing collapse regime.}
-Shard substitution on an ANP-repaired model destroys utility before
-the backdoor can recover.
-The architectural incompatibility between the baked-in pruning mask
-and the full weights of a pre-repair shard makes tampering immediately
-detectable through CA monitoring alone---a favorable signal for
-defenders---but both repair strategies are fully vulnerable to
-complete rollback at $k{=}6$.
-
-\paragraph{Epoch-manifest pinning closes the gap.}
-Both vulnerability regimes share the same root cause: the artifact
-pipeline enforces that each shard is authentic but not that all shards
-belong to the same repair epoch.
-Epoch-manifest pinning, as defined in TUF~\cite{tuf} and
-Uptane~\cite{uptane}, binds each shard to a per-epoch identifier in
-the signed snapshot metadata; a loader that checks this identifier
-rejects a stale shard as epoch-mismatched rather than accepting it as
-individually valid.
-Our serving comparison (Section~\ref{sec:serving}) confirms that this
-protection adds 34 bytes of manifest overhead and no measurable
-per-load verification cost.
-The defense is an application of existing supply-chain controls to a
-previously unmeasured ML-specific gap.
+\textbf{The fix is cheap.} All hybrids share one root cause: each shard
+is checked for authenticity, not for membership in the same epoch.
+Binding every shard to an epoch identifier in signed snapshot metadata,
+as TUF~\cite{tuf} and Uptane~\cite{uptane} specify, rejected every skewed
+load in our serving test for 34 extra bytes per manifest. In partitioned
+edge inference each node sees only its own shard, so the epoch check must
+be enforced per node against a pinned manifest, not only at the
+publisher.
 
 \subsection{Limitations}
 
-This study evaluates a single architecture (PreActResNet18) on a
-single dataset (CIFAR-10) with a single attack pattern (BadNets,
-visible patch trigger, 10\% poison rate) and two repair methods;
-fine-pruning, Neural Attention Distillation, short-epoch fine-tuning,
-other architectures (ResNet-50, ViT), larger datasets, non-patch
-triggers (blended, WaNet), and non-block-aligned shard partitions
-are left as explicit future work.
-
-Similarly, the serving comparison (Section~\ref{sec:serving}) measures
-a single skew scenario---one substituted shard out of six, against one
-hardware/software configuration---and reports verify-time and
-recovery-time as single-run, exploratory measurements rather than a
-claim generalizable across manifest sizes, partition granularities, or
-deployment environments; only the mechanism's deterministic properties
-(accept/reject behavior, manifest-size overhead) were predeclared as
-confirmatory targets.
+We study one architecture (PreActResNet18), one dataset (CIFAR-10), one
+attack (BadNets, 10\% poisoning) and
+\ifincludeanp two repairs\else one repair (clean fine-tuning with the full
+clean training set, a strong defender)\fi, with block-aligned partitions only.
+\ifrepairseed\else The fine-tuned repair uses a single training seed. \fi
+\ifincludeanp ANP selects its pruning threshold on test-set ASR, as
+BackdoorBench does, which favours the defender. \fi
+Of the 63 rollback subsets at $n\!=\!6$, 41 were evaluated. The serving
+test uses HMAC-SHA256 as a stand-in for signatures and one skew scenario
+at $n\!=\!3$; its timings are single-machine measurements.
+Local repairs, other triggers and architectures, and non-aligned
+partitions are future work.
 
 % =====================================================================
 \section{Related Work}
 \label{sec:related}
-% Owner: Chinh. Filled 23/09/2026.
-% NOTE: \cite{airs} identity unconfirmed -- see references.bib comment.
-%   Verify with Dr. Hung before the 26/09 freeze.
 
-Our work sits at the intersection of backdoor repair fragility,
-weight-level substitution attacks, and artifact supply-chain security.
-We survey the six closest lines of prior work and state precisely where
-each differs from our contribution.
+\textbf{Backdoor repair and its fragility.} Fine-tuning and pruning
+defenses such as fine-pruning~\cite{liu2018fineprune} and
+ANP~\cite{wu2021anp} remove backdoors after training. Min et
+al.~\cite{min2024uncovering} show that models purified by several such
+defenses (including ANP, BAU, SAM, FST and BTI) quickly re-learn the
+backdoor when retuned on a few poisoned samples or probed with crafted
+queries. DeferBad~\cite{shin2024deferbad} designs the backdoor so that
+unlearning leaves a residue that later benign fine-tuning reactivates.
+Both need training or queries. Our attacker needs neither: it restores
+backdoor behaviour purely by serving shards that were once legitimately
+signed.
 
-\textbf{Backdoor repair fragility.}
-Min et al.~\cite{min2024uncovering} demonstrate that state-of-the-art
-backdoor defenses---including fine-pruning, Neural Cleanse, and
-SCALE-UP---leave a latent backdoor signal in the repaired model that
-can be reactivated by adversarial retuning or by querying the model
-with carefully chosen inputs.
-Our work is complementary but distinct: we do not retune or query the
-repaired model; instead, we substitute a historically valid, correctly
-signed shard from the pre-repair checkpoint, testing whether
-\emph{rollback} alone---with no access to training data or
-gradients---suffices to reactivate the backdoor.
-Shin and Park~\cite{shin2024deferbad} (DeferBad) take a different angle
-by engineering the backdoor injection itself so that the unlearning step
-leaves a fragile residual that a subsequent \emph{benign} fine-tune
-can reactivate, thereby defeating the defense after it has been applied.
-Our attack does not require any forward update: the stale shard is a
-historically valid artifact that pre-dates the repair, so no
-fine-tuning---benign or adversarial---is involved.
+\textbf{Weight substitution and merging.} The subnet replacement
+attack~\cite{qi2022subnet} overwrites part of a deployed model with
+weights trained for the purpose, and BadMerging~\cite{zhang2024badmerging}
+plants backdoors through merging of distinct models. Our attacker cannot
+craft weights; it reuses the two endpoints of one repair.
 
-\textbf{Weight-level substitution attacks.}
-Qi et al.~\cite{qi2022subnet} introduce the Subnet Replacement Attack
-(SRA), in which a gray-box attacker freely replaces a contiguous
-subnetwork of a victim model with backdoored weights crafted for that
-purpose.
-The key distinction is attacker freedom: SRA allows arbitrary parameter
-selection and a dedicated backdoor-training step, whereas our attacker
-is restricted to shards that were already produced, validly signed, and
-archived before the repair---a strictly weaker capability that reflects
-realistic artifact-cache compromise.
-Zhang et al.~\cite{zhang2024badmerging} (BadMerging) show that backdoors
-can survive or be injected through model merging across \emph{distinct}
-model lineages using task-vector arithmetic.
-Our setting concerns partial rollback \emph{within a single, known model
-lineage}, not merging across sources; the merged model in BadMerging
-need not ever have passed a repair, whereas our hybrid is constructed
-from the repair's own two endpoints.
-
-\textbf{Artifact integrity and deployment security.}
-\cite{airs} addresses per-shard hash and signature verification and
-loader integrity in distributed ML serving, establishing that each
-loaded shard is authentic.
-However, per-shard signature verification proves only that a shard
-matches a known signed binary; it does not prove that all shards belong
-to the \emph{same repair epoch}.
-A pre-repair shard that was validly signed before the repair is accepted
-by per-shard checking without any indication of version skew---precisely
-the gap our work quantifies.
-TUF~\cite{tuf} and Uptane~\cite{uptane} address rollback and
-mix-and-match attacks at the snapshot-metadata level in software update
-systems, and epoch-manifest pinning---as applied in our serving
-comparison (Section~\ref{sec:serving})---is a direct application of
-these existing controls.
-Our contribution is not a new protocol: we measure the ML-specific
-consequence of the absence of epoch pinning in a model-shard deployment,
-providing the empirical justification for applying TUF/Uptane-style
-controls to this setting.
+\textbf{Artifact integrity and update security.}
+Sentry~\cite{gan2025sentry} authenticates ML artifacts as they are loaded,
+and the OpenSSF Model Signing specification~\cite{oms2025} signs one
+manifest of per-file digests. Both prove that each artifact is authentic.
+When shards are verified independently by the nodes that host them, as in
+partitioned edge inference~\cite{kang2017neurosurgeon,letaief2022edgeai6g},
+authenticity alone does not stop a node from accepting a stale but genuine
+shard. TUF~\cite{tuf} and Uptane~\cite{uptane} define the rollback and
+mix-and-match protections that close this gap; we quantify what their
+absence costs for a repaired model.
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-We measured the attack surface created by shard-version skew in
-distributed edge inference, where a validly signed but pre-repair
-shard can be silently introduced into an otherwise-repaired deployment.
-Against a globally fine-tuned model partitioned into six shards,
-single-shard rollback is too weak to restore the backdoor
-(max ASR~$=$~8.94\%) yet completely invisible to utility monitoring,
-while repair-aware three-shard rollback recovers
-ASR~$=$~92.89\% at CA~$=$~87.38\%---a result that replicates exactly
-across two random seeds.
-Against an ANP-repaired model, any single-shard substitution causes
-utility collapse (CA~$\approx$~10\%) before the backdoor can recover,
-making tampering detectable through standard accuracy monitoring.
-Epoch-manifest pinning---already specified in TUF and Uptane---eliminates
-the attack surface by binding each shard to a repair epoch, adding
-only 34 bytes of manifest overhead and no measurable per-load cost,
-and should be adopted as a baseline control wherever model shards are
-distributed through artifact caches.
+Signed but stale shards can undo a backdoor repair in partitioned edge
+inference. Against a strong fine-tuning repair, one stale shard restores
+at most 8.94\% ASR, but three shards chosen from the two signed
+checkpoints restore 92.89\% ASR at 87.38\% CA, and recovery hinges on
+\texttt{layer2} and \texttt{layer4} being stale together.
+\ifincludeanp \todo{One sentence on ANP.} \fi
+Epoch-manifest pinning rejects these hybrids for 34 bytes per manifest and
+should be a baseline control wherever 6G edge nodes receive model shards
+through caches.
 
 % =====================================================================
 \section*{Acknowledgment}

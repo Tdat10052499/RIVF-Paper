@@ -1,0 +1,69 @@
+{
+  "a": "data/checkpoints/resnet18_cifar10_badnets_infected.pt",
+  "b": "data/checkpoints/resnet18_cifar10_badnets_anp_fixed.pt",
+  "n_shards": 6,
+  "min_cos": 0.5,
+  "verdict": "DIFFERENT LINEAGE -- do not substitute shards",
+  "shards": [
+    {
+      "shard_idx": 0,
+      "layers": [
+        "conv1"
+      ],
+      "cosine": 0.0192,
+      "rel_diff": 1.4001,
+      "identical_params": 0,
+      "total_params": 1728
+    },
+    {
+      "shard_idx": 1,
+      "layers": [
+        "layer1"
+      ],
+      "cosine": 0.4013,
+      "rel_diff": 1.0991,
+      "identical_params": 0,
+      "total_params": 147968
+    },
+    {
+      "shard_idx": 2,
+      "layers": [
+        "layer2"
+      ],
+      "cosine": 0.3363,
+      "rel_diff": 1.15,
+      "identical_params": 0,
+      "total_params": 525184
+    },
+    {
+      "shard_idx": 3,
+      "layers": [
+        "layer3"
+      ],
+      "cosine": 0.3654,
+      "rel_diff": 1.1241,
+      "identical_params": 0,
+      "total_params": 2098944
+    },
+    {
+      "shard_idx": 4,
+      "layers": [
+        "layer4"
+      ],
+      "cosine": 0.4514,
+      "rel_diff": 1.013,
+      "identical_params": 0,
+      "total_params": 8392192
+    },
+    {
+      "shard_idx": 5,
+      "layers": [
+        "linear"
+      ],
+      "cosine": 0.0067,
+      "rel_diff": 1.4129,
+      "identical_params": 0,
+      "total_params": 5130
+    }
+  ]
+}

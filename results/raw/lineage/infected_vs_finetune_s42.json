@@ -1,0 +1,69 @@
+{
+  "a": "data/checkpoints/resnet18_cifar10_badnets_infected.pt",
+  "b": "data/checkpoints/resnet18_cifar10_badnets_repaired.pt",
+  "n_shards": 6,
+  "min_cos": 0.5,
+  "verdict": "same lineage",
+  "shards": [
+    {
+      "shard_idx": 0,
+      "layers": [
+        "conv1"
+      ],
+      "cosine": 0.9888,
+      "rel_diff": 0.1583,
+      "identical_params": 0,
+      "total_params": 1728
+    },
+    {
+      "shard_idx": 1,
+      "layers": [
+        "layer1"
+      ],
+      "cosine": 0.9646,
+      "rel_diff": 0.2651,
+      "identical_params": 0,
+      "total_params": 147968
+    },
+    {
+      "shard_idx": 2,
+      "layers": [
+        "layer2"
+      ],
+      "cosine": 0.9368,
+      "rel_diff": 0.3552,
+      "identical_params": 0,
+      "total_params": 525184
+    },
+    {
+      "shard_idx": 3,
+      "layers": [
+        "layer3"
+      ],
+      "cosine": 0.9213,
+      "rel_diff": 0.3955,
+      "identical_params": 0,
+      "total_params": 2098944
+    },
+    {
+      "shard_idx": 4,
+      "layers": [
+        "layer4"
+      ],
+      "cosine": 0.9773,
+      "rel_diff": 0.242,
+      "identical_params": 1,
+      "total_params": 8392192
+    },
+    {
+      "shard_idx": 5,
+      "layers": [
+        "linear"
+      ],
+      "cosine": 0.9975,
+      "rel_diff": 0.0865,
+      "identical_params": 0,
+      "total_params": 5130
+    }
+  ]
+}
