@@ -762,45 +762,48 @@ norms, only knowledge of the partition indices---still eventually
 achieves full backdoor recovery at $k\!=\!5$, underscoring that the
 attack does not require privileged access to repair internals to
 succeed at moderate stale-shard counts.
+
 \subsection{Contrast with a Local Repair (ANP)}
 \label{sec:anp}
 
-The ANP-repaired checkpoint achieves $\text{CA}=83.03\%$ and
-$\text{ASR}=0.00\%$ at $k=0$, a stronger initial repair than global
-fine-tuning ($\text{ASR}=0.90\%$).
-However, the $k$-shard rollback behaviour is qualitatively different.
+We repeat the shard-rollback experiment on the ANP-repaired checkpoint
+(CA~$=$~83.03\%, ASR~$=$~0.00\%) to contrast with the fine-tune results
+in Section~\ref{sec:singleshard}.
 
-\paragraph{Utility collapse at $k=1$.}
-Any single-shard substitution drops clean accuracy to approximately
-$10\%$---the level expected from a uniformly random classifier on
-CIFAR-10---in each of the four shards tested individually.
-The mechanism is architectural: ANP bakes its pruning mask into the
-weight tensors by zeroing pruned neurons in the checkpoint.
-When an infected shard carrying full weights is spliced next to
-ANP shards whose neurons are zeroed, the activation signal becomes
-incompatible with the remainder of the network, causing the model
-to collapse to a single predicted class.
+\textbf{Utility collapse at $k=1$.}
+For each of the four shards tested individually (shards~0, 2, 3, and~5),
+substituting a single stale shard drops clean accuracy to approximately
+10\%---the level of a random classifier on CIFAR-10.
+This is qualitatively different from the fine-tune case, where all hybrid
+models retained CA above 86\% (Table~\ref{tab:fullrollback}).
+The mechanism is architectural: ANP zeroes pruned neurons directly in the
+weight tensors of the repaired checkpoint.
+When a pre-repair shard carrying full weights is placed next to ANP shards
+with zeroed neurons, the activation signal is incompatible with the rest of
+the network, causing all predictions to collapse to a single class.
 
-\paragraph{High ASR as a measurement artifact.}
-At $k=1$ when shard~5 (the linear classification head) is substituted,
-we observe $\text{ASR}=81.10\%$ alongside $\text{CA}=10.01\%$.
-This is not evidence of backdoor reactivation.
-The collapsed model predicts class~0 (the attack target,
-\textit{airplane}) for every input; the ASR metric registers high
-success because the trigger also targets class~0.
-Unlike fine-tuned hybrids, which retain high clean accuracy while
-recovering ASR proportionally to the number of substituted shards,
-ANP hybrids collapse to random-chance clean accuracy at $k=1$.
-This utility collapse precedes any potential backdoor recovery,
-making shard substitution on ANP-defended models detectable through
-standard accuracy monitoring rather than trigger-based evaluation.
+\textbf{High ASR as a measurement artifact.}
+At $k=1$, shard~5 (the linear classification head) yields
+ASR~$=$~81.10\% alongside CA~$=$~10.01\%.
+This is not evidence of backdoor recovery.
+The collapsed model predicts class~0 (airplane, the attack target) for every
+input; since the ASR metric counts any triggered prediction of class~0 as a
+success, it registers high on a degenerate model regardless of whether the
+backdoor has actually been restored.
+We report this value for completeness and exclude it from any claim about
+backdoor reactivation.
 
-\paragraph{Harness verification.}
-At $k=6$ (full rollback), both repair strategies correctly reconstruct
-the original infected model: $\text{ASR}=97.43\%$, $\text{CA}=89.41\%$.
-This confirms that the evaluation harness is correct and that the
-collapse at $k<6$ is caused by the hybrid architecture, not by a
-pipeline error.
+\textbf{Harness verification.}
+Full rollback at $k=6$ reconstructs the infected model exactly:
+ASR~$=$~97.43\%, CA~$=$~89.41\%, consistent with the fine-tune result in
+Table~\ref{tab:fullrollback}.
+This confirms the substitution harness is correct and that the utility
+collapse at $k<6$ is a property of the ANP hybrid architecture, not a
+pipeline bug.
+
+In contrast to the fine-tune case---where CA stays above 86\% and gives no
+monitoring signal---ANP hybrids collapse at $k=1$, making stale-shard
+substitution immediately detectable through standard accuracy monitoring.
 
 \subsection{Repair Locality vs.\ Recovered ASR}
 \label{sec:locality}
