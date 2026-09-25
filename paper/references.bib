@@ -1,153 +1,153 @@
-% =====================================================================
-% paper/references.bib — updated 23/09/2026 by Nguyen Minh Chinh
-%
-% All six prior-work entries now have confirmed author/title/venue/year
-% from arXiv, ACM DL, and IEEE Xplore (search date: 23/09/2026).
-%
-% Fields still marked TODO need final verification before 26/09 freeze.
-% AIRS: no paper with this exact acronym confirmed -- see note below.
-% =====================================================================
-
-@misc{backdoorbench2024,
-  title        = {BackdoorBench: A Comprehensive Benchmark of Backdoor Learning},
-  author       = {Wu, Baoyuan and Chen, Hongrui and Zhang, Mingda and Zhu, Zihao
-                  and Wei, Shaokui and Yuan, Danni and Shen, Li and Cheng, Ruichao},
-  year         = {2022},
-  note         = {arXiv:2206.12654; toolkit: \url{https://github.com/SCLBD/BackdoorBench}},
-}
-
-% -- Repair-fragility papers ------------------------------------------
-
-@inproceedings{min2024uncovering,
-  title        = {Uncovering, Explaining, and Mitigating the Superficial Safety
-                  of Backdoor Defense},
-  author       = {Min, Rui and Qin, Zeyu and Zhang, Nevin L. and Shen, Li
-                  and Cheng, Minhao},
-  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year         = {2024},
-  note         = {Spotlight. arXiv:2410.09838.
-                  Shows that purified/defended models retain latent backdoor
-                  behavior reactivatable via fine-tuning or querying.
-                  Difference from this paper: we test reactivation via rollback
-                  of a historically valid signed shard, not via retuning.},
-}
-
-@misc{shin2024deferbad,
-  title        = {Unlearn to Relearn Backdoors: Deferred Backdoor Functionality
-                  Attacks on Deep Learning Models},
-  author       = {Shin, Jeongjin and Park, Sangdon},
-  year         = {2024},
-  note         = {arXiv:2411.14449. OpenReview: S5JCqTJyKj.
-                  TODO: confirm acceptance venue before 26/09 freeze
-                  (submitted to ICLR-family venue; status unconfirmed 23/09/2026).
-                  Deliberately engineers unlearning to be fragile to subsequent
-                  benign updates. Difference from this paper: we examine fragility
-                  to rollback toward a prior historical state, not forward benign
-                  updates.},
-}
-
-% -- Weight-substitution papers ---------------------------------------
-
-@inproceedings{qi2022subnet,
-  title        = {Towards Practical Deployment-Stage Backdoor Attack on Deep
-                  Neural Networks},
-  author       = {Qi, Xiangyu and Xie, Tinghao and Pan, Ruizhe and Zhu, Jifeng
-                  and Yang, Yong and Bu, Kai},
-  booktitle    = {IEEE/CVF Conference on Computer Vision and Pattern Recognition
-                  (CVPR)},
-  year         = {2022},
-  note         = {Oral. arXiv:2111.12965.
-                  Subnet Replacement Attack: attacker freely selects replacement
-                  parameters and runs a dedicated backdoor-training step.
-                  Difference from this paper: our attacker is restricted to shards
-                  that were historically valid and signed.},
-}
-
-@inproceedings{zhang2024badmerging,
-  title        = {BadMerging: Backdoor Attacks Against Model Merging},
-  author       = {Zhang, Jinghuai and Chi, Jianfeng and Li, Zheng and Cai, Kunlin
-                  and Zhang, Yang and Tian, Yuan},
-  booktitle    = {ACM SIGSAC Conference on Computer and Communications Security
-                  (CCS)},
-  year         = {2024},
-  doi          = {10.1145/3658644.3690284},
-  note         = {arXiv:2408.07362.
-                  Backdoor injection via model merging across distinct model sources.
-                  Difference from this paper: we concern partial rollback within a
-                  single, known model lineage, not merging across sources.},
-}
-
-% -- Artifact integrity / deployment security -------------------------
-
-% AIRS: A paper with the acronym "AIRS" matching the Project Agreement
-%   description (per-shard hash/signature + loader integrity, distributed
-%   ML serving) was NOT found in the literature search (23/09/2026).
-%   Closest functional match: Sentry (Gan & Ghodsi, CCS 2025,
-%   arXiv:2510.00554, doi:10.1145/3719027.3765070), which performs
-%   GPU-accelerated cryptographic integrity verification of ML artifacts
-%   during loading/serving.
-%   ACTION REQUIRED: verify with Dr. Hung which paper "AIRS" refers to
-%   before the 26/09 freeze, then update this entry.
-@misc{airs,
-  title        = {TODO: verify exact title/authors/venue for AIRS.
-                  Closest confirmed match: Sentry -- Authenticating Machine
-                  Learning Artifacts on the Fly
-                  (Gan \& Ghodsi, CCS 2025, arXiv:2510.00554,
-                  doi:10.1145/3719027.3765070)},
-  author       = {TODO},
-  year         = {TODO},
-  note         = {ACTION: confirm with Dr. Hung before 26/09 freeze.},
-}
-
-@inproceedings{tuf,
-  title        = {Survivable Key Compromise in Software Update Systems},
-  author       = {Samuel, Justin and Mathewson, Nick and Cappos, Justin
-                  and Dingledine, Roger},
-  booktitle    = {17th ACM Conference on Computer and Communications Security
-                  (CCS)},
-  year         = {2010},
-  doi          = {10.1145/1866307.1866315},
-  note         = {Canonical academic citation for The Update Framework (TUF).},
-}
-
-@article{uptane,
-  title        = {Uptane: Security and Customizability of Software Updates
-                  for Vehicles},
-  author       = {Kuppusamy, Trishank Karthik and DeLong, Lois Anne
-                  and Cappos, Justin},
-  journal      = {IEEE Security \& Privacy},
-  volume       = {16},
-  number       = {1},
-  year         = {2018},
-  doi          = {10.1109/MSP.2018.1081083},
-  note         = {TODO: confirm full author list from IEEE Xplore before freeze
-                  (earlier ESCAR EU 2016 version lists 9 authors).
-                  IEEE Standard 2900-2023 also exists as an alternative citation.},
-}
-
-% -- Original-source citations added 25/09/2026 (Chinh, per Dat review) --
-
-@techreport{krizhevsky2009cifar,
-  title        = {Learning Multiple Layers of Features from Tiny Images},
-  author       = {Krizhevsky, Alex and Hinton, Geoffrey},
-  institution  = {University of Toronto},
-  year         = {2009},
-  note         = {Available at \url{https://www.cs.toronto.edu/~kriz/cifar.html}},
-}
-
-@article{gu2019badnets,
-  title        = {{BadNets}: Identifying Vulnerabilities in the Machine
-                  Learning Model Supply Chain},
-  author       = {Gu, Tianyu and Dolan-Gavitt, Brendan and Garg, Siddharth},
-  journal      = {IEEE Access},
-  year         = {2019},
-  note         = {arXiv:1708.06733},
-}
-
-@inproceedings{he2016identity,
-  title        = {Identity Mappings in Deep Residual Networks},
-  author       = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
-  booktitle    = {European Conference on Computer Vision (ECCV)},
-  year         = {2016},
-  note         = {arXiv:1603.05027},
-}
+% =====================================================================
+% paper/references.bib — updated 23/09/2026 by Nguyen Minh Chinh
+%
+% All six prior-work entries now have confirmed author/title/venue/year
+% from arXiv, ACM DL, and IEEE Xplore (search date: 23/09/2026).
+%
+% Fields still marked TODO need final verification before 26/09 freeze.
+% AIRS: no paper with this exact acronym confirmed -- see note below.
+% =====================================================================
+
+@misc{backdoorbench2024,
+  title        = {BackdoorBench: A Comprehensive Benchmark of Backdoor Learning},
+  author       = {Wu, Baoyuan and Chen, Hongrui and Zhang, Mingda and Zhu, Zihao
+                  and Wei, Shaokui and Yuan, Danni and Shen, Li and Cheng, Ruichao},
+  year         = {2022},
+  note         = {arXiv:2206.12654; toolkit: \url{https://github.com/SCLBD/BackdoorBench}},
+}
+
+% -- Repair-fragility papers ------------------------------------------
+
+@inproceedings{min2024uncovering,
+  title        = {Uncovering, Explaining, and Mitigating the Superficial Safety
+                  of Backdoor Defense},
+  author       = {Min, Rui and Qin, Zeyu and Zhang, Nevin L. and Shen, Li
+                  and Cheng, Minhao},
+  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year         = {2024},
+  note         = {Spotlight. arXiv:2410.09838.
+                  Shows that purified/defended models retain latent backdoor
+                  behavior reactivatable via fine-tuning or querying.
+                  Difference from this paper: we test reactivation via rollback
+                  of a historically valid signed shard, not via retuning.},
+}
+
+@misc{shin2024deferbad,
+  title        = {Unlearn to Relearn Backdoors: Deferred Backdoor Functionality
+                  Attacks on Deep Learning Models},
+  author       = {Shin, Jeongjin and Park, Sangdon},
+  year         = {2024},
+  note         = {arXiv:2411.14449. OpenReview: S5JCqTJyKj.
+                  TODO: confirm acceptance venue before 26/09 freeze
+                  (submitted to ICLR-family venue; status unconfirmed 23/09/2026).
+                  Deliberately engineers unlearning to be fragile to subsequent
+                  benign updates. Difference from this paper: we examine fragility
+                  to rollback toward a prior historical state, not forward benign
+                  updates.},
+}
+
+% -- Weight-substitution papers ---------------------------------------
+
+@inproceedings{qi2022subnet,
+  title        = {Towards Practical Deployment-Stage Backdoor Attack on Deep
+                  Neural Networks},
+  author       = {Qi, Xiangyu and Xie, Tinghao and Pan, Ruizhe and Zhu, Jifeng
+                  and Yang, Yong and Bu, Kai},
+  booktitle    = {IEEE/CVF Conference on Computer Vision and Pattern Recognition
+                  (CVPR)},
+  year         = {2022},
+  note         = {Oral. arXiv:2111.12965.
+                  Subnet Replacement Attack: attacker freely selects replacement
+                  parameters and runs a dedicated backdoor-training step.
+                  Difference from this paper: our attacker is restricted to shards
+                  that were historically valid and signed.},
+}
+
+@inproceedings{zhang2024badmerging,
+  title        = {BadMerging: Backdoor Attacks Against Model Merging},
+  author       = {Zhang, Jinghuai and Chi, Jianfeng and Li, Zheng and Cai, Kunlin
+                  and Zhang, Yang and Tian, Yuan},
+  booktitle    = {ACM SIGSAC Conference on Computer and Communications Security
+                  (CCS)},
+  year         = {2024},
+  doi          = {10.1145/3658644.3690284},
+  note         = {arXiv:2408.07362.
+                  Backdoor injection via model merging across distinct model sources.
+                  Difference from this paper: we concern partial rollback within a
+                  single, known model lineage, not merging across sources.},
+}
+
+% -- Artifact integrity / deployment security -------------------------
+
+% AIRS: A paper with the acronym "AIRS" matching the Project Agreement
+%   description (per-shard hash/signature + loader integrity, distributed
+%   ML serving) was NOT found in the literature search (23/09/2026).
+%   Closest functional match: Sentry (Gan & Ghodsi, CCS 2025,
+%   arXiv:2510.00554, doi:10.1145/3719027.3765070), which performs
+%   GPU-accelerated cryptographic integrity verification of ML artifacts
+%   during loading/serving.
+%   ACTION REQUIRED: verify with Dr. Hung which paper "AIRS" refers to
+%   before the 26/09 freeze, then update this entry.
+@misc{airs,
+  title        = {TODO: verify exact title/authors/venue for AIRS.
+                  Closest confirmed match: Sentry -- Authenticating Machine
+                  Learning Artifacts on the Fly
+                  (Gan \& Ghodsi, CCS 2025, arXiv:2510.00554,
+                  doi:10.1145/3719027.3765070)},
+  author       = {TODO},
+  year         = {TODO},
+  note         = {ACTION: confirm with Dr. Hung before 26/09 freeze.},
+}
+
+@inproceedings{tuf,
+  title        = {Survivable Key Compromise in Software Update Systems},
+  author       = {Samuel, Justin and Mathewson, Nick and Cappos, Justin
+                  and Dingledine, Roger},
+  booktitle    = {17th ACM Conference on Computer and Communications Security
+                  (CCS)},
+  year         = {2010},
+  doi          = {10.1145/1866307.1866315},
+  note         = {Canonical academic citation for The Update Framework (TUF).},
+}
+
+@article{uptane,
+  title        = {Uptane: Security and Customizability of Software Updates
+                  for Vehicles},
+  author       = {Kuppusamy, Trishank Karthik and DeLong, Lois Anne
+                  and Cappos, Justin},
+  journal      = {IEEE Security \& Privacy},
+  volume       = {16},
+  number       = {1},
+  year         = {2018},
+  doi          = {10.1109/MSP.2018.1081083},
+  note         = {TODO: confirm full author list from IEEE Xplore before freeze
+                  (earlier ESCAR EU 2016 version lists 9 authors).
+                  IEEE Standard 2900-2023 also exists as an alternative citation.},
+}
+
+% -- Original-source citations added 25/09/2026 (Chinh, per Dat review) --
+
+@techreport{krizhevsky2009cifar,
+  title        = {Learning Multiple Layers of Features from Tiny Images},
+  author       = {Krizhevsky, Alex and Hinton, Geoffrey},
+  institution  = {University of Toronto},
+  year         = {2009},
+  note         = {Available at \url{https://www.cs.toronto.edu/~kriz/cifar.html}},
+}
+
+@article{gu2019badnets,
+  title        = {{BadNets}: Identifying Vulnerabilities in the Machine
+                  Learning Model Supply Chain},
+  author       = {Gu, Tianyu and Dolan-Gavitt, Brendan and Garg, Siddharth},
+  journal      = {IEEE Access},
+  year         = {2019},
+  note         = {arXiv:1708.06733},
+}
+
+@inproceedings{he2016identity,
+  title        = {Identity Mappings in Deep Residual Networks},
+  author       = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  booktitle    = {European Conference on Computer Vision (ECCV)},
+  year         = {2016},
+  note         = {arXiv:1603.05027},
+}
