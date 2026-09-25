@@ -22,6 +22,7 @@
 %     the 26/09 draft freeze; nothing with a TODO should remain by then.
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
+%%Hung: GLOBAL. (a) The '--' and '---' used as punctuation throughout are mine to fix in my editing pass; do not spend time on them. (b) Every float uses [h]; if the page count ever passes 6, switch them to [!t] before cutting anything. (c) Keep both switches OFF unless the new result passed check_lineage.py; the paper is valid as compiled. (d) Resolve each %%Hung: comment by fixing it and deleting the comment line, or reply on a %%Hung-reply: line underneath.
 % --- Result switches (Chinh, 26/09). Flip to \...true ONLY after the new
 %     results exist in results/raw/ and pass scripts/check_lineage.py.
 %     See notes/2026-09-26_chinh_fix_guide.md.
@@ -60,6 +61,7 @@ Van Lang University\\
 Ho Chi Minh City, Vietnam\\
 chinh.2275106050051@vanlanguni.vn}
 \\[4pt]
+%%Hung: Remove this 'Supervised by' line. IEEEtran has no supervisor field and it prints as a stray line under the affiliations (see page 1 of the PDF). Supervision is already credited in the Acknowledgment, which stays. Whether I join the author list is my call; I will tell you by noon 26/09. If you have not heard, submit with three authors.
 {\footnotesize Supervised by Dr. Dang Khanh Hung}
 }
 
@@ -75,8 +77,10 @@ gap means after a backdoor has been repaired: an adversary controlling the
 artifact cache re-introduces validly signed, pre-repair shards into an
 otherwise-repaired model. Using BadNets on CIFAR-10 with PreActResNet18
 partitioned into six shards and repaired by clean fine-tuning, rolling back
+%%Hung: Both numbers here are correct for n=6 single-shard only (max 8.94% ASR; CA 86.03 to 93.26). Keep 'six shards' in this sentence so the scope is unambiguous, because the n=3 partition reaches 17.46% for one shard.
 any single shard is weak (at most 8.94\% attack success rate, ASR) and keeps
 clean accuracy (CA) between 86.0\% and 93.3\%. Rolling back several shards
+%%Hung: 'every evaluated subset' is honest for the 41 you have (I re-checked: 11 subsets contain both, minimum 74.76%, none below). After the all-63 run, change to 'every subset' ONLY if Chinh's script confirms the rule on all 63. If any subset breaks it, rewrite this sentence, Sec. III-F, and the Conclusion together.
 is not: every evaluated subset that contains both \texttt{layer2} and
 \texttt{layer4} restores at least 74.8\% ASR, and the three shards carrying
 the largest share of the repair restore 92.89\% ASR at 87.38\% CA,
@@ -138,10 +142,12 @@ only aggregate accuracy is visible. The real attack surface appears
 once an adversary substitutes multiple shards. A repair-aware attacker
 who targets the shards carrying the largest share of the repair update
 crosses a sharp threshold at three substituted shards, restoring
+%%Hung: FALSE, delete: 'a result that replicates exactly across two independent random seeds'. The second seed re-ran a deterministic evaluation; the repair has one seed, and your own Sec. III-G says so. If the seed-0 repair lands by 20:00 26/09 and \repairseedtrue, replace with the measured seed-0 numbers; otherwise say nothing about replication here.
 ASR to 92.89\% while maintaining CA at 87.38\%, a result that
 replicates exactly across two independent random seeds; an attacker
 with no knowledge of the repair internals, selecting shards by
 architectural position alone, reaches the same threshold with only
+%%Hung: DELETE the whole ANP sentence, from 'Under Adversarial Neuron Pruning (ANP), the picture reverses' to 'in contrast to the fine-tuned case.' It describes the INVALID wrong-lineage checkpoint (cosine 0.02 at conv1; results/raw/lineage/infected_vs_anp_fixed_OLD.json). It is OUTSIDE \ifincludeanp, so it is in the compiled PDF right now. If a valid ANP result exists by the cutoff, write one new sentence from the measured numbers inside \ifincludeanp; otherwise nothing.
 two additional shards. Under Adversarial Neuron Pruning (ANP), the
 picture reverses: any single-shard substitution collapses utility
 (CA~$\approx$~10\%) before the backdoor can recover, because the
@@ -167,6 +173,7 @@ The remainder of this paper is organized as follows.
 Section~\ref{sec:threat} formalizes the threat model.
 Section~\ref{sec:setup} describes the dataset, architecture, attack,
 repairs, and partitioning scheme.
+%%Hung: Unconditional text promising 'ANP-contrast results' and 'a second-seed replication'. Wrap the ANP words in \ifincludeanp ... \fi and replace 'a second-seed replication' with 'a determinism check' unless \repairseedtrue.
 Section~\ref{sec:results} reports the single-shard, multi-shard, and
 ANP-contrast results together with a second-seed replication and the
 serving comparison.
@@ -313,6 +320,7 @@ either metric, so we report differences below 1 point as ties.
 
 \subsection{Baseline Reproduction}
 
+%%Hung: FALSE: 'our re-trained checkpoints'. You did not retrain; the infected model is BackdoorBench's published checkpoint (Sec. II-B says so). Write: 'our evaluation pipeline reproduces the published infected checkpoint, and the fine-tuned repair reaches ...'.
 Table~\ref{tab:baseline} confirms that our re-trained checkpoints match
 the expected performance range for BadNets on CIFAR-10.
 The infected model retains high clean accuracy while achieving near-perfect
@@ -344,6 +352,7 @@ Table~\ref{tab:fullrollback} confirms this at both granularities: the
 recovered ASR and CA match the infected baseline exactly, ruling out any
 bug in the substitution code.
 
+%%Hung: WRONG range. Across every hybrid you evaluated (one to five shards), CA runs from 73.55% to 93.26%: e.g. {0,2,4} = 73.55%, {2,4} = 76.99%, {0,1,3} = 78.12%. 84.58 to 93.26 is the SINGLE-shard range only. Either scope this sentence to single-shard hybrids, or state 73.55 to 93.26. 'No hybrid degrades to random chance' remains true either way.
 \textbf{Hybrid models are not broken.} Across all partial rollback
 configurations evaluated in this paper (one to five shards substituted,
 both $n=3$ and $n=6$), the hybrid models achieve clean accuracies
@@ -359,6 +368,7 @@ exactly reproduces the infected model.}
 \label{tab:fullrollback}
 \begin{tabular}{lccc}
 \toprule
+%%Hung: This 'Hybrid CA range' column holds single-shard values only, but the text above calls it 'all partial rollback configurations'. Retitle the column 'Single-shard hybrid CA (%)' or drop it.
 Config & ASR (\%) & CA (\%) & Hybrid CA range (\%) \\
 \midrule
 $n=3$ & 97.43 & 89.41 & 84.58--90.98 \\
@@ -373,6 +383,7 @@ We first evaluate whether substituting a single stale shard is sufficient
 to restore the backdoor. Fig.~\ref{fig:singleshard} shows, for each
 $n\!=\!6$ shard, its repair-share $\mathrm{share}_s \times 100$ (blue)
 alongside the ASR when that shard alone is rolled back (red).
+%%Hung: Shards 1 and 4 WERE tested; the data is in results/raw/substitution/n6/: shard 1 (layer1) ASR 1.29% CA 90.95%, shard 4 (layer4) ASR 8.08% CA 90.52%. Delete 'Shards 1 and 4 were not isolated ... (not tested)' here, in the caption, and remove the two n.t. nodes in the figure. Set the red bars to 1.29 and 8.08 (see comment at the coordinates).
 Shards~1 and~4 were not isolated in any $k\!=\!1$ draw and are marked
 n.t.\ (not tested); the relative update norm $r_s$ for each shard is
 given in Table~\ref{tab:singleshard_rs}.
@@ -418,6 +429,7 @@ given in Table~\ref{tab:singleshard_rs}.
 };
 \addlegendentry{$\mathrm{share}_s \times 100$}
 
+%%Hung: Fix these coordinates: (1, 1.29) and (4, 8.08) instead of 0. Then delete the two \node ... {n.t.} lines below.
 % Single-shard ASR (red bars; shards 1,4 = 0 and labelled n.t.)
 \addplot[fill=red!40!white, draw=red!70!black] coordinates {
     (0, 1.02)
@@ -438,6 +450,7 @@ given in Table~\ref{tab:singleshard_rs}.
 \caption{Per-shard repair share ($\mathrm{share}_s \times 100$, blue) vs.\
 single-shard rollback ASR (red), $n=6$, global fine-tune, seed~42.
 Shards~1 and~4 were not isolated in any $k=1$ draw (n.t.).
+%%Hung: 'confirming' is too strong for one seed; write 'indicating'. The observation itself (largest share, lowest single-shard ASR) is real and worth keeping.
 Shard~3 carries the largest share (47.7\%) yet yields the \emph{lowest}
 tested ASR (0.50\%), confirming that repair-share concentration does not
 predict single-shard rollback efficacy.}
@@ -463,6 +476,7 @@ Shard & Layer(s) & $r_s$ \\
 \end{table}
 
 No individual shard rollback restores the backdoor above the 50\%
+%%Hung: 'Among the four shards tested in isolation' -> all six were tested. 'the highest ASR is 8.94% (shard 2)' stays true with shard 4 at 8.08%.
 threshold. Among the four shards tested in isolation, the highest ASR
 is 8.94\% (shard~2, \texttt{layer2}), despite shard~3 carrying the
 largest repair share (47.7\%). Counterintuitively, the shard with the
@@ -471,9 +485,11 @@ most repair update (shard~3, $\mathrm{share}_3=0.477$) yields the
 distributed across multiple shards in a way that no single shard can
 undo. At the coarser $n\!=\!3$ partition, where shard~S2
 (\texttt{layer2}$+$\texttt{layer3}) combines a share of 68.8\%, the
+%%Hung: '50-percentage-point gate' -> it is a 50% ASR threshold, not 50 percentage points. Also introduce the 50% criterion once at first use as THIS STUDY's recovery threshold; the draft uses it as if it were a standard.
 best single-shard ASR reaches only 17.46\%---still well below the
 50-percentage-point gate.
 
+%%Hung: Delete 'rather than cherry-picking configurations'. Never name a fault you are not committing; it makes the reader look for it. 'This is a genuine negative finding.' can go too; the numbers say it. Keep the stealth sentence that follows.
 This is a genuine negative finding. We report it as such rather than
 cherry-picking configurations. However, we emphasize the stealth
 implication: the hybrid model's clean accuracy
@@ -484,6 +500,7 @@ Section~\ref{sec:kcurve} shows.
 
 \subsection{\(k\)-Shard Recovery Curve}
 \label{sec:kcurve}
+%%Hung: Typo: 'Fig~\ref' -> 'Fig.~\ref' (missing period).
 Fig~\ref{fig:kcurve} shows ASR as $k$ shards are cumulatively rolled
 back under the repair-aware strategy ($n\!=\!6$), where shards are
 selected greedily in decreasing order of $\mathrm{share}_s$ (i.e.,
@@ -656,6 +673,7 @@ between, with high variance across draws
 \label{fig:strategy}
 \end{figure}
 
+%%Hung: 'strictly most efficient' is not true: the random draw {2,4} reaches 74.76% at k=2, which repair-aware (4.57% at k=2) does not. Write 'the most efficient of the three ordered strategies'.
 Repair-aware selection is strictly most efficient: it reaches $>\!50\%$
 ASR at $k\!=\!3$, requiring only three stale shards to restore the
 backdoor. Architectural selection requires $k\!=\!5$ to cross the same
@@ -663,6 +681,7 @@ threshold. Random selection falls between, crossing 50\% ASR at
 $k\!=\!5$ on average (though individual draws vary). Importantly,
 architectural selection---which requires no knowledge of repair update
 norms, only knowledge of the partition indices---still eventually
+%%Hung: 'underscoring that' -> 'which shows that'.
 achieves full backdoor recovery at $k\!=\!5$, underscoring that the
 attack does not require privileged access to repair internals to
 succeed at moderate stale-shard counts.
@@ -670,9 +689,11 @@ succeed at moderate stale-shard counts.
 \subsection{What Drives Recovery: Repair Share and Shard Interaction}
 \label{sec:locality}
 
+%%Hung: '41 of the 63': make this count come from the same JSON that draws Fig. 4 (make_locality_pgf.py prints it). When the all-63 run lands, update this, the abstract, Limitations, and the '11 such subsets' / '30 other subsets' counts below, all from the one file.
 Fig.~\ref{fig:locality_asr} plots, for every shard subset evaluated so
 far (41 of the 63 non-empty subsets at $n\!=\!6$), the repair share it
 covers against the ASR it restores. Share alone is a weak predictor
+%%Hung: Spearman rho = 0.65 needs a named script (e.g. 'computed by scripts/plot_locality_asr.py') so a reviewer can reproduce it, or it comes out. An unsourced correlation is a liability.
 (Spearman $\rho = 0.65$). A single shard never exceeds 8.94\% ASR, even
 shard~3, which carries 47.74\% of the repair and restores only 0.50\%.
 What separates success from failure is whether the rolled-back set
@@ -741,6 +762,7 @@ restores \todo{ASR}\% ASR at \todo{CA}\% CA.
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
 % Owner: Ho Du Tuan Dat.
+%%Hung: Delete this stale comment block (lines down to 'freeze.') before submission.
 % Numbers below are taken from the run committed at
 % results/raw/serving/{per_shard_sig,epoch_manifest_pin}.jsonl (22/09/2026),
 % against src/partition/shard.py, scripts/build_shard_manifest.py, and
@@ -750,6 +772,7 @@ restores \todo{ASR}\% ASR at \todo{CA}\% CA.
 % of the three files above changes before then, re-run
 % scripts/run_serving_comparison.py and update this section before the
 % freeze.
+%%Hung: Dat, three things in this paragraph: (1) state the hardware the timings were taken on in the first sentence (M2 MacBook, CPU, single process each); timings without hardware are not reportable. (2) Say once that 'signature' here is an HMAC-SHA256 keyed-hash stand-in; Limitations says it, this section must too. (3) One clause noting this run used n=3 while the rest of the paper is n=6.
 Table~\ref{tab:serving} compares per-shard signature checking against
 epoch-manifest pinning as defenses against shard-version skew, measured
 over 30 repetitions per (scheme, scenario) cell against the real
@@ -772,6 +795,7 @@ per-shard signature checking has no equivalent recovery path, since it
 never detects the skew to begin with.
 \begin{table}[h]
 \centering
+%%Hung: Delete '; pending 23/09 freeze' from this caption. It is in the compiled PDF in capitals.
 \caption{Per-shard signature checking vs.\ epoch-manifest pinning (n=30 per cell; pending 23/09 freeze)}
 \label{tab:serving}
 \begin{tabular}{lcc}
@@ -823,6 +847,7 @@ publisher.
 
 \subsection{Limitations}
 
+%%Hung: Limitations is good and honest; keep it. If ANP stays out, 'Local repairs ... are future work' is correct. If ANP goes in, the \ifincludeanp branches already handle it.
 We study one architecture (PreActResNet18), one dataset (CIFAR-10), one
 attack (BadNets, 10\% poisoning) and
 \ifincludeanp two repairs\else one repair (clean fine-tuning with the full
@@ -844,6 +869,7 @@ partitions are future work.
 defenses such as fine-pruning~\cite{liu2018fineprune} and
 ANP~\cite{wu2021anp} remove backdoors after training. Min et
 al.~\cite{min2024uncovering} show that models purified by several such
+%%Hung: 'BAU, SAM, FST and BTI' are undefined acronyms. Either expand them or write 'several purification defenses'.
 defenses (including ANP, BAU, SAM, FST and BTI) quickly re-learn the
 backdoor when retuned on a few poisoned samples or probed with crafted
 queries. DeferBad~\cite{shin2024deferbad} designs the backdoor so that
@@ -884,6 +910,7 @@ should be a baseline control wherever 6G edge nodes receive model shards
 through caches.
 
 % =====================================================================
+%%Hung: Keep this Acknowledgment; it is the right place for supervision credit. See the comment at the author block.
 \section*{Acknowledgment}
 The authors thank Dr.\ Dang Khanh Hung for supervision and guidance
 throughout this project.

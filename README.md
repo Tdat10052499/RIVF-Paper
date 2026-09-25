@@ -6,11 +6,11 @@
 **Deadline:** 29/09/2026
 
 > ### Read this first
-> [`notes/2026-09-21_hung_supervisor.md`](notes/2026-09-21_hung_supervisor.md) is **the plan**. It replaces every
-> earlier instruction, including the Day-5 gate stated below and the 18/09 note. If anything in this README
-> contradicts it, follow the plan.
+> [`notes/2026-09-25_hung_supervisor.md`](notes/2026-09-25_hung_supervisor.md) is **the plan** for 26 to 29 September.
+> It replaces every earlier note. Line-by-line comments on the draft are inside `paper/main.tex` as
+> `%%Hung:` lines; resolve each one and delete it, or reply on a `%%Hung-reply:` line.
 >
-> Key dates: experiments stop end of **23/09**, complete draft due late **26/09**, submit **29/09**.
+> Ready version uploaded to EDAS (track SS3, 139851) by **29/09 20:00 VN**. Official deadline **30/09**.
 
 ---
 
