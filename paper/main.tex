@@ -455,7 +455,7 @@ exactly reproduces the infected model.}
 \label{tab:fullrollback}
 \begin{tabular}{lccc}
 \toprule
-Config & Rollback ASR (\%) & Rollback CA (\%) & Hybrid CA range (\%) \\
+Config & ASR (\%) & CA (\%) & Hybrid CA range (\%) \\
 \midrule
 $n=3$ & 97.43 & 89.41 & 84.58--90.98 \\
 $n=6$ & 97.43 & 89.41 & 86.03--93.26 \\
@@ -591,7 +591,7 @@ repair share covered by the first $k$ shards is shown alongside ASR and CA.
 \begin{tikzpicture}
 \begin{axis}[
     name=mainaxis,
-    width=\columnwidth,
+    width=0.9\columnwidth,
     height=6cm,
     xlabel={Number of stale shards $k$},
     ylabel={ASR (\%)},
@@ -629,7 +629,7 @@ repair share covered by the first $k$ shards is shown alongside ASR and CA.
 
 % CA line (right axis, overlaid)
 \begin{axis}[
-    width=\columnwidth,
+    width=0.9\columnwidth,
     height=6cm,
     xmin=-0.3, xmax=6.3,
     ymin=83, ymax=97,
@@ -991,7 +991,7 @@ never detects the skew to begin with.
 \label{tab:serving}
 \begin{tabular}{lcc}
 \toprule
-Metric & Per-shard sig.\ check & Epoch-manifest pinning \\
+Metric & Sig.-only check & Epoch pinning \\
 \midrule
 Manifest size (bytes) & 814 & 848 \\
 Verify time / load (ms) & 133.4~$\pm$~3.1 & 132.0~$\pm$~3.8 \\
