@@ -988,6 +988,15 @@ other architectures (ResNet-50, ViT), larger datasets, non-patch
 triggers (blended, WaNet), and non-block-aligned shard partitions
 are left as explicit future work.
 
+Similarly, the serving comparison (Section~\ref{sec:serving}) measures
+a single skew scenario---one substituted shard out of six, against one
+hardware/software configuration---and reports verify-time and
+recovery-time as single-run, exploratory measurements rather than a
+claim generalizable across manifest sizes, partition granularities, or
+deployment environments; only the mechanism's deterministic properties
+(accept/reject behavior, manifest-size overhead) were predeclared as
+confirmatory targets.
+
 % =====================================================================
 \section{Related Work}
 \label{sec:related}
