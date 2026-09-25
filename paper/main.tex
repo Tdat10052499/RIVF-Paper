@@ -809,10 +809,12 @@ substitution immediately detectable through standard accuracy monitoring.
 \label{sec:locality}
 
 Figure~\ref{fig:locality_asr} plots each shard's repair share
-$\sigma_s$ against the single-shard rollback ASR when that shard
-is substituted.
+$\mathrm{share}_s$ against the single-shard rollback ASR for both
+the fine-tuned and ANP-repaired models.
+Each point represents one tested shard; shards~1 and~4 are absent
+because they were not isolated in the $k\!=\!1$ single-shard runs.
 
-\begin{figure}[t]
+  \begin{figure}[t]
   \centering
   \begin{tikzpicture}
   \begin{axis}[
@@ -894,17 +896,22 @@ is substituted.
   \label{fig:locality_asr}
 \end{figure}
 
-For the fine-tuned model, repair share concentrates in shards~3 and~4
-yet their individual rollback ASRs remain below $9\%$.
-No single shard, even the one absorbing nearly half the repair change,
-suffices to reactivate the backdoor.
-For the ANP-repaired model, all non-artifact ASR values are $0.00\%$,
-not because the model is more robust but because utility collapses
-before any backdoor can surface.
-The figure therefore shows two distinct vulnerability regimes:
-a \emph{threshold regime} under fine-tuning (requiring coordinated
-multi-shard substitution) and a \emph{collapse regime} under ANP
-(detectable via clean-accuracy monitoring alone).
+For the fine-tuned model, repair share does not predict single-shard
+rollback efficacy.
+Shard~3 absorbs nearly half the repair update ($\mathrm{share}_3 =
+47.74\%$) yet yields the lowest tested ASR (0.50\%), while shard~2
+with a moderate share (21.11\%) yields the highest tested ASR (8.94\%).
+No individual shard, regardless of how much of the repair it carries,
+is sufficient to restore the backdoor on its own.
+For the ANP-repaired model, shards~0, 2, and~3 all yield
+ASR~$=$~0.00\%; shard~5 registers 81.10\% only as a utility-collapse
+artifact (CA~$=$~10.01\%), not genuine backdoor recovery
+(Section~\ref{sec:anp}).
+The two repair methods therefore define two distinct vulnerability
+regimes: a \emph{threshold regime} under fine-tuning, where
+coordinated multi-shard substitution is required to restore the
+backdoor, and a \emph{collapse regime} under ANP, where any single
+substitution is immediately detectable through clean-accuracy monitoring.
 
 \subsection{Second-Seed Replication}
 \label{sec:seed}
