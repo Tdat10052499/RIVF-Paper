@@ -1,5 +1,5 @@
 % =====================================================================
-% paper/main.tex — RIVF 2026 SS3 scaffold (v2)
+% paper/main.tex â€” RIVF 2026 SS3 scaffold (v2)
 % Built 21/09/2026 by Ho Du Tuan Dat, per notes/2026-09-21_hung_supervisor.md
 % Method section filled 22/09/2026 by Nguyen Minh Chinh.
 % ANP results added 22/09/2026 by Nguyen Minh Chinh.
@@ -405,38 +405,7 @@ given in Table~\ref{tab:singleshard_rs}.
     every axis plot/.append style={thick},
 ]
 
-% share_s x 100 (blue bars, all 6 shards)
-\addplot[fill=blue!40!white, draw=blue!70!black] coordinates {
-    (0,  0.3)
-    (1,  6.4)
-    (2, 21.1)
-    (3, 47.7)
-    (4, 24.3)
-    (5,  0.1)
-};
-\addlegendentry{$\mathrm{share}_s \times 100$}
-
-% Single-shard ASR seed 42 (red bars) -- from finetune_s42_bb_n6.json
-\addplot[fill=red!40!white, draw=red!70!black] coordinates {
-    (0, 0.81)
-    (1, 0.91)
-    (2, 5.36)
-    (3, 0.40)
-    (4, 3.96)
-    (5, 1.09)
-};
-\addlegendentry{ASR seed~42}
-
-% Single-shard ASR seed 0 (orange bars) -- from finetune_s0_bb_n6.json
-\addplot[fill=orange!50!white, draw=orange!80!black] coordinates {
-    (0,  1.12)
-    (1,  1.50)
-    (2,  4.57)
-    (3,  0.39)
-    (4, 16.40)
-    (5,  1.51)
-};
-\addlegendentry{ASR seed~0}
+\input{fig_singleshard_data.tex}
 
 \end{axis}
 \end{tikzpicture}
