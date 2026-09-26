@@ -5,6 +5,9 @@
 **Target:** RIVF 2026 Special Session SS3  
 **Deadline:** 29/09/2026
 
+> ### ⚠️ Read before you edit `paper/main.tex` (26/09, afternoon)
+> **The compiled PDF is deliberately inconsistent right now.** The Abstract, Introduction, Discussion, Limitations, and Conclusion were rewritten by Dr. Hung with the **new** BackdoorBench-normalization numbers (two repairs). The Results sections III-A to III-G still carry the **old** legacy-normalization numbers until Dan re-derives them from [`results/analysis/2026-09-26_hung_digest.md`](results/analysis/2026-09-26_hung_digest.md). Do not "fix" the new sections to match the old Results; it is the Results that must change. See the plan, Section 11.
+>
 > ### Read this first
 > [`notes/2026-09-25_hung_supervisor.md`](notes/2026-09-25_hung_supervisor.md) is **the plan** for 26 to 29 September.
 > It replaces every earlier note. Line-by-line comments on the draft are inside `paper/main.tex` as

@@ -4,6 +4,8 @@
 **To:** Dan, Chinh, Dat
 **Ready version:** 29 September. **Official deadline:** 30 September, EDAS track SS3 (139851).
 
+> **⚠️ 26 September, afternoon: the compiled PDF is deliberately inconsistent.** Abstract, Introduction, Discussion, Limitations, and Conclusion now carry the NEW numbers (BackdoorBench normalization, two repairs). Results III-A to III-G still carry the OLD numbers until Dan re-derives them from `results/analysis/2026-09-26_hung_digest.md`. The Results must change to match the new sections, never the reverse. Section 11 has the split.
+>
 > **DECISION, 26 September (read Section 10 first).** The normalization check found a real problem and Chinh stopped, exactly as asked. Decision: **BackdoorBench normalization for every number in the paper.** No retraining of the seed-42 repair. Every result is re-evaluated under the new normalization today, and every number in the draft is provisional until those JSON files exist. Details, order of work, and the revised timeline are in Section 10.
 
 This note replaces the 21 September plan. Read it in full once, then work from Sections 3 and 4. My line-by-line comments on the draft are inside `paper/main.tex` as lines beginning `%%Hung:`. Each one tells you what to change and why.
