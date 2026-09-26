@@ -34,11 +34,16 @@ from itertools import combinations
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def load_records(path):
+    """Load subset records from JSON; handles both {"subsets":[...]} and [...] formats."""
+    d = json.load(open(path))
+    return d["subsets"] if isinstance(d, dict) else d
+
+
 def load_index(path):
     """Return dict: frozenset(shards) -> (asr, ca) for every record in the JSON."""
-    d = json.load(open(path))
     index = {}
-    for r in d["subsets"]:
+    for r in load_records(path):
         key = frozenset(r["shards"])
         index[key] = (r["asr"], r["ca"])
     return index
@@ -49,9 +54,8 @@ def greedy_order(path):
     Return shard indices sorted by share_covered descending (repair-aware order).
     Computed from the 1-shard records in path.
     """
-    d = json.load(open(path))
     single = {}
-    for r in d["subsets"]:
+    for r in load_records(path):
         if len(r["shards"]) == 1:
             single[r["shards"][0]] = r["share_covered"]
     return sorted(single, key=lambda s: single[s], reverse=True)
