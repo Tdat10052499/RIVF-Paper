@@ -215,3 +215,35 @@ Every number in the draft is provisional until the new JSON exists, so the compl
 | 29/09, by 20:00 | Final PDF on EDAS. Unchanged. |
 
 If the seed-42 re-evaluation moves the headline, for example the threshold shifts from k=3 to k=2 or k=4, that is the result and we report it. Do not go looking for the normalization that gives the nicer number. We chose the normalization on principle in 10.2, before seeing the hybrid numbers, and that is the only order in which this choice is defensible.
+
+---
+
+## 11. 26 September, afternoon: the new numbers, the new story, and who writes what
+
+Chinh delivered everything in Section 10 by midday: the normcheck files, the 63-subset evaluation of seed 42 under BackdoorBench normalization (sanity 95.06 / 91.33, exact), and a second repair, seed 0, trained and evaluated under the same normalization. Both files are in `results/raw/all_subsets/`. That is the whole critical path, done on time. Thank you.
+
+### 11.1 What changed
+
+The numbers moved, and the story is different from the one in the draft. The single-shard maximum is 5.36% (seed 42) and 16.40% (seed 0). The greedy repair-aware attacker reaches 56% and 81% at three shards, not 92.89%, and 92.3% and 95.8% at four shards with clean accuracy within 2.3 points of the repaired model. The sharp threshold at k=3 is gone. What replaces it is better, for it replicates across two independent repairs: every hybrid above 50% ASR contains layer4, layer3 (48% of the repair) is dispensable, repair share predicts ASR only weakly, and the two repairs agree on the 50% classification of 60 of 64 subsets (Pearson r = 0.926).
+
+Every number the paper needs, for both seeds, is in `results/analysis/2026-09-26_hung_digest.md`, computed by script from the two JSON files. Section 10 of that page maps each old number-bearing sentence to its replacement. Work from it. Do not work from memory and do not work from Chinh's `seed_replication.md`, which has one estimated value marked with an asterisk; the JSON has the real one.
+
+### 11.2 Who writes what, from now until the draft
+
+I have taken the narrative sections, for they had to change together and I had the numbers first. Pull before you touch anything.
+
+**Done by me, in `main.tex`, this afternoon.** Abstract. Introduction, all four paragraphs. Discussion. Limitations. Conclusion. The Setup sentences describing the two repairs and the normalization disclosure. The Metrics sentence naming the normalization. The Acknowledgment is removed, since an author cannot thank himself; add one thanking the university if you wish. Do not re-derive anything in those sections. If you find an error in them, fix it and tell me, but do not restructure them.
+
+**Dan, today.** Results III-A to III-G, from the digest. Baseline table with both repairs. Sanity checks with the true CA ranges. Figure 1 with all six shards and both seeds. Figure 2 and Figure 3 from the digest's greedy, architectural, and exact-mean rows; the "random" line is now the exact mean over all C(6,k) subsets, so say that and drop the sampling-variance text. Section III-F from the digest's Section 7, with the Spearman values 0.33 and 0.41 and the layer4 rule replacing the layer2-plus-layer4 rule. Section III-G with the seed-0 replication numbers, then set `\repairseedtrue`. Generate every coordinate block by script from the JSON, as I asked in Section 10; the digest tells you which rows.
+
+**Chinh, today.** Second reader for every number Dan writes: pick fifteen at random and re-derive them from the JSON. Then, and only then, ANP under the stop rule, evaluated under the same normalization. If it lands, fill the `\ifincludeanp` slots in my sections from measured numbers; they are marked with `\todo`.
+
+**Dat, today.** EDAS registration with four authors, me as corresponding. Then read the whole paper once as a stranger and list every sentence you do not understand.
+
+### 11.3 The one sentence not to write
+
+Layer2 is necessary for recovery under seed 42 and not under seed 0. Do not write that both layer2 and layer4 are required as a general claim. Write that layer4 is necessary in both repairs and that layer2 is its usual partner. The digest, Section 7, has the exact numbers behind this.
+
+### 11.4 Timeline
+
+Unchanged from Section 10.5: complete draft by 10:00 on the 27th, my first pass that afternoon, second pass on the 28th, final PDF on EDAS by 20:00 on the 29th.

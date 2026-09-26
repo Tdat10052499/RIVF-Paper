@@ -4,6 +4,7 @@
 % Method section filled 22/09/2026 by Nguyen Minh Chinh.
 % ANP results added 22/09/2026 by Nguyen Minh Chinh.
 % Related Work filled 23/09/2026 by Nguyen Minh Chinh.
+% Abstract, Introduction, Discussion, Limitations, Conclusion rewritten 26/09/2026 by Dang Khanh Hung (BackdoorBench normalization, two repairs).
 % =====================================================================
 \pdfminorversion=6
 \documentclass[conference,a4paper]{IEEEtran}  % RIVF 2026 required class options
@@ -75,26 +76,25 @@ hung.dk@vlu.edu.vn (corresponding author)}
 \begin{abstract}
 Edge intelligence in 6G networks distributes deep models to edge nodes as
 independently signed shards that are cached and updated in stages over
-intermittent links. Per-shard signatures prove that each shard is authentic,
-not that all shards belong to the same model version. We measure what this
-gap means after a backdoor has been repaired: an adversary controlling the
-artifact cache re-introduces validly signed, pre-repair shards into an
-otherwise-repaired model. Using BadNets on CIFAR-10 with PreActResNet18
-partitioned into six shards and repaired by clean fine-tuning, rolling back
-%%Hung: Both numbers here are correct for n=6 single-shard only (max 8.94% ASR; CA 86.03 to 93.26). Keep 'six shards' in this sentence so the scope is unambiguous, because the n=3 partition reaches 17.46% for one shard.
-any single shard is weak (at most 8.94\% attack success rate, ASR) and keeps
-clean accuracy (CA) between 86.0\% and 93.3\%. Rolling back several shards
-%%Hung: 'every evaluated subset' is honest for the 41 you have (I re-checked: 11 subsets contain both, minimum 74.76%, none below). After the all-63 run, change to 'every subset' ONLY if Chinh's script confirms the rule on all 63. If any subset breaks it, rewrite this sentence, Sec. III-F, and the Conclusion together.
-is not: every evaluated subset that contains both \texttt{layer2} and
-\texttt{layer4} restores at least 74.8\% ASR, and the three shards carrying
-the largest share of the repair restore 92.89\% ASR at 87.38\% CA,
-5.97 percentage points below the repaired model.
+intermittent links. A per-shard signature proves that a shard is authentic,
+not that every shard belongs to the same model version. We measure what this
+gap costs after a backdoor has been repaired, when an adversary who controls
+the artifact cache re-introduces validly signed pre-repair shards into an
+otherwise repaired model. Using BadNets on CIFAR-10 with PreActResNet18
+partitioned into six shards, we evaluate all 63 rollback subsets against two
+independently fine-tuned repairs. Rolling back one shard restores at most
+16.4\% attack success rate (ASR). Recovery depends on which shards are stale
+rather than on how much of the repair they carry: every hybrid above 50\% ASR
+contains \texttt{layer4}, whereas the shard holding 48\% of the repair update
+is dispensable. An adversary who ranks shards by repair share restores between
+92.3\% and 95.8\% ASR with four stale shards while clean accuracy stays within
+2.3 points of the repaired model, and the two repairs agree on the 50\%
+classification of 60 of 64 subsets. Epoch-manifest pinning, as specified by
+TUF and Uptane, rejects every skewed load for 34 bytes per manifest and no
+measurable verification overhead.
 \ifincludeanp
-Under Adversarial Neuron Pruning, a local repair, \todo{one-sentence ANP result}.
+\todo{one-sentence ANP result, from measured numbers only}
 \fi
-Epoch-manifest pinning, as already specified by TUF and Uptane, rejects
-every skewed load at a cost of 34 bytes per manifest and no measurable
-verification overhead.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -105,88 +105,65 @@ model supply-chain security, version skew, over-the-air model updates
 % =====================================================================
 \section{Introduction}
 \label{sec:intro}
-% Owner: Dan + Dat, together, 25/09.
+% Rewritten 26/09 by Hung from results/analysis/2026-09-26_hung_digest.md.
 
-Backdoor repair is not the end of a model's lifecycle; the repaired
-model still has to be distributed, cached, and served. Edge inference
-deployments increasingly partition a model into independently signed
-shards so that workers can cache, update, and verify them separately
-during a rolling update, rather than replacing the entire model
-atomically. This partitioning is attractive precisely because it makes
-rollout incremental: a repair can reach some workers before others,
-and an interrupted or partial rollout is treated as an ordinary
-operational condition rather than a failure. Existing supply-chain
-protections for this setting verify that each shard is authentically
-signed, but per-shard signature verification proves only that a shard
-is a genuine artifact, not that it belongs to the same repair epoch as
-the shards around it. An adversary who controls the artifact cache or
-the update distribution path -- without forging any signature or
-compromising the loader -- can exploit exactly this gap, supplying a
-validly signed, pre-repair shard to a worker during an interrupted
-rollout and causing it to serve a hybrid model that mixes repaired and
-stale weights.
+Backdoor repair does not end a model's lifecycle, for the repaired model must
+still be distributed, cached, and served. In 6G edge intelligence a model is
+increasingly partitioned into independently signed shards, so that edge nodes
+can fetch, cache, and verify each shard separately over intermittent wireless
+links, and a repair can be rolled out in stages rather than as one atomic
+replacement~\cite{kang2017neurosurgeon,letaief2022edgeai6g}. Staged rollout is
+attractive precisely because it tolerates interruption: a link outage or a
+handover leaves some nodes on the new version and others on the old, and the
+deployment continues to serve. Supply-chain protections for this setting verify
+that each shard is authentically signed. A per-shard signature, however, proves
+only that a shard is a genuine artifact; it does not prove that the shard
+belongs to the same repair epoch as the shards around it. An adversary who
+controls the artifact cache or the update path, without forging a signature or
+compromising a loader, can supply a validly signed pre-repair shard to a node
+during an interrupted rollout, and the node then serves a hybrid model that
+mixes repaired and stale weights.
 
-We measure the ML-specific consequence of this gap rather than propose
-a new protocol. Using BadNets on CIFAR-10 with PreActResNet18,
-partitioned into six shards, we ask when a hybrid model assembled this
-way restores backdoor behavior, and whether that restoration is
-visible to standard utility monitoring. The answer depends sharply on
-the repair method. Under global clean fine-tuning, rolling back any
-single shard is weak: the highest single-shard attack success rate
-(ASR) we observe is 8.94\%, and the repair is distributed across
-shards in a way that no individual shard can undo. This weakness is
-not benign, however, because it is also silent -- clean accuracy (CA)
-%%Hung: FALSE as written: hybrids go down to 73.55% CA ({0,2,4}). Either scope to 'every single-shard hybrid' (true: min 86.03%) or state the real range. Same fix as III-B.
-stays above 86\% in every hybrid configuration we test, so utility
-monitoring gives a defender no signal that a stale shard has been
-accepted. We report this single-shard result plainly as the lower
-bound of the attack, not as its headline, and place its practical
-implication first: detection has to happen at the artifact layer,
-where shard provenance is checked, not at the inference layer, where
-only aggregate accuracy is visible. The real attack surface appears
-once an adversary substitutes multiple shards. A repair-aware attacker
-who targets the shards carrying the largest share of the repair update
-crosses a sharp threshold at three substituted shards, restoring
-%%Hung: FALSE, delete: 'a result that replicates exactly across two independent random seeds'. The second seed re-ran a deterministic evaluation; the repair has one seed, and your own Sec. III-G says so. If the seed-0 repair lands by 20:00 26/09 and \repairseedtrue, replace with the measured seed-0 numbers; otherwise say nothing about replication here.
-ASR to 92.89\% while maintaining CA at 87.38\%, a result that
-replicates exactly across two independent random seeds; an attacker
-with no knowledge of the repair internals, selecting shards by
-architectural position alone, reaches the same threshold with only
-%%Hung: DELETE the whole ANP sentence, from 'Under Adversarial Neuron Pruning (ANP), the picture reverses' to 'in contrast to the fine-tuned case.' It describes the INVALID wrong-lineage checkpoint (cosine 0.02 at conv1; results/raw/lineage/infected_vs_anp_fixed_OLD.json). It is OUTSIDE \ifincludeanp, so it is in the compiled PDF right now. If a valid ANP result exists by the cutoff, write one new sentence from the measured numbers inside \ifincludeanp; otherwise nothing.
-two additional shards. Under Adversarial Neuron Pruning (ANP), the
-picture reverses: any single-shard substitution collapses utility
-(CA~$\approx$~10\%) before the backdoor can recover, because the
-pruning mask ANP bakes into the retained shards is architecturally
-incompatible with the full weights of a pre-repair shard. This makes
-tampering self-revealing under an ANP repair, in contrast to the
-fine-tuned case.
+We measure the machine-learning consequence of this gap rather than propose a
+protocol. Using BadNets on CIFAR-10 with PreActResNet18 partitioned into six
+shards, we repair the infected model by clean fine-tuning under two seeds,
+evaluate every one of the 63 possible rollback subsets against each repair, and
+ask when a hybrid restores backdoor behaviour and whether utility monitoring
+would notice. Three findings follow. Rolling back a single shard is weak: the
+largest single-shard attack success rate (ASR) is 16.4\%, and the clean
+accuracy (CA) of every single-shard hybrid stays within 6.8 points of the
+repaired model, so a stale shard is accepted silently and to little effect.
+Recovery is governed by which shards are stale rather than by how much of the
+repair they carry: every hybrid above 50\% ASR contains \texttt{layer4},
+whereas \texttt{layer3}, which holds 48\% of the repair update, is dispensable,
+and the repair share covered by a subset predicts its ASR only weakly (Spearman
+$\rho \le 0.41$). Finally, an adversary who holds both signed versions can rank
+shards by repair share offline; four shards chosen this way restore 92.3\% and
+95.8\% ASR under the two repairs, at a CA within 2.3 points of the repaired
+model and within 0.2 points of the infected model that was in service before
+the repair. The two repairs agree on whether a subset exceeds 50\% ASR in 60 of
+64 cases.
+\ifincludeanp
+\todo{One sentence on ANP, from measured numbers only.}
+\fi
 
-The defense we evaluate is deliberately not novel. Epoch-manifest
-pinning -- binding each shard to a per-epoch identifier in signed
-snapshot metadata, so that a loader can reject a shard as
-epoch-mismatched rather than accept it as individually valid -- is
-already specified in update frameworks such as TUF~\cite{tuf} and
-Uptane~\cite{uptane} for exactly this class of problem. Our
-contribution is to show that this gap exists, unaddressed, in
-model-shard distribution, and to measure what closing it costs: our
-serving comparison (Section~\ref{sec:serving}) finds 34 additional
-bytes of manifest overhead and no measurable per-load verification
-cost, making adoption a low-cost baseline control rather than a
-design trade-off.
+The defense we evaluate is deliberately not new. Epoch-manifest pinning binds
+every shard to a per-epoch identifier in signed snapshot metadata, so that a
+loader rejects a shard as epoch-mismatched instead of accepting it as
+individually valid; TUF~\cite{tuf} and Uptane~\cite{uptane} specify it for
+exactly this class of problem. Our contribution is to show that the gap it
+closes is open in model-shard distribution and to measure what closing it
+costs: in our serving comparison (Section~\ref{sec:serving}) it adds 34 bytes
+of manifest per epoch and no measurable per-load verification cost, which makes
+it a baseline control rather than a design trade-off.
 
-The remainder of this paper is organized as follows.
-Section~\ref{sec:threat} formalizes the threat model.
-Section~\ref{sec:setup} describes the dataset, architecture, attack,
-repairs, and partitioning scheme.
-%%Hung: Unconditional text promising 'ANP-contrast results' and 'a second-seed replication'. Wrap the ANP words in \ifincludeanp ... \fi and replace 'a second-seed replication' with 'a determinism check' unless \repairseedtrue.
+Section~\ref{sec:threat} states the threat model. Section~\ref{sec:setup}
+describes the dataset, architecture, attack, repairs, and partitioning.
 Section~\ref{sec:results} reports the single-shard, multi-shard, and
-ANP-contrast results together with a second-seed replication and the
-serving comparison.
-Section~\ref{sec:discussion} interprets these results as two distinct
-vulnerability regimes and situates epoch-manifest pinning as their
-common remedy, and states the scope limitations of our measurements.
-Section~\ref{sec:related} relates this work to prior model
-partitioning, backdoor, and supply-chain security literature, and
+shard-selection results for both repairs, \ifincludeanp the contrast with a
+local repair, \fi the determinism and replication checks, and the serving
+comparison. Section~\ref{sec:discussion} interprets the results and states
+their limits, Section~\ref{sec:related} relates them to prior work, and
 Section~\ref{sec:conclusion} concludes.
 
 % =====================================================================
@@ -234,15 +211,20 @@ protocol. We measure the ML-specific consequence of its absence.
 PreActResNet18~\cite{he2016identity}. The infected model is the publicly
 released BackdoorBench~\cite{backdoorbench2024} BadNets~\cite{gu2019badnets}
 checkpoint for this pair (poisoning ratio 10\%, 3$\times$3 white patch in the
-bottom-right corner, target class~0); we do not retrain it. On our
-evaluation pipeline it reaches CA~$=$~89.41\% and ASR~$=$~97.43\%.
+bottom-right corner, target class~0); we do not retrain it. Evaluated under its native input normalization it
+reaches CA~$=$~91.33\% and ASR~$=$~95.06\%, matching the published values.
 
 \textbf{Repair~(a): global clean fine-tuning.} The infected model is
 fine-tuned for 20 epochs on the full clean training set (SGD, momentum 0.9,
 weight decay $5\!\times\!10^{-4}$, learning rate 0.01 with cosine annealing,
-batch 128, seed 42), updating every parameter. This yields CA~$=$~93.35\%
-and ASR~$=$~0.90\%. Giving the defender the full clean training set makes
-this a strong, global repair; CA even rises by 3.94 points.
+batch 128), updating every parameter. We train two such repairs. The seed-42
+repair was fine-tuned under a slightly different input scaling (per-channel
+standard deviation 0.2023, 0.1994, 0.2010) from the one used for evaluation;
+its accuracy changes by less than 0.2 points between the two, so this does not
+affect the results. The seed-0 repair uses the evaluation normalization
+throughout. They reach CA~$=$~93.18\% and ASR~$=$~0.81\% (seed 42) and
+CA~$=$~93.51\% and ASR~$=$~1.13\% (seed 0). Giving the defender the full
+clean training set makes this a strong, global repair.
 \ifincludeanp
 
 \textbf{Repair~(b): Adversarial Neuron Pruning (ANP).} We apply
@@ -314,7 +296,9 @@ signed checkpoints, so an attacker who holds both can compute it offline.
 not the target that are classified as the target class
 (9{,}000 images), following BackdoorBench~\cite{backdoorbench2024}.
 \textbf{CA} is top-1 accuracy on the 10{,}000 clean test images. Both are
-measured in evaluation mode. With these test-set sizes, the 95\%
+measured in evaluation mode. All models are evaluated with BackdoorBench's
+input normalization (per-channel standard deviation 0.247, 0.243, 0.261).
+With these test-set sizes, the 95\%
 binomial confidence half-width is at most 1.0 percentage point for
 either metric, so we report differences below 1 point as ties.
 
@@ -813,53 +797,64 @@ Skewed model accepted? & Yes (undetected) & No (rejected) \\
 % =====================================================================
 \section{Discussion}
 \label{sec:discussion}
+% Rewritten 26/09 by Hung from results/analysis/2026-09-26_hung_digest.md.
 
-\textbf{One stale shard is not enough; a few are.} Under a strong global
-repair, a single rolled-back shard restores at most 8.94\% ASR, so the
-single-shard case is the lower bound of the attack. Recovery is a
-threshold effect driven by an interaction between shards: the backdoor
-returns once \texttt{layer2} and \texttt{layer4} are both stale. An
-attacker holding both signed epochs can find these shards offline from
-the repair share, and needs three stale shards to restore 92.89\% ASR;
-an attacker who knows only the partition needs five.
+\textbf{Which shards are stale matters more than how many.} A single stale
+shard restores at most 16.4\% ASR, so the single-shard case is the lower bound
+of the attack. Recovery is not proportional to the repair share reverted:
+\texttt{layer3} carries 48\% of the repair update and its rollback alone yields
+0.4\% ASR, whereas every hybrid above 50\% ASR contains \texttt{layer4}, which
+carries 24\%. The share metric therefore locates the repair but not the
+backdoor. An adversary who holds both signed epochs can still exploit it, for
+ranking shards by share and rolling back the top four restores 92.3\% and
+95.8\% ASR under the two repairs, and an adversary who knows only the partition
+needs five.
 
-\textbf{Utility monitoring is a weak signal.} The stealthiest successful
-hybrid loses 5.97 points of CA against the repaired model but stays
-within 2.03 points of the infected model that was deployed before the
-repair. Detecting it therefore requires labelled canary data and a
-tight alarm threshold; label-free monitoring would not see it. Other
-successful hybrids are cruder (e.g.\ $\{2,4\}$ at 76.99\% CA) and would be
-caught.
+\textbf{Four stale shards is a stealthy attack.} The four-shard hybrids above
+serve at 91.1\% and 91.2\% CA, which is 2.1 and 2.3 points below the repaired
+model and within 0.2 points of the infected model that was in service before
+the repair. A monitor that compares against the pre-repair baseline sees
+nothing; one that compares against the repaired model needs labelled canary
+data and an alarm threshold tighter than 2 points. Label-free monitoring would
+not detect it. Detection therefore belongs at the artifact layer, where
+provenance is checked, not at the inference layer, where only aggregate
+accuracy is visible.
+
+\textbf{Two repairs, one pattern.} The two fine-tuned repairs differ in seed
+and in training normalization, yet their ASR across all 64 subsets correlates
+at $r = 0.926$ and they agree on the 50\% classification of 60 subsets. The
+four disagreements all contain \texttt{layer4} without \texttt{layer2}, where
+the seed-0 repair is the more fragile. Under that repair three hybrids also
+exceed the infected model's own ASR, reaching 96.5\%, so a partial rollback can
+be a stronger attack than the original model.
 \ifincludeanp
 
 \textbf{Local repair.} \todo{One or two sentences comparing ANP with
 fine-tuning, from Section~\ref{sec:anp}.}
 \fi
 
-\textbf{The fix is cheap.} All hybrids share one root cause: each shard
-is checked for authenticity, not for membership in the same epoch.
-Binding every shard to an epoch identifier in signed snapshot metadata,
-as TUF~\cite{tuf} and Uptane~\cite{uptane} specify, rejected every skewed
-load in our serving test for 34 extra bytes per manifest. In partitioned
-edge inference each node sees only its own shard, so the epoch check must
-be enforced per node against a pinned manifest, not only at the
-publisher.
+\textbf{The fix is cheap.} Every hybrid shares one root cause: each shard is
+checked for authenticity, not for membership in the same epoch. Binding every
+shard to an epoch identifier in signed snapshot metadata, as TUF~\cite{tuf} and
+Uptane~\cite{uptane} specify, rejected every skewed load in our serving test
+for 34 extra bytes per manifest. In partitioned edge inference each node sees
+only its own shard, so the epoch check must be enforced per node against a
+pinned manifest, not only at the publisher.
 
 \subsection{Limitations}
 
-%%Hung: Limitations is good and honest; keep it. If ANP stays out, 'Local repairs ... are future work' is correct. If ANP goes in, the \ifincludeanp branches already handle it.
-We study one architecture (PreActResNet18), one dataset (CIFAR-10), one
-attack (BadNets, 10\% poisoning) and
-\ifincludeanp two repairs\else one repair (clean fine-tuning with the full
-clean training set, a strong defender)\fi, with block-aligned partitions only.
-\ifrepairseed\else The fine-tuned repair uses a single training seed. \fi
+We study one architecture (PreActResNet18), one dataset (CIFAR-10), one attack
+(BadNets at 10\% poisoning), and one family of repair (clean fine-tuning with
+the full clean training set, a strong defender), with block-aligned partitions
+only. The two repairs differ in seed and, as stated in
+Section~\ref{sec:setup}, in training normalization, so they are two
+independent repairs rather than a controlled seed study.
 \ifincludeanp ANP selects its pruning threshold on test-set ASR, as
 BackdoorBench does, which favours the defender. \fi
-Of the 63 rollback subsets at $n\!=\!6$, 41 were evaluated. The serving
-test uses HMAC-SHA256 as a stand-in for signatures and one skew scenario
-at $n\!=\!3$; its timings are single-machine measurements.
-Local repairs, other triggers and architectures, and non-aligned
-partitions are future work.
+The serving test uses HMAC-SHA256 as a stand-in for signatures, one skew
+scenario at $n=3$, and single-machine timings.
+\ifincludeanp\else Local repairs, \fi other triggers and architectures, and
+non-aligned partitions are future work.
 
 % =====================================================================
 \section{Related Work}
@@ -869,8 +864,7 @@ partitions are future work.
 defenses such as fine-pruning~\cite{liu2018fineprune} and
 ANP~\cite{wu2021anp} remove backdoors after training. Min et
 al.~\cite{min2024uncovering} show that models purified by several such
-%%Hung: 'BAU, SAM, FST and BTI' are undefined acronyms. Either expand them or write 'several purification defenses'.
-defenses (including ANP, BAU, SAM, FST and BTI) quickly re-learn the
+defenses, ANP among them, quickly re-learn the
 backdoor when retuned on a few poisoned samples or probed with crafted
 queries. DeferBad~\cite{shin2024deferbad} designs the backdoor so that
 unlearning leaves a residue that later benign fine-tuning reactivates.
@@ -900,10 +894,12 @@ absence costs for a repaired model.
 \label{sec:conclusion}
 
 Signed but stale shards can undo a backdoor repair in partitioned edge
-inference. Against a strong fine-tuning repair, one stale shard restores
-at most 8.94\% ASR, but three shards chosen from the two signed
-checkpoints restore 92.89\% ASR at 87.38\% CA, and recovery hinges on
-\texttt{layer2} and \texttt{layer4} being stale together.
+inference. Against a strong fine-tuning repair, one stale shard restores at
+most 16.4\% ASR, but four shards chosen by repair share restore 92.3\% to
+95.8\% ASR at a clean accuracy within 2.3 points of the repaired model, and
+recovery hinges on \texttt{layer4} being stale rather than on the fraction of
+the repair reverted. Two independent repairs agree on this pattern in 60 of 64
+rollback subsets.
 \ifincludeanp \todo{One sentence on ANP.} \fi
 Epoch-manifest pinning rejects these hybrids for 34 bytes per manifest and
 should be a baseline control wherever 6G edge nodes receive model shards
@@ -911,10 +907,6 @@ through caches.
 
 % =====================================================================
 %%Hung: I am now an author, so this section thanks an author. Delete it, or if Van Lang University or the Faculty provided compute or support, thank them instead. Do not thank me.
-\section*{Acknowledgment}
-The authors thank Dr.\ Dang Khanh Hung for supervision and guidance
-throughout this project.
-
 % =====================================================================
 \bibliographystyle{IEEEtran}
 \bibliography{references}
