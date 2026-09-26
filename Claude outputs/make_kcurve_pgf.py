@@ -34,9 +34,22 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_records(path):
-    """Load subset records from JSON; handles both {"subsets":[...]} and [...] formats."""
+    """
+    Load subset records from JSON.
+    Handles two formats:
+      - {"subsets": [{"shards": [...], ...}, ...]}   (s42 style)
+      - [{"subset": [...], "k": int, ...}, ...]       (s0 style)
+    Always returns records with a "shards" key.
+    """
     d = json.load(open(path))
-    return d["subsets"] if isinstance(d, dict) else d
+    records = d["subsets"] if isinstance(d, dict) else d
+    normalized = []
+    for r in records:
+        if "shards" not in r:
+            r = dict(r)
+            r["shards"] = r.get("subset", [])
+        normalized.append(r)
+    return normalized
 
 
 def load_index(path):
