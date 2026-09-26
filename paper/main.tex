@@ -1,18 +1,11 @@
 % =====================================================================
-%%Hung: WARNING, 26/09 afternoon. THIS FILE IS DELIBERATELY INCONSISTENT.
-%%Hung: Abstract, Introduction, Discussion, Limitations, Conclusion = NEW numbers
-%%Hung:   (BackdoorBench normalization, two repairs), rewritten by Hung.
-%%Hung: Results III-A to III-G = OLD numbers (legacy normalization, seed 42 only)
-%%Hung:   until Dan re-derives them from results/analysis/2026-09-26_hung_digest.md.
-%%Hung: The Results must change to match the new sections. Never the reverse.
-% =====================================================================
-% =====================================================================
 % paper/main.tex — RIVF 2026 SS3 scaffold (v2)
 % Built 21/09/2026 by Ho Du Tuan Dat, per notes/2026-09-21_hung_supervisor.md
 % Method section filled 22/09/2026 by Nguyen Minh Chinh.
 % ANP results added 22/09/2026 by Nguyen Minh Chinh.
 % Related Work filled 23/09/2026 by Nguyen Minh Chinh.
 % Abstract, Introduction, Discussion, Limitations, Conclusion rewritten 26/09/2026 by Dang Khanh Hung (BackdoorBench normalization, two repairs).
+% Results III-A..G re-derived 26/09/2026 by Nguyen Minh Chinh from results/analysis/2026-09-26_hung_digest.md.
 % =====================================================================
 \pdfminorversion=6
 \documentclass[conference,a4paper]{IEEEtran}  % RIVF 2026 required class options
@@ -36,7 +29,7 @@
 %     results exist in results/raw/ and pass scripts/check_lineage.py.
 %     See notes/2026-09-26_chinh_fix_guide.md.
 \newif\ifincludeanp      \includeanpfalse   % ANP re-run on OUR infected model (C1)
-\newif\ifrepairseed      \repairseedfalse   % second fine-tune repair seed (C2)
+\newif\ifrepairseed      \repairseedtrue    % second fine-tune repair seed (C2) -- flipped 26/09 Chinh
 % ANP numbers: fill from data/checkpoints/*_anp_v2_meta.json and
 % results/raw/all_subsets/anp_v2_n6.json. Red = not yet filled.
 \newcommand{\ANPthr}{\todo{thr}}        % selected pruning threshold
@@ -276,8 +269,8 @@ are \{stem, \texttt{layer1}\}, \{\texttt{layer2}, \texttt{layer3}\} and
 \{\texttt{layer4}, head\}. Rolling back a set of shards replaces all of
 their tensors, including BatchNorm statistics, with the infected
 versions and leaves every other shard repaired. Rolling back all $n$
-shards reproduces the infected model exactly (ASR~$=$~97.43\%,
-CA~$=$~89.41\% at both granularities), which verifies the harness.
+shards reproduces the infected model exactly (ASR~$=$~95.06\%,
+CA~$=$~91.33\% at both granularities), which verifies the harness.
 
 \subsection{Repair-Share Metric}
 \label{sec:share}
@@ -313,19 +306,16 @@ either metric, so we report differences below 1 point as ties.
 % =====================================================================
 \section{Results}
 \label{sec:results}
-%%Hung: EVERYTHING BELOW THIS LINE STILL HAS THE OLD (legacy-norm, seed-42) NUMBERS.
-%%Hung: Re-derive every table, figure coordinate, and sentence from results/analysis/2026-09-26_hung_digest.md.
-%%Hung: The Abstract/Intro/Discussion/Conclusion above are already on the new numbers; match them.
+% Results re-derived 26/09 by Nguyen Minh Chinh from results/analysis/2026-09-26_hung_digest.md.
+% Source JSONs: results/raw/all_subsets/finetune_s42_bb_n6.json, finetune_s0_bb_n6.json.
 % Owner: Dan, 24/09, EXCEPT Section~\ref{sec:serving} (owned by Dat).
 
 \subsection{Baseline Reproduction}
 
-%%Hung: FALSE: 'our re-trained checkpoints'. You did not retrain; the infected model is BackdoorBench's published checkpoint (Sec. II-B says so). Write: 'our evaluation pipeline reproduces the published infected checkpoint, and the fine-tuned repair reaches ...'.
-Table~\ref{tab:baseline} confirms that our re-trained checkpoints match
-the expected performance range for BadNets on CIFAR-10.
-The infected model retains high clean accuracy while achieving near-perfect
-attack success; the 20-epoch fine-tune repair suppresses the backdoor to
-below 1\% ASR while recovering clean accuracy above the infected baseline.
+Table~\ref{tab:baseline} confirms that our evaluation pipeline reproduces
+the published BackdoorBench infected checkpoint (BadNets, CIFAR-10), and
+both fine-tuned repairs suppress the backdoor to below 1.2\% ASR while
+raising clean accuracy above the infected model.
 
 \begin{table}[h]
 \centering
@@ -335,8 +325,9 @@ below 1\% ASR while recovering clean accuracy above the infected baseline.
 \toprule
 Model & ASR (\%) & CA (\%) \\
 \midrule
-Infected (BadNets, poison rate 0.1) & 97.43 & 89.41 \\
-Repaired (20-epoch clean fine-tune) &  0.90 & 93.35 \\
+Infected (BackdoorBench, BadNets) & 95.06 & 91.33 \\
+Repaired, seed~42 (fine-tune) & 0.81 & 93.18 \\
+Repaired, seed~0 (fine-tune) & 1.13 & 93.51 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -352,11 +343,10 @@ Table~\ref{tab:fullrollback} confirms this at both granularities: the
 recovered ASR and CA match the infected baseline exactly, ruling out any
 bug in the substitution code.
 
-%%Hung: WRONG range. Across every hybrid you evaluated (one to five shards), CA runs from 73.55% to 93.26%: e.g. {0,2,4} = 73.55%, {2,4} = 76.99%, {0,1,3} = 78.12%. 84.58 to 93.26 is the SINGLE-shard range only. Either scope this sentence to single-shard hybrids, or state 73.55 to 93.26. 'No hybrid degrades to random chance' remains true either way.
 \textbf{Hybrid models are not broken.} Across all partial rollback
-configurations evaluated in this paper (one to five shards substituted,
-both $n=3$ and $n=6$), the hybrid models achieve clean accuracies
-between 84.58\% and 93.26\%. No hybrid model degrades to random-chance
+configurations ($n=6$, one to five shards substituted), hybrid models
+achieve clean accuracies between 74.76\% and 93.15\% (seed~42) and
+79.87\% to 93.52\% (seed~0). No hybrid model degrades to random-chance
 accuracy ($\approx$10\%). This is important: it means a deployment
 that monitors only clean accuracy would observe nothing unusual when a
 stale shard is silently accepted.
@@ -368,11 +358,11 @@ exactly reproduces the infected model.}
 \label{tab:fullrollback}
 \begin{tabular}{lccc}
 \toprule
-%%Hung: This 'Hybrid CA range' column holds single-shard values only, but the text above calls it 'all partial rollback configurations'. Retitle the column 'Single-shard hybrid CA (%)' or drop it.
-Config & ASR (\%) & CA (\%) & Hybrid CA range (\%) \\
+Config & ASR (\%) & CA (\%) & Single-shard hybrid CA (\%) \\
 \midrule
-$n=3$ & 97.43 & 89.41 & 84.58--90.98 \\
-$n=6$ & 97.43 & 89.41 & 86.03--93.26 \\
+$n=3$ & 95.06 & 91.33 & --- \\
+$n=6$, seed~42 & 95.06 & 91.33 & 86.76--93.15 \\
+$n=6$, seed~0  & 95.06 & 91.33 & 86.78--93.52 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -382,10 +372,9 @@ $n=6$ & 97.43 & 89.41 & 86.03--93.26 \\
 We first evaluate whether substituting a single stale shard is sufficient
 to restore the backdoor. Fig.~\ref{fig:singleshard} shows, for each
 $n\!=\!6$ shard, its repair-share $\mathrm{share}_s \times 100$ (blue)
-alongside the ASR when that shard alone is rolled back (red).
-%%Hung: Shards 1 and 4 WERE tested; the data is in results/raw/substitution/n6/: shard 1 (layer1) ASR 1.29% CA 90.95%, shard 4 (layer4) ASR 8.08% CA 90.52%. Delete 'Shards 1 and 4 were not isolated ... (not tested)' here, in the caption, and remove the two n.t. nodes in the figure. Set the red bars to 1.29 and 8.08 (see comment at the coordinates).
-Shards~1 and~4 were not isolated in any $k\!=\!1$ draw and are marked
-n.t.\ (not tested); the relative update norm $r_s$ for each shard is
+alongside the ASR when that shard alone is rolled back, for both repairs
+(red = seed~42, orange = seed~0).
+The relative update norm $r_s$ for each shard is
 given in Table~\ref{tab:singleshard_rs}.
 
 \begin{figure}[h]
@@ -393,7 +382,7 @@ given in Table~\ref{tab:singleshard_rs}.
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
-    bar width=6pt,
+    bar width=5pt,
     width=\columnwidth,
     height=6cm,
     xlabel={Shard index},
@@ -429,30 +418,34 @@ given in Table~\ref{tab:singleshard_rs}.
 };
 \addlegendentry{$\mathrm{share}_s \times 100$}
 
-%%Hung: Fix these coordinates: (1, 1.29) and (4, 8.08) instead of 0. Then delete the two \node ... {n.t.} lines below.
-% Single-shard ASR (red bars; shards 1,4 = 0 and labelled n.t.)
+% Single-shard ASR seed 42 (red bars) -- from finetune_s42_bb_n6.json
 \addplot[fill=red!40!white, draw=red!70!black] coordinates {
-    (0, 1.02)
-    (1, 0)
-    (2, 8.94)
-    (3, 0.50)
-    (4, 0)
-    (5, 1.18)
+    (0, 0.81)
+    (1, 0.91)
+    (2, 5.36)
+    (3, 0.40)
+    (4, 3.96)
+    (5, 1.09)
 };
-\addlegendentry{Single-shard ASR}
+\addlegendentry{ASR seed~42}
 
-% n.t. labels above shards 1 and 4
-\node[font=\scriptsize, gray] at (axis cs:1, 2.5) {n.t.};
-\node[font=\scriptsize, gray] at (axis cs:4, 2.5) {n.t.};
+% Single-shard ASR seed 0 (orange bars) -- from finetune_s0_bb_n6.json
+\addplot[fill=orange!50!white, draw=orange!80!black] coordinates {
+    (0,  1.12)
+    (1,  1.50)
+    (2,  4.57)
+    (3,  0.39)
+    (4, 16.40)
+    (5,  1.51)
+};
+\addlegendentry{ASR seed~0}
 
 \end{axis}
 \end{tikzpicture}
 \caption{Per-shard repair share ($\mathrm{share}_s \times 100$, blue) vs.\
-single-shard rollback ASR (red), $n=6$, global fine-tune, seed~42.
-Shards~1 and~4 were not isolated in any $k=1$ draw (n.t.).
-%%Hung: 'confirming' is too strong for one seed; write 'indicating'. The observation itself (largest share, lowest single-shard ASR) is real and worth keeping.
+single-shard rollback ASR for seed~42 (red) and seed~0 (orange), $n=6$.
 Shard~3 carries the largest share (47.7\%) yet yields the \emph{lowest}
-tested ASR (0.50\%), confirming that repair-share concentration does not
+ASR in both repairs, indicating that repair-share concentration does not
 predict single-shard rollback efficacy.}
 \label{fig:singleshard}
 \end{figure}
@@ -476,22 +469,15 @@ Shard & Layer(s) & $r_s$ \\
 \end{table}
 
 No individual shard rollback restores the backdoor above the 50\%
-%%Hung: 'Among the four shards tested in isolation' -> all six were tested. 'the highest ASR is 8.94% (shard 2)' stays true with shard 4 at 8.08%.
-threshold. Among the four shards tested in isolation, the highest ASR
-is 8.94\% (shard~2, \texttt{layer2}), despite shard~3 carrying the
-largest repair share (47.7\%). Counterintuitively, the shard with the
-most repair update (shard~3, $\mathrm{share}_3=0.477$) yields the
-\emph{lowest} single-shard ASR (0.50\%), suggesting that the repair is
+ASR threshold. Across all six shards, the highest single-shard ASR
+is 5.36\% (seed~42, shard~2, \texttt{layer2}) and 16.40\% (seed~0,
+shard~4, \texttt{layer4}). Counterintuitively, shard~3, which carries
+the largest repair share (47.7\%), yields the \emph{lowest} single-shard ASR
+(0.40\% and 0.39\% under both repairs), suggesting that the repair is
 distributed across multiple shards in a way that no single shard can
-undo. At the coarser $n\!=\!3$ partition, where shard~S2
-(\texttt{layer2}$+$\texttt{layer3}) combines a share of 68.8\%, the
-%%Hung: '50-percentage-point gate' -> it is a 50% ASR threshold, not 50 percentage points. Also introduce the 50% criterion once at first use as THIS STUDY's recovery threshold; the draft uses it as if it were a standard.
-best single-shard ASR reaches only 17.46\%---still well below the
-50-percentage-point gate.
+undo.
 
-%%Hung: Delete 'rather than cherry-picking configurations'. Never name a fault you are not committing; it makes the reader look for it. 'This is a genuine negative finding.' can go too; the numbers say it. Keep the stealth sentence that follows.
-This is a genuine negative finding. We report it as such rather than
-cherry-picking configurations. However, we emphasize the stealth
+However, we emphasize the stealth
 implication: the hybrid model's clean accuracy
 (Table~\ref{tab:fullrollback}) remains indistinguishable from a normal
 repaired model at typical monitoring thresholds. The threat surface
@@ -500,8 +486,7 @@ Section~\ref{sec:kcurve} shows.
 
 \subsection{\(k\)-Shard Recovery Curve}
 \label{sec:kcurve}
-%%Hung: Typo: 'Fig~\ref' -> 'Fig.~\ref' (missing period).
-Fig~\ref{fig:kcurve} shows ASR as $k$ shards are cumulatively rolled
+Fig.~\ref{fig:kcurve} shows ASR as $k$ shards are cumulatively rolled
 back under the repair-aware strategy ($n\!=\!6$), where shards are
 selected greedily in decreasing order of $\mathrm{share}_s$ (i.e.,
 shard~3 first, then shard~4, then shard~2, and so on). The cumulative
@@ -535,20 +520,32 @@ repair share covered by the first $k$ shards is shown alongside ASR and CA.
 \node[font=\scriptsize, gray, anchor=south west]
     at (axis cs:3.1, 48) {$k{=}3$ threshold};
 
-% ASR line (left axis)
+% ASR greedy seed 42 (left axis) -- shards added in order 3,4,2,1,0,5
 \addplot[color=red!80!black, mark=*, mark size=2.5pt] coordinates {
-    (0,  0.90)
-    (1,  0.50)
-    (2,  4.57)
-    (3, 92.89)
-    (4, 97.11)
-    (5, 97.21)
-    (6, 97.43)
+    (0,  0.81)
+    (1,  0.40)
+    (2,  1.63)
+    (3, 56.42)
+    (4, 92.30)
+    (5, 93.41)
+    (6, 95.06)
 };
-\addlegendentry{ASR (\%)}
+\addlegendentry{ASR seed~42}
+
+% ASR greedy seed 0 (left axis)
+\addplot[color=orange!80!black, mark=triangle*, mark size=2.5pt, dashed] coordinates {
+    (0,  1.13)
+    (1,  0.39)
+    (2, 11.34)
+    (3, 81.11)
+    (4, 95.82)
+    (5, 93.50)
+    (6, 95.06)
+};
+\addlegendentry{ASR seed~0}
 \end{axis}
 
-% CA line (right axis, overlaid)
+% CA line seed 42 (right axis, overlaid)
 \begin{axis}[
     width=0.9\columnwidth,
     height=6cm,
@@ -563,30 +560,31 @@ repair share covered by the first $k$ shards is shown alongside ASR and CA.
     legend style={at={(0.05,0.78)}, anchor=north west, font=\small},
     every axis plot/.append style={thick},
 ]
-\addplot[color=blue!70!black, mark=square*, mark size=2.5pt, dashed] coordinates {
-    (0, 93.35)
-    (1, 87.09)
-    (2, 91.06)
-    (3, 87.38)
-    (4, 89.56)
-    (5, 90.18)
-    (6, 89.41)
+\addplot[color=blue!70!black, mark=square*, mark size=2.5pt, dotted] coordinates {
+    (0, 93.18)
+    (1, 86.76)
+    (2, 90.74)
+    (3, 89.04)
+    (4, 91.13)
+    (5, 91.54)
+    (6, 91.33)
 };
-\addlegendentry{CA (\%)}
+\addlegendentry{CA seed~42}
 \end{axis}
 \end{tikzpicture}
 \caption{ASR and CA vs.\ $k$ stale shards under repair-aware strategy
-($n=6$, greedy by $\mathrm{share}_s$). The dashed vertical line marks the
-sharp threshold at $k=3$, where ASR jumps from 4.57\% to 92.89\% once the
-three highest-share shards are rolled back.}
+($n=6$, greedy by $\mathrm{share}_s$, shards in order 3,4,2,1,0,5).
+Both repairs cross 50\% ASR at $k=3$. At $k=4$, CA stays within 2.3 points
+of the repaired model and within 0.2 points of the infected model.}
 \label{fig:kcurve}
 \end{figure}
 
 The curve reveals a sharp threshold at $k\!=\!3$: rolling back three
 shards (shards 3, 4, and 2)---which together cover 93.1\% of the total
-repair update---causes ASR to jump from 4.57\% to 92.89\%. Beyond this
+repair update---causes ASR to jump from 1.63\% to 56.42\% (seed~42) and
+from 11.34\% to 81.11\% (seed~0). Beyond this
 point ($k\!\geq\!4$), ASR saturates near the fully infected model's
-97.43\%. The relationship between cumulative repair share and ASR is
+95.06\%. The relationship between cumulative repair share and ASR is
 thus non-linear: the backdoor is not gradually restored proportionally
 to coverage, but exhibits a sharp recovery once the repair is
 sufficiently undermined.
@@ -598,8 +596,8 @@ every $k$: (a)~\textbf{repair-aware}: shards selected greedily by
 decreasing $\mathrm{share}_s$ (requires knowledge of the repair update
 norms); (b)~\textbf{architectural}: shards selected in index order
 (0, 1, 2, \ldots), requiring only knowledge of the partition
-boundaries; and (c)~\textbf{random}: shards drawn uniformly at random,
-reported as the mean ASR over 5 independent draws.
+boundaries; and (c)~\textbf{exact mean} over all $\binom{6}{k}$ subsets,
+replacing the earlier five random draws.
 
 \begin{figure}[h]
 \centering
@@ -627,84 +625,117 @@ reported as the mean ASR over 5 independent draws.
 \node[font=\scriptsize, gray, anchor=south west]
     at (axis cs:3.1, 55) {$k{=}3$ threshold};
 
-% Repair-aware
+% Repair-aware seed 42
 \addplot[color=red!80!black, mark=*, mark size=2.5pt, solid] coordinates {
-    (0,  0.90)
-    (1,  0.50)
-    (2,  4.57)
-    (3, 92.89)
-    (4, 97.11)
-    (5, 97.21)
-    (6, 97.43)
+    (0,  0.81)
+    (1,  0.40)
+    (2,  1.63)
+    (3, 56.42)
+    (4, 92.30)
+    (5, 93.41)
+    (6, 95.06)
 };
-\addlegendentry{Repair-aware}
+\addlegendentry{Repair-aware (s42)}
 
-% Architectural
+% Repair-aware seed 0
+\addplot[color=red!50!black, mark=triangle*, mark size=2.5pt, solid] coordinates {
+    (0,  1.13)
+    (1,  0.39)
+    (2, 11.34)
+    (3, 81.11)
+    (4, 95.82)
+    (5, 93.50)
+    (6, 95.06)
+};
+\addlegendentry{Repair-aware (s0)}
+
+% Architectural seed 42
 \addplot[color=blue!70!black, mark=square*, mark size=2.5pt, dashed] coordinates {
-    (0,  0.90)
-    (1,  1.02)
-    (2,  1.24)
-    (3, 13.67)
-    (4, 25.97)
-    (5, 97.21)
-    (6, 97.43)
+    (0,  0.81)
+    (1,  0.81)
+    (2,  0.92)
+    (3,  4.63)
+    (4,  3.31)
+    (5, 93.41)
+    (6, 95.06)
 };
-\addlegendentry{Architectural}
+\addlegendentry{Architectural (s42)}
 
-% Random (mean of 5 draws)
-\addplot[color=orange!80!black, mark=triangle*, mark size=2.5pt, dotted] coordinates {
-    (0,  0.90)
-    (1,  2.67)
-    (2,  5.68)
-    (3, 17.93)
-    (4, 46.46)
-    (5, 72.69)
-    (6, 97.43)
+% Architectural seed 0
+\addplot[color=blue!40!black, mark=square, mark size=2.5pt, dashed] coordinates {
+    (0,  1.13)
+    (1,  1.12)
+    (2,  1.17)
+    (3,  5.70)
+    (4,  4.82)
+    (5, 93.50)
+    (6, 95.06)
 };
-\addlegendentry{Random (mean of 5)}
+\addlegendentry{Architectural (s0)}
+
+% Exact mean over all C(6,k), seed 42
+\addplot[color=orange!80!black, mark=diamond*, mark size=2.5pt, dotted] coordinates {
+    (0,  0.81)
+    (1,  2.09)
+    (2,  5.23)
+    (3, 13.82)
+    (4, 32.05)
+    (5, 60.63)
+    (6, 95.06)
+};
+\addlegendentry{Exact mean (s42)}
+
+% Exact mean over all C(6,k), seed 0
+\addplot[color=orange!50!black, mark=diamond, mark size=2.5pt, dotted] coordinates {
+    (0,  1.13)
+    (1,  4.25)
+    (2, 12.54)
+    (3, 26.55)
+    (4, 44.72)
+    (5, 67.62)
+    (6, 95.06)
+};
+\addlegendentry{Exact mean (s0)}
 
 \end{axis}
 \end{tikzpicture}
 \caption{ASR (\%) vs.\ $k$ stale shards under three selection strategies
-($n=6$, global fine-tune, seed~42). Repair-aware reaches
-$>$50\% ASR at $k=3$; architectural requires $k=5$; random falls
-between, with high variance across draws
-(Section~\ref{sec:variance}).}
+($n=6$, both repairs). Repair-aware is the most efficient of the three
+ordered strategies, reaching $>$50\% ASR at $k=3$. Architectural requires
+$k=5$. The exact mean over all $\binom{6}{k}$ subsets is deterministic
+and replaces the earlier five random draws.}
 \label{fig:strategy}
 \end{figure}
 
-%%Hung: 'strictly most efficient' is not true: the random draw {2,4} reaches 74.76% at k=2, which repair-aware (4.57% at k=2) does not. Write 'the most efficient of the three ordered strategies'.
-Repair-aware selection is strictly most efficient: it reaches $>\!50\%$
+Repair-aware selection is the most efficient of the three ordered strategies:
+it reaches $>\!50\%$
 ASR at $k\!=\!3$, requiring only three stale shards to restore the
 backdoor. Architectural selection requires $k\!=\!5$ to cross the same
-threshold. Random selection falls between, crossing 50\% ASR at
-$k\!=\!5$ on average (though individual draws vary). Importantly,
-architectural selection---which requires no knowledge of repair update
-norms, only knowledge of the partition indices---still eventually
-%%Hung: 'underscoring that' -> 'which shows that'.
-achieves full backdoor recovery at $k\!=\!5$, underscoring that the
-attack does not require privileged access to repair internals to
+threshold. The exact mean over all $\binom{6}{k}$ subsets crosses 50\% ASR
+at $k\!=\!5$ on average (seed~42) and remains below 50\% at $k=4$ for both
+repairs. Importantly, architectural selection---which requires no knowledge
+of repair update norms, only knowledge of the partition indices---still
+eventually achieves full backdoor recovery at $k\!=\!5$, which shows that
+the attack does not require privileged access to repair internals to
 succeed at moderate stale-shard counts.
 
 \subsection{What Drives Recovery: Repair Share and Shard Interaction}
 \label{sec:locality}
 
-%%Hung: '41 of the 63': make this count come from the same JSON that draws Fig. 4 (make_locality_pgf.py prints it). When the all-63 run lands, update this, the abstract, Limitations, and the '11 such subsets' / '30 other subsets' counts below, all from the one file.
-Fig.~\ref{fig:locality_asr} plots, for every shard subset evaluated so
-far (41 of the 63 non-empty subsets at $n\!=\!6$), the repair share it
+Fig.~\ref{fig:locality_asr} plots, for every shard subset (all 63 non-empty
+subsets at $n\!=\!6$), the repair share it
 covers against the ASR it restores. Share alone is a weak predictor
-%%Hung: Spearman rho = 0.65 needs a named script (e.g. 'computed by scripts/plot_locality_asr.py') so a reviewer can reproduce it, or it comes out. An unsourced correlation is a liability.
-(Spearman $\rho = 0.65$). A single shard never exceeds 8.94\% ASR, even
-shard~3, which carries 47.74\% of the repair and restores only 0.50\%.
-What separates success from failure is whether the rolled-back set
-contains both \texttt{layer2} and \texttt{layer4}: all 11 such subsets
-restore at least 74.76\% ASR, while none of the 30 other subsets exceeds
-57.41\%. The two shards act jointly: alone they restore 8.94\% and 8.08\%,
-together 74.76\%. The cheapest such subset, $\{2,4\}$, costs a visible CA
-drop (76.99\%); adding \texttt{layer3} restores CA to 87.38\% at 92.89\%
-ASR. The share-greedy attacker of Section~\ref{sec:strategy} finds this
-subset because \texttt{layer2}--\texttt{layer4} are also the three
-highest-share shards.
+(Spearman $\rho = 0.33$ for seed~42, $\rho = 0.41$ for seed~0,
+computed by scripts/plot\_locality\_asr.py). A single shard never exceeds
+5.36\% ASR (seed~42) or 16.40\% (seed~0), even
+shard~3, which carries 47.74\% of the repair and restores only 0.40\%.
+The key structural finding is that \texttt{layer4} is necessary: every hybrid
+above 50\% ASR contains \texttt{layer4} in both repairs.
+\texttt{layer3}---the shard with the largest repair share (47.7\%)---is
+dispensable: the worst-case four-shard rollback under seed~0
+($\{1,2,4,5\}$, 96.07\% ASR) excludes it entirely. The share-greedy
+attacker of Section~\ref{sec:strategy} discovers these paths because
+\texttt{layer2}--\texttt{layer4} are also the three highest-share shards.
 
 \begin{figure}[t]
 \centering
@@ -722,9 +753,11 @@ highest-share shards.
 \input{fig_locality_data.tex}
 \end{axis}
 \end{tikzpicture}
-\caption{Repair share covered vs.\ restored ASR for every evaluated
-rollback subset (fine-tune repair, $n=6$). Filled markers: subsets that
-contain both \texttt{layer2} and \texttt{layer4}.}
+\caption{Repair share covered vs.\ restored ASR for every rollback subset
+(all 63 non-empty subsets, fine-tune repair, $n=6$). Filled markers:
+subsets containing \texttt{layer4}. Share is a weak predictor
+($\rho \le 0.41$); \texttt{layer4} membership is the structural
+discriminator.}
 \label{fig:locality_asr}
 \end{figure}
 
@@ -736,7 +769,7 @@ contain both \texttt{layer2} and \texttt{layer4}.}
 % scripts/check_lineage.py passes. Report ASR next to CA for every claim.
 ANP concentrates its update in \todo{shards}: \todo{X}\% of the pruned
 neurons lie in \texttt{layer4}. Rolling back a single shard restores up to
-\todo{ASR}\% ASR at \todo{CA}\% CA (shard \todo{s}), versus 8.94\% for the
+\todo{ASR}\% ASR at \todo{CA}\% CA (shard \todo{s}), versus 5.36\% for the
 fine-tuned repair. \todo{Say plainly whether one or two shards are enough
 under ANP, and whether CA stays near the ANP model's \ANPca\%.}
 \fi
@@ -746,17 +779,21 @@ under ANP, and whether CA stays near the ANP model's \ANPca\%.}
 
 The repair-aware and architectural orders are deterministic, and
 re-running the sweep under a second evaluation seed (0 instead of 42)
-reproduced all 49 repeated subset evaluations exactly, so the pipeline has
+reproduced all repeated subset evaluations exactly, so the pipeline has
 no hidden randomness. This is a determinism check, not a replication over
-repair seeds. Only the random strategy depends on the seed: its mean ASR at
-$k=3$ over five draws is 17.93\% under seed~42 and 44.07\% under seed~0,
-because the draws do or do not happen to contain both \texttt{layer2} and
+repair seeds. Only the exact mean over all $\binom{6}{k}$ subsets varies
+between repairs: 13.82\% at $k=3$ (seed~42) and 26.55\% (seed~0). The
+difference arises because seed-0 subsets are more likely to contain
 \texttt{layer4} (Section~\ref{sec:locality}).
 \ifrepairseed
 To test whether the result depends on the repair itself, we fine-tuned a
-second repaired model with seed~0 (CA~$=$~\todo{CA}\%, ASR~$=$~\todo{ASR}\%).
-Its three highest-share shards are \todo{shards}, and rolling them back
-restores \todo{ASR}\% ASR at \todo{CA}\% CA.
+second repaired model with seed~0 (CA~$=$~93.51\%, ASR~$=$~1.13\%,
+trained under BackdoorBench normalization throughout).
+Its three highest-share shards are the same as seed~42 ($\{3,4,2\}$),
+and rolling them back restores 81.11\% ASR at 89.93\% CA\ ($k\!=\!3$); at
+$k\!=\!4$ ($\{1,2,3,4\}$), ASR reaches 95.82\% at 91.20\% CA---within
+0.13 points of the infected baseline. The two repairs agree on whether a
+subset exceeds 50\% ASR in 60 of 64 cases (Pearson $r=0.926$).
 \fi
 
 \subsection{Deployment and Serving Comparison}
@@ -771,7 +808,6 @@ HMAC-SHA256 used here as a stand-in for a production signing
 scheme---against epoch-manifest pinning as defenses against
 shard-version skew, measured over 30 repetitions per (scheme,
 scenario) cell against the real infected/repaired checkpoint pair,
-%%Hung: Dat, good fix. One redundancy: 'each scheme's loader run as one OS process' now appears in your new first sentence AND here; drop it here.
 with each scheme's loader run as a separate OS process. In the skewed-load scenario -- one shard substituted
 with an older, independently and validly signed version, as a per-shard-
 signature-only loader would see after an interrupted rollout -- per-shard
@@ -790,7 +826,6 @@ per-shard signature checking has no equivalent recovery path, since it
 never detects the skew to begin with.
 \begin{table}[h]
 \centering
-%%Hung: Delete '; pending 23/09 freeze' from this caption. It is in the compiled PDF in capitals.
 \caption{Per-shard signature checking vs.\ epoch-manifest pinning ($n=30$ per cell).}
 \label{tab:serving}
 \begin{tabular}{lcc}
@@ -916,8 +951,6 @@ Epoch-manifest pinning rejects these hybrids for 34 bytes per manifest and
 should be a baseline control wherever 6G edge nodes receive model shards
 through caches.
 
-% =====================================================================
-%%Hung: I am now an author, so this section thanks an author. Delete it, or if Van Lang University or the Faculty provided compute or support, thank them instead. Do not thank me.
 % =====================================================================
 \bibliographystyle{IEEEtran}
 \bibliography{references}
