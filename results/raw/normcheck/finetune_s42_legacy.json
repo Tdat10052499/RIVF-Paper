@@ -1,0 +1,50 @@
+{
+  "repair": "finetune_s42",
+  "norm": "legacy",
+  "n_shards": 6,
+  "infected_ckpt": "data/checkpoints/resnet18_cifar10_badnets_infected.pt",
+  "repaired_ckpt": "data/checkpoints/resnet18_cifar10_badnets_repaired.pt",
+  "share_s": [
+    0.002952,
+    0.064359,
+    0.211121,
+    0.477438,
+    0.242879,
+    0.001251
+  ],
+  "sanity_full_rollback": {
+    "asr": 97.43,
+    "ca": 89.41
+  },
+  "subsets": [
+    {
+      "shards": [],
+      "k": 0,
+      "share_covered": 0,
+      "asr": 0.9,
+      "asr_correct": 81,
+      "asr_total": 9000,
+      "ca": 93.35,
+      "ca_correct": 9335,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "k": 6,
+      "share_covered": 1.0,
+      "asr": 97.43,
+      "asr_correct": 8769,
+      "asr_total": 9000,
+      "ca": 89.41,
+      "ca_correct": 8941,
+      "ca_total": 10000
+    }
+  ]
+}
