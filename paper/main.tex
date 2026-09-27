@@ -563,7 +563,6 @@ To test whether the pattern depends on the repair itself, we fine-tuned a second
 \subsection{Deployment and Serving Comparison}
 \label{sec:serving}
 % Owner: Ho Du Tuan Dat.
-%%Hung: Say which repaired checkpoint the loader serves, for "the real infected/repaired checkpoint pair" does not. Replace "against the real infected/repaired checkpoint pair" with: "against the infected checkpoint and the seed-42 repaired checkpoint" (or seed 0, whichever the loader used).
 All timings below were measured on a single M2 MacBook, on CPU, with
 each scheme's loader run as one OS process; this
 comparison uses the $n=3$ shard partition, unlike the $n=6$ partition
@@ -573,7 +572,7 @@ HMAC-SHA256, used here as a stand-in for a production signing
 scheme such as OpenSSF Model Signing~\cite{oms2025}) against
 epoch-manifest pinning as defenses against
 shard-version skew, measured over 30 repetitions per (scheme,
-scenario) cell against the real infected/repaired checkpoint pair.
+scenario) cell against the infected checkpoint and the seed-42 repaired checkpoint.
 In the skewed-load scenario (one shard substituted
 with an older, independently and validly signed version, as a
 per-shard-signature-only loader would see after an interrupted rollout),
@@ -585,21 +584,18 @@ protection costs 34 additional bytes of manifest per epoch (848 vs.\ 814
 bytes) to store the epoch identifier, and adds no measurable per-load
 verification cost once the identifier is hashed via an incremental update
 rather than a full-buffer concatenation (132.0~$\pm$~3.8~ms vs.\
-%%Hung: A 1.4 ms difference with standard deviations of 3.1 and 3.8 ms is noise, and claiming that it "favours pinning" invites the reviewer to distrust the rest. Replace "the 1.4~ms difference favours pinning" with: "the 1.4~ms difference lies within the run-to-run variation".
 133.4~$\pm$~3.1~ms per load over 60 loads per scheme; the 1.4~ms
-difference favours pinning). Recovering from a detected skew (reloading from the
+difference lies within the run-to-run variation). Recovering from a detected skew (reloading from the
 correct manifest immediately after rejection) takes 148.4~$\pm$~5.3~ms;
 per-shard signature checking has no equivalent recovery path, since it
 never detects the skew to begin with.
 \begin{table}[h]
 \centering
-%%Hung: $n$ is the number of shards everywhere else, and this paragraph itself uses $n=3$. Replace the caption with: "\caption{Per-shard signature checking against epoch-manifest pinning ($n=3$ partition, 30 repetitions per cell).}"
-\caption{Per-shard signature checking vs.\ epoch-manifest pinning ($n=30$ per cell).}
+\caption{Per-shard signature checking against epoch-manifest pinning ($n=3$ partition, 30 repetitions per cell).}
 \label{tab:serving}
 \begin{tabular}{lcc}
 \toprule
-%%Hung: "Sig.-only check" is cryptic. Replace the header row with: "Metric & Per-shard signature & Epoch pinning \\"
-Metric & Sig.-only check & Epoch pinning \\
+Metric & Per-shard signature & Epoch pinning \\
 \midrule
 Manifest size (bytes) & 814 & 848 \\
 Verify time / load (ms) & 133.4~$\pm$~3.1 & 132.0~$\pm$~3.8 \\
