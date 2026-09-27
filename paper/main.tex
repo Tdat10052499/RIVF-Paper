@@ -775,12 +775,13 @@ comparison uses the $n=3$ shard partition, unlike the $n=6$ partition
 used elsewhere in the paper. Table~\ref{tab:serving} compares
 per-shard signature checking---where ``signature'' denotes
 HMAC-SHA256 used here as a stand-in for a production signing
-scheme---against epoch-manifest pinning as defenses against
+scheme such as OpenSSF Model Signing~\cite{oms2025}---against
+epoch-manifest pinning as defenses against
 shard-version skew, measured over 30 repetitions per (scheme,
-scenario) cell against the real infected/repaired checkpoint pair,
-with each scheme's loader run as a separate OS process. In the skewed-load scenario -- one shard substituted
-with an older, independently and validly signed version, as a per-shard-
-signature-only loader would see after an interrupted rollout -- per-shard
+scenario) cell against the real infected/repaired checkpoint pair.
+In the skewed-load scenario -- one shard substituted
+with an older, independently and validly signed version, as a
+per-shard-signature-only loader would see after an interrupted rollout -- per-shard
 signature checking accepts the substituted shard in all 30 repetitions,
 since it has no way to detect that the shard belongs to a different repair
 epoch than its neighbours; epoch-manifest pinning rejects it in all 30
@@ -789,8 +790,8 @@ protection costs 34 additional bytes of manifest per epoch (848 vs.\ 814
 bytes) to store the epoch identifier, and adds no measurable per-load
 verification cost once the identifier is hashed via an incremental update
 rather than a full-buffer concatenation (132.0~$\pm$~3.8~ms vs.\
-133.4~$\pm$~3.1~ms per load, not statistically distinguishable at this
-sample size). Recovering from a detected skew -- reloading from the
+133.4~$\pm$~3.1~ms per load over 60 loads per scheme; the 1.4~ms
+difference favours pinning). Recovering from a detected skew -- reloading from the
 correct manifest immediately after rejection -- takes 148.4~$\pm$~5.3~ms;
 per-shard signature checking has no equivalent recovery path, since it
 never detects the skew to begin with.
