@@ -552,31 +552,12 @@ fine-tuned repair. \todo{Say plainly whether one or two shards are enough
 under ANP, and whether CA stays near the ANP model's \ANPca\%.}
 \fi
 
-%%Hung: With the exact mean there is no sampling variance left to discuss. Replace the heading with: "\subsection{Determinism and Replication Across Repairs}"
-\subsection{Determinism and Sampling Variance}
+\subsection{Determinism and Replication Across Repairs}
 \label{sec:variance}
 
-%%Hung: The 63 subsets are the same under both repairs, so "seed-0 subsets are more likely to contain layer4" is not meaningful; "only the exact mean varies between repairs" is false, for every curve does; and "seed 0" here names an evaluation seed while the next sentence names a repair seed. Replace the paragraph before \ifrepairseed with:
-%%Hung: "The repair-aware and architectural orders are deterministic, and re-running the sweep under a second evaluation seed reproduced every repeated subset evaluation exactly, so the pipeline has no hidden randomness. This is a determinism check, not a replication over repairs; the second repair below provides that."
-The repair-aware and architectural orders are deterministic, and
-re-running the sweep under a second evaluation seed (0 instead of 42)
-reproduced all repeated subset evaluations exactly, so the pipeline has
-no hidden randomness. This is a determinism check, not a replication over
-repair seeds. Only the exact mean over all $\binom{6}{k}$ subsets varies
-between repairs: 13.82\% at $k=3$ (seed~42) and 26.55\% (seed~0). The
-difference arises because seed-0 subsets are more likely to contain
-\texttt{layer4} (Section~\ref{sec:locality}).
+The repair-aware and architectural orders are deterministic, and re-running the sweep under a second evaluation seed reproduced every repeated subset evaluation exactly, so the pipeline has no hidden randomness. This is a determinism check, not a replication over repairs; the second repair below provides that.
 \ifrepairseed
-%%Hung: The k=3 and k=4 numbers repeat III-D. Replace the text inside \ifrepairseed ... \fi with:
-%%Hung: "To test whether the pattern depends on the repair itself, we fine-tuned a second repaired model with seed~0 (CA~$=$~93.51\%, ASR~$=$~1.13\%, trained under BackdoorBench normalization throughout). Its three highest-share shards are the same as under seed~42 ($\{3,4,2\}$), its repair-aware curve crosses 50\% ASR at the same $k$ (Fig.~\ref{fig:kcurve}), and the two repairs agree on whether a subset exceeds 50\% ASR in 60 of 64 cases (Pearson $r=0.926$ across all 64 subsets)."
-To test whether the result depends on the repair itself, we fine-tuned a
-second repaired model with seed~0 (CA~$=$~93.51\%, ASR~$=$~1.13\%,
-trained under BackdoorBench normalization throughout).
-Its three highest-share shards are the same as seed~42 ($\{3,4,2\}$),
-and rolling them back restores 81.11\% ASR at 89.93\% CA\ ($k\!=\!3$); at
-$k\!=\!4$ ($\{1,2,3,4\}$), ASR reaches 95.82\% at 91.20\% CA, within
-0.13 points of the infected baseline. The two repairs agree on whether a
-subset exceeds 50\% ASR in 60 of 64 cases (Pearson $r=0.926$).
+To test whether the pattern depends on the repair itself, we fine-tuned a second repaired model with seed~0 (CA~$=$~93.51\%, ASR~$=$~1.13\%, trained under BackdoorBench normalization throughout). Its three highest-share shards are the same as under seed~42 ($\{3,4,2\}$), its repair-aware curve crosses 50\% ASR at the same $k$ (Fig.~\ref{fig:kcurve}), and the two repairs agree on whether a subset exceeds 50\% ASR in 60 of 64 cases (Pearson $r=0.926$ across all 64 subsets).
 \fi
 
 \subsection{Deployment and Serving Comparison}
