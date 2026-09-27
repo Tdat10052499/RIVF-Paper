@@ -373,13 +373,7 @@ bug in the substitution code.
 
 %%Hung: A hybrid at 74.76% CA would be noticed by any monitor, so "would observe nothing unusual" overclaims and contradicts Section IV, and "This is important" is editorial. Replace the paragraph with:
 %%Hung: "\textbf{Hybrid utility.} Across all partial rollbacks ($n=6$, one to five stale shards), hybrids serve at 74.76\% to 93.15\% CA (seed~42) and 79.87\% to 93.52\% CA (seed~0); the single-shard hybrids stay within 86.76--93.15\% and 86.78--93.52\%. No hybrid degrades to chance accuracy (about 10\%), so a stale shard never breaks the model outright. Whether a monitor would notice depends on the subset, for the four-shard hybrids of Section~\ref{sec:kcurve} stay within 2.3 points of the repaired model."
-\textbf{Hybrid models are not broken.} Across all partial rollback
-configurations ($n=6$, one to five shards substituted), hybrid models
-achieve clean accuracies between 74.76\% and 93.15\% (seed~42) and
-79.87\% to 93.52\% (seed~0). No hybrid model degrades to random-chance
-accuracy ($\approx$10\%). This is important: it means a deployment
-that monitors only clean accuracy would observe nothing unusual when a
-stale shard is silently accepted.
+\textbf{Hybrid utility.} Across all partial rollbacks ($n=6$, one to five stale shards), hybrids serve at 74.76\% to 93.15\% CA (seed~42) and 79.87\% to 93.52\% CA (seed~0); the single-shard hybrids stay within 86.76--93.15\% and 86.78--93.52\%. No hybrid degrades to chance accuracy (about 10\%), so a stale shard never breaks the model outright. Whether a monitor would notice depends on the subset, for the four-shard hybrids of Section~\ref{sec:kcurve} stay within 2.3 points of the repaired model.
 
 \begin{table}[h]
 \centering
