@@ -292,8 +292,8 @@ There are **58 `%%Hung:` comment lines** in `main.tex`, mostly in Results. Each 
 
 **First, five sentences that contradict the data or the figures.** Each will be in the PDF until you fix it.
 
-1. **Fig. 4 (Dan).** The caption says 63 subsets and "filled markers contain layer4". The figure plots 126 points and fills by {2,4}. Regenerate it for seed 42 only, fill by `4 in p[0]`, and use the caption given in the comment.
-2. **III-D (Dan).** Delete "sharp threshold at k=3" and use my replacement sentence. The paragraph also promises a cumulative-share curve that Fig. 2 does not plot. Keep Fig. 2, but draw it from `fig_kcurve_asr_data.tex` and `fig_kcurve_ca_data.tex`.
+1. ~~**Fig. 4 (Dan).**~~ **Resolved by me, see 13.4.** Do not regenerate it.
+2. **III-D (Dan).** Delete "sharp threshold at k=3" and use my replacement sentence. The paragraph also promises a cumulative-share curve that Fig. 2 does not plot. (The Fig. 2 drawing itself is resolved by me, see 13.4; the two text fixes remain yours.)
 3. **III-B (Dan).** "Would observe nothing unusual" is false: one hybrid drops to 74.76% CA. Use the replacement paragraph, which limits the stealth claim to the four-shard hybrids.
 4. **III-E (Dan).** Delete "the earlier five random draws" from the text and the caption. The reader never saw those draws. Also fix the miscounted "three ordered strategies" and the "on average (seed 42)" wording.
 5. **III-G (Chinh).** Two sentences are false. First, "only the exact mean varies between repairs": every curve differs between the two repairs. Second, "seed-0 subsets are more likely to contain layer4": the 63 subsets are identical under both repairs, and exactly half contain layer4. The paragraph also uses "seed 0" for the evaluation seed and for the repair seed in adjacent sentences.
@@ -310,3 +310,31 @@ There are **58 `%%Hung:` comment lines** in `main.tex`, mostly in Results. Each 
 | 28/09, afternoon | My second pass. |
 | 29/09, 12:00 | Your final revisions. |
 | 29/09, 20:00 | Dat uploads the freshly compiled PDF to EDAS. Do not upload the committed `main.pdf`. |
+
+### 13.4 Figures: restyled by me, do not edit their code
+
+I restyled every figure after the figures in my SIGMOD 2019 paper. Every legend now sits above its plot and never covers data. There is no grid, the colors are the same in every figure, and multi-panel figures are compact and side by side.
+
+- **Figs. 2 and 3 are now one two-panel figure.** Panel (a) shows ASR for the three strategies under both repairs; panel (b) shows CA of the repair-aware hybrids. This removes the dual y-axis, the repair-aware curves that appeared in both figures, and the legend that covered Fig. 3's steepest curve. `\ref{fig:kcurve}` and `\ref{fig:strategy}` both point to it, so your text references still work.
+- **The old Fig. 4 is now Fig. 3**, with one panel per repair and filled markers for subsets containing layer4. This fixes the caption mismatch, and the reader can see the rule replicate.
+- **Fig. 1** is restyled with the legend above. The repair share bars are gray and the seed-0 bars are hatched; the caption and the III-C text say so.
+- **Where the code and numbers live.** Figure code is in `paper/fig_singleshard.tex`, `fig_kcurve.tex`, and `fig_locality.tex`. Every number is in `paper/figdata/*.dat`, generated from the two JSON files by `scripts/make_figures_pgf.py`. **Do not edit the figure code and do not type numbers.** If a result changes, run `python3 scripts/make_figures_pgf.py` and recompile.
+- The old `fig_*_data.tex` files and the four `make_*_pgf.py` scripts are no longer used. You may delete them.
+
+The text items in III-D and III-E still apply: the "sharp threshold" sentence, the cumulative-share sentence, and "the earlier five random draws" in the body text.
+
+### 13.5 Chinh: one data problem, urgent
+
+The seed-0 file's per-shard repair shares are **identical to seed 42's to six decimal places**: 0.002952, 0.064359, 0.211121, 0.477438, 0.242879, 0.001251. Two different fine-tunes cannot produce the same weight deltas. So the seed-0 shares were copied from seed 42, not computed from the seed-0 checkpoint.
+
+**Not affected:** ASR and CA, the layer4 rule, the 60-of-64 agreement, and r = 0.926.
+
+**Affected:** the seed-0 repair-aware order, which drives the 95.82% four-shard number and III-G's claim that the three highest-share shards are the same. Also affected are the seed-0 x-positions in Fig. 3 and the seed-0 Spearman value (0.41).
+
+**Fix, by 28/09 12:00.**
+1. On Kaggle, re-run `scripts/eval_all_subsets.py --norm backdoorbench` with the **seed-0** checkpoint.
+2. Write the output to a **new** file, `results/raw/all_subsets/finetune_s0_bb_n6_v2.json`. Raw files are append-only.
+3. Check that its ASR and CA match the old file exactly. They must, because the evaluation is deterministic.
+4. Change the seed-0 path in `RUNS` at the top of `scripts/make_figures_pgf.py`, and run the script. It prints each repair's repair-aware order.
+5. If the order is still 3, 4, 2, 1, 0, 5, only Fig. 3's seed-0 panel and the 0.41 change. Send me the new Spearman value.
+6. If the order changes, **stop and message me before editing any text.**

@@ -1,0 +1,28 @@
+% Fig. 3 (locality), one panel per repair. Style: 'rivf' (preamble). Data:
+% figdata/locality_{s42,s0}_{l4,nol4}.dat, written by scripts/make_figures_pgf.py.
+% Never type numbers here; rerun the script.
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1, horizontal sep=0.28cm, y descriptions at=edge left},
+  rivf, scale only axis, width=3.55cm, height=2.45cm,
+  xmin=-4, xmax=104, ymin=-5, ymax=104,
+  xtick={0,25,50,75,100}, ytick={0,25,50,75,100},
+  xlabel={Repair share covered (\%)}, ylabel={ASR (\%)},
+]
+\nextgroupplot[title={Seed-42 repair}, legend to name=legLocality, legend columns=2]
+\draw[black!40, densely dashed, line width=0.5pt] (axis cs:-4,50) -- (axis cs:104,50);
+\addplot[only marks, mark=o, mark size=1.55pt, cAR, line width=0.6pt]
+  table[x=share, y=asr]{figdata/locality_s42_nol4.dat};
+\addplot[only marks, mark=*, mark size=1.65pt, cRA, line width=0.4pt]
+  table[x=share, y=asr]{figdata/locality_s42_l4.dat};
+\legend{Without \texttt{layer4}, With \texttt{layer4}}
+\nextgroupplot[title={Seed-0 repair}]
+\draw[black!40, densely dashed, line width=0.5pt] (axis cs:-4,50) -- (axis cs:104,50);
+\addplot[only marks, mark=o, mark size=1.55pt, cAR, line width=0.6pt]
+  table[x=share, y=asr]{figdata/locality_s0_nol4.dat};
+\addplot[only marks, mark=*, mark size=1.65pt, cRA, line width=0.4pt]
+  table[x=share, y=asr]{figdata/locality_s0_l4.dat};
+\end{groupplot}
+\node[anchor=south, inner sep=0pt] at ($(group c1r1.outer north west)!0.5!(group c2r1.outer north east)+(0,2pt)$)
+  {\pgfplotslegendfromname{legLocality}};
+\end{tikzpicture}

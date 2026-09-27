@@ -1,0 +1,23 @@
+% Fig. 1, single-shard rollback. Style: 'rivf' (preamble). Data: figdata/singleshard.dat,
+% written by scripts/make_figures_pgf.py. Never type numbers here; rerun the script.
+\begin{tikzpicture}
+\begin{axis}[rivf, scale only axis, width=7.3cm, height=2.45cm,
+  ybar=0.7pt, bar width=4.3pt,
+  xmin=-0.55, xmax=5.55, ymin=0, ymax=52,
+  xtick={0,...,5},
+  xticklabels={{0\\\texttt{conv1}},{1\\\texttt{layer1}},{2\\\texttt{layer2}},
+               {3\\\texttt{layer3}},{4\\\texttt{layer4}},{5\\\texttt{linear}}},
+  xticklabel style={align=center, font=\scriptsize, inner sep=1pt},
+  ytick={0,10,20,30,40,50}, ylabel={Share or ASR (\%)},
+  legend style={at={(0.5,1.03)}, anchor=south, legend columns=3},
+  legend image code/.code={\draw[#1] (0cm,-0.08cm) rectangle (0.32cm,0.08cm);},
+]
+\addplot[draw=cSH!85!black, fill=cSH!45, line width=0.5pt]
+  table[x=idx, y=share]{figdata/singleshard.dat};
+\addplot[draw=cRA!75!black, fill=cRA, line width=0.5pt]
+  table[x=idx, y=asr_s42]{figdata/singleshard.dat};
+\addplot[draw=cRA!75!black, pattern=north east lines, pattern color=cRA, line width=0.5pt]
+  table[x=idx, y=asr_s0]{figdata/singleshard.dat};
+\legend{Repair share (seed 42), ASR (seed 42), ASR (seed 0)}
+\end{axis}
+\end{tikzpicture}

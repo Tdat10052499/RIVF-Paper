@@ -1,0 +1,34 @@
+% Fig. 2, k-curves: (a) ASR for three strategies x two repairs, (b) CA of the
+% repair-aware hybrids. Style: 'rivf' (preamble). Data: figdata/kcurve.dat,
+% written by scripts/make_figures_pgf.py. Never type numbers here; rerun the script.
+\begin{tikzpicture}
+\begin{groupplot}[
+  group style={group size=2 by 1, horizontal sep=1.12cm},
+  rivf, scale only axis, width=3.05cm, height=2.45cm,
+  xmin=-0.35, xmax=6.35, xtick={0,...,6}, xlabel={Stale shards $k$},
+]
+\nextgroupplot[title={(a) Attack success rate}, ylabel={ASR (\%)},
+  ymin=-4, ymax=103, ytick={0,25,50,75,100},
+  legend to name=legKcurve, legend columns=3]
+\draw[black!40, densely dashed, line width=0.5pt] (axis cs:-0.35,50) -- (axis cs:6.35,50);
+\addplot[cEM, mark=triangle*, forget plot]       table[x=k, y=em_s42]{figdata/kcurve.dat};
+\addplot[cEM, mark=triangle*, seed0, forget plot] table[x=k, y=em_s0]{figdata/kcurve.dat};
+\addplot[cAR, mark=square*, forget plot]         table[x=k, y=ar_s42]{figdata/kcurve.dat};
+\addplot[cAR, mark=square*, seed0, forget plot]  table[x=k, y=ar_s0]{figdata/kcurve.dat};
+\addplot[cRA, mark=*, forget plot]               table[x=k, y=ra_s42]{figdata/kcurve.dat};
+\addplot[cRA, mark=*, seed0, forget plot]        table[x=k, y=ra_s0]{figdata/kcurve.dat};
+\addlegendimage{cRA, mark=*}           \addlegendentry{Repair-aware}
+\addlegendimage{cAR, mark=square*}     \addlegendentry{Architectural}
+\addlegendimage{cEM, mark=triangle*}   \addlegendentry{Mean of all subsets}
+\addlegendimage{black!80, mark=*}      \addlegendentry{Seed-42 repair}
+\addlegendimage{black!80, mark=*, seed0}\addlegendentry{Seed-0 repair}
+\nextgroupplot[title={(b) Clean accuracy, repair-aware}, ylabel={CA (\%)},
+  ymin=85.2, ymax=94.3, ytick={86,88,90,92,94}]
+\draw[black!55, densely dotted, line width=0.6pt] (axis cs:-0.35,91.33) -- (axis cs:6.35,91.33);
+\node[anchor=south, font=\tiny, text=black!65, inner sep=1.5pt] at (axis cs:2.5,91.33) {infected};
+\addplot[cRA, mark=*]        table[x=k, y=ca_ra_s42]{figdata/kcurve.dat};
+\addplot[cRA, mark=*, seed0] table[x=k, y=ca_ra_s0]{figdata/kcurve.dat};
+\end{groupplot}
+\node[anchor=south, inner sep=0pt] at ($(group c1r1.outer north west)!0.5!(group c2r1.outer north east)+(0,2pt)$)
+  {\pgfplotslegendfromname{legKcurve}};
+\end{tikzpicture}
