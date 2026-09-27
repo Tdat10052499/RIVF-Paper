@@ -270,3 +270,43 @@ Good work overnight. I checked everything by script against the two JSON files.
 **One correction to my own checklist.** The `pdffonts` line in Section 6 was wrong; it printed every Type 1 font as if it were not embedded. It is fixed above. Every font in the current PDF is embedded.
 
 **Timeline.** My first editing pass starts once Figure 4 is pushed. The 29th does not move.
+
+---
+
+## 13. 27 September, evening: my first editing pass is in
+
+My first editing pass is pushed. Pull before you touch anything.
+
+### 13.1 What I changed directly
+
+- **New title**: "Signed but Stale: Rolling Back Backdoor Repairs Through Shard-Version Skew in 6G Edge Inference". It names the attack and puts 6G in front of an SS3 reviewer.
+- **One author block**: all four names over one shared affiliation, which saves about ten lines on page 1.
+- **Contributions list** added at the end of the Introduction's second paragraph.
+- **Table III (r_s) is gone**, with the sentence in III-C that cited it. The paper never defined r_s and no result used it.
+- **My own sections** (Abstract, Introduction, Discussion, Limitations, Conclusion) are polished. They now open with the four-shard attack, and the single-shard result comes second as the lower bound. Do not revert these edits.
+- **Every dash used as punctuation** is removed, as I promised. Range dashes such as `layer1--layer4` are kept.
+
+### 13.2 What you must do
+
+There are **58 `%%Hung:` comment lines** in `main.tex`, mostly in Results. Each one names the problem and gives the exact replacement text. As before, fix each one and delete the comment, or reply on a `%%Hung-reply:` line.
+
+**First, five sentences that contradict the data or the figures.** Each will be in the PDF until you fix it.
+
+1. **Fig. 4 (Dan).** The caption says 63 subsets and "filled markers contain layer4". The figure plots 126 points and fills by {2,4}. Regenerate it for seed 42 only, fill by `4 in p[0]`, and use the caption given in the comment.
+2. **III-D (Dan).** Delete "sharp threshold at k=3" and use my replacement sentence. The paragraph also promises a cumulative-share curve that Fig. 2 does not plot. Keep Fig. 2, but draw it from `fig_kcurve_asr_data.tex` and `fig_kcurve_ca_data.tex`.
+3. **III-B (Dan).** "Would observe nothing unusual" is false: one hybrid drops to 74.76% CA. Use the replacement paragraph, which limits the stealth claim to the four-shard hybrids.
+4. **III-E (Dan).** Delete "the earlier five random draws" from the text and the caption. The reader never saw those draws. Also fix the miscounted "three ordered strategies" and the "on average (seed 42)" wording.
+5. **III-G (Chinh).** Two sentences are false. First, "only the exact mean varies between repairs": every curve differs between the two repairs. Second, "seed-0 subsets are more likely to contain layer4": the 63 subsets are identical under both repairs, and exactly half contain layer4. The paragraph also uses "seed 0" for the evaluation seed and for the repair seed in adjacent sentences.
+
+**Then the rest**: headings, terminology, legends, and serving wording. All of these are marked in the comments.
+
+**Dat, today:** change the paper title on EDAS to the new title, character for character, and tell me that the registration exists. I still have no confirmation of it.
+
+### 13.3 Timeline
+
+| When (Vietnam time) | What |
+|---|---|
+| 28/09, 12:00 | Every `%%Hung:` comment resolved or replied to, the five contradictions first. The PDF compiles to 6 pages. |
+| 28/09, afternoon | My second pass. |
+| 29/09, 12:00 | Your final revisions. |
+| 29/09, 20:00 | Dat uploads the freshly compiled PDF to EDAS. Do not upload the committed `main.pdf`. |

@@ -1,12 +1,12 @@
-# Backdoor Repair Under Shard-Version Skew in Distributed Edge Inference
+# Signed but Stale: Rolling Back Backdoor Repairs Through Shard-Version Skew in 6G Edge Inference
 
 **Team:** Duong Ngoc Linh Dan · Ho Du Tuan Dat · Nguyen Minh Chinh  
 **Supervisor:** Dr. Dang Khanh Hung  
 **Target:** RIVF 2026 Special Session SS3  
 **Deadline:** 29/09/2026
 
-> ### Status, 27/09
-> Results III-A to III-G are re-derived on the new numbers; the paper is consistent **except Figure 4**, which still plots the old 41-subset data. See the plan, Section 12.
+> ### Status, 27/09 evening
+> Dr. Hung's first editing pass is in. **58 `%%Hung:` comments** in `paper/main.tex`; the five that contradict the data come first. See the plan, Section 13. New title; Dat must match it on EDAS today.
 >
 > ### Read this first
 > [`notes/2026-09-25_hung_supervisor.md`](notes/2026-09-25_hung_supervisor.md) is **the plan** for 26 to 29 September.
