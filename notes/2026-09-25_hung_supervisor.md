@@ -4,7 +4,7 @@
 **To:** Dan, Chinh, Dat
 **Ready version:** 29 September. **Official deadline:** 30 September, EDAS track SS3 (139851).
 
-> **⚠️ 26 September, afternoon: the compiled PDF is deliberately inconsistent.** Abstract, Introduction, Discussion, Limitations, and Conclusion now carry the NEW numbers (BackdoorBench normalization, two repairs). Results III-A to III-G still carry the OLD numbers until Dan re-derives them from `results/analysis/2026-09-26_hung_digest.md`. The Results must change to match the new sections, never the reverse. Section 11 has the split.
+> **27 September: read Section 12 first.** Results are re-derived and every number in `main.tex` checks against the JSON. Two items remain before my editing pass: Figure 4 is stale, and a few small fixes.
 >
 > **DECISION, 26 September (read Section 10 first).** The normalization check found a real problem and Chinh stopped, exactly as asked. Decision: **BackdoorBench normalization for every number in the paper.** No retraining of the seed-42 repair. Every result is re-evaluated under the new normalization today, and every number in the draft is provisional until those JSON files exist. Details, order of work, and the revised timeline are in Section 10.
 
@@ -115,7 +115,7 @@ Before every upload, run this checklist and paste the output into your daily not
 ```bash
 cd paper && latexmk -pdf -interaction=nonstopmode main.tex
 pdfinfo main.pdf | grep -E "Pages|Page size|PDF version"   # 6, A4 (595 x 842 pt), 1.6
-pdffonts main.pdf | awk 'NR>2 && $4!="yes"'                # must print nothing: every font embedded
+pdffonts main.pdf | awk 'NR>2 && $(NF-4)!="yes"'           # must print nothing: every font embedded
 pdftotext main.pdf - | grep -c "TODO"                       # must print 0
 grep -c "%%Hung:" main.tex                                  # must print 0 by the 28th
 ```
@@ -249,3 +249,24 @@ Layer2 is necessary for recovery under seed 42 and not under seed 0. Do not writ
 ### 11.4 Timeline
 
 Unchanged from Section 10.5: complete draft by 10:00 on the 27th, my first pass that afternoon, second pass on the 28th, final PDF on EDAS by 20:00 on the 29th.
+
+---
+
+## 12. 27 September: status before my editing pass
+
+Good work overnight. I checked everything by script against the two JSON files.
+
+**What is right.** The paper compiles to 6 A4 pages, PDF 1.6, every font embedded, no undefined references, no red text. Every decimal number in `main.tex` traces to the JSON. Results III-A to III-G are on the new numbers, both seeds, and you avoided the layer2 trap: the text says layer4 is necessary, which is true in both repairs. Every `%%Hung:` comment is resolved. All four affiliations now read the official faculty name. Figures 1 and 3 come from scripts. Figure 2 is typed by hand but its numbers are correct.
+
+**What must still change, in order.**
+
+1. **Figure 4 is wrong. Dan, this blocks submission.** `paper/fig_locality_data.tex` still holds the old legacy data: 41 points, including 17.46, 8.94, 8.08. The text and caption say all 63 subsets. Regenerate it from `results/raw/all_subsets/finetune_s42_bb_n6.json` with `--all-subsets`. One more change: `make_locality_pgf.py` fills the markers for subsets containing both layer2 and layer4, but the caption now says filled markers are subsets containing layer4. Change lines 69 and 70 of the script to test `4 in p[0]` only, so figure and caption agree. Plot seed 42 only and say "seed 42" in the caption; the Spearman values for both seeds are already in the text.
+2. **Soften one sentence in III-D.** "The curve reveals a sharp threshold at k=3" is strong for seed 42, which reaches only 56.42% at k=3. Write: "ASR crosses 50% at k=3 under both repairs (56.42% and 81.11%) and reaches 92.30% and 95.82% at k=4." That also matches the Abstract, which leads with the four-shard result.
+3. **Delete the `Claude outputs/` folder** (four files, duplicates of `scripts/`), and add `Claude outputs/` to `.gitignore`. This is the second time it has been committed.
+4. **The committed `paper/main.pdf` is stale** (built at 04:44, source changed at 12:36). Either recompile and commit it with every change to `main.tex`, or remove it and add it to `.gitignore`. A stale PDF on GitHub will mislead anyone who opens it.
+
+**One correction to `NOTE_FOR_DAT.md`.** It labels the serving numbers wrongly. 814 and 848 bytes are the manifest sizes for per-shard signature checking and for epoch pinning, not "infected" and "repaired" models. 133.4 and 132.0 ms are verification time per load under the two schemes, not inference latency. The paper itself is correct. Dat, do not change Section III-H to match that note.
+
+**One correction to my own checklist.** The `pdffonts` line in Section 6 was wrong; it printed every Type 1 font as if it were not embedded. It is fixed above. Every font in the current PDF is embedded.
+
+**Timeline.** My first editing pass starts once Figure 4 is pushed. The 29th does not move.
