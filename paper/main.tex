@@ -446,8 +446,7 @@ Section~\ref{sec:kcurve} shows.
 Fig.~\ref{fig:kcurve} shows ASR as $k$ shards are cumulatively rolled
 back under the repair-aware strategy ($n\!=\!6$), where shards are
 selected greedily in decreasing order of $\mathrm{share}_s$ (i.e.,
-shard~3 first, then shard~4, then shard~2, and so on). The cumulative
-repair share covered by the first $k$ shards is shown alongside ASR and CA.
+shard~3 first, then shard~4, then shard~2, and so on).
 
 \begin{figure}[t]
 \centering
@@ -464,15 +463,7 @@ points of the repaired models.}
 
 %%Hung: "Sharp threshold" overclaims for seed 42, which reaches only 56.42% at k=3, and "sufficiently undermined" is vague. Replace the paragraph with:
 %%Hung: "ASR crosses 50\% at $k=3$ under both repairs (56.42\% and 81.11\%) and reaches 92.30\% and 95.82\% at $k=4$. The three shards rolled back at $k=3$ (shards 3, 4, and 2) together cover 93.1\% of the repair update, yet at $k=2$ ASR is still 1.63\% and 11.34\%, and beyond $k=4$ it saturates near the infected model's 95.06\%. Recovery is therefore not proportional to the repair share reverted; Section~\ref{sec:locality} shows that it is governed by which shards are stale."
-The curve reveals a sharp threshold at $k\!=\!3$: rolling back three
-shards (shards 3, 4, and 2), which together cover 93.1\% of the total
-repair update, causes ASR to jump from 1.63\% to 56.42\% (seed~42) and
-from 11.34\% to 81.11\% (seed~0). Beyond this
-point ($k\!\geq\!4$), ASR saturates near the fully infected model's
-95.06\%. The relationship between cumulative repair share and ASR is
-thus non-linear: the backdoor is not gradually restored proportionally
-to coverage, but exhibits a sharp recovery once the repair is
-sufficiently undermined.
+ASR crosses 50\% at $k=3$ under both repairs (56.42\% and 81.11\%) and reaches 92.30\% and 95.82\% at $k=4$. The three shards rolled back at $k=3$ (shards 3, 4, and 2) together cover 93.1\% of the repair update, yet at $k=2$ ASR is still 1.63\% and 11.34\%, and beyond $k=4$ it saturates near the infected model's 95.06\%. Recovery is therefore not proportional to the repair share reverted; Section~\ref{sec:locality} shows that it is governed by which shards are stale.
 
 \subsection{Shard-Selection Strategy Comparison}
 \label{sec:strategy}
