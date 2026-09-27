@@ -1,85 +1,69 @@
-# RIVF Paper — Status Note for Duong Ngoc Linh Dan
-
-> **As of 27 Sep 2026, ~10 PM — YOUR ITEMS ARE BLOCKING SUBMISSION**
-
-Hey Dan, three things are blocking the final submission. All three are yours. Please read carefully.
+# Status Note for Dương Ngọc Linh Đan
+**Updated: 27 Sep 2026 — by Chinh (via Claude)**
 
 ---
 
-## Current Repo State
+## ✅ What You Did Right — kcurve files confirmed GOOD
 
-- HEAD: `5ecbbbb` (Chinh). PDF is **6 pages, clean**.
-- Dr. Hung rewrote Abstract, Introduction, Discussion, Limitations, Conclusion on 26 Sep.
-- Your Repair-Share Metric section (Sec II-D) is in and correct.
-- The **ANP section is fully gated off** (`\includeanpfalse`) — waiting for your `anp_v2_n6.json`.
-- Fig 2 (k-curve) renders from **hardcoded inline data** — your replacement files never landed.
-- Fig 4 (locality scatter) is **factually wrong** — 41 subsets in the data, 63 claimed in the caption.
+Your commit `f81e06` pushed **fig_kcurve_asr_data.tex** and **fig_kcurve_ca_data.tex** — both were checked line by line. Numbers are correct:
 
----
+| k | s42 ASR | s0 ASR | s42 CA | s0 CA |
+|---|---|---|---|---|
+| 0 | 0.81 | 1.13 | 93.18 | 93.51 |
+| 1 | 0.40 | 0.39 | 86.76 | 86.78 |
+| 2 | 1.63 | 11.34 | 90.74 | 90.49 |
+| 3 | 56.42 | 81.11 | 89.04 | 89.93 |
+| 4 | 92.30 | 95.82 | 91.13 | 91.20 |
+| 5 | 93.41 | 93.50 | 91.54 | 91.55 |
+| 6 | 95.06 | 95.06 | 91.33 | 91.33 |
 
-## 🚨 Item 1 — Push `paper/fig_kcurve_asr_data.tex` and `paper/fig_kcurve_ca_data.tex`
-
-Your commit `e1704a0` deleted `fig_kcurve_data.tex` with the message:
-> *"Remove unused fig_kcurve_data.tex (replaced by fig_kcurve_asr_data.tex and fig_kcurve_ca_data.tex)"*
-
-**Neither replacement file was ever pushed.** The repo has no k-curve data files right now. Push both to `paper/`.
+Endpoints match known values (k=0 = fine-tune result, k=6 = infected baseline). Greedy order [3,4,2,1,0,5] is correct. These files are ready to wire in.
 
 ---
 
-## 🚨 Item 2 — Regenerate `paper/fig_locality_data.tex` with 63 subsets
+## ❌ BLOCKING #1 — fig_locality_data.tex is STILL WRONG
 
-The current file has **41 subsets**. The paper caption says **"all 63 non-empty subsets"**. This is a factual error that reviewers will catch.
+**You did not update this file.** Its SHA on `main` is still `9cdb5b4` — unchanged from before your commit.
 
-Regenerate from **both JSON files** using **BackdoorBench normalization (std = 0.247, 0.243, 0.261)**:
+The problem:
+- The file header says **"41 subsets"**
+- It has **30 blue points + 11 red points = 41 data points total**
+- The paper caption says **63 subsets** — this is a factual error that reviewers will catch
 
-- `results/raw/all_subsets/finetune_s42_bb_n6.json`
-- `results/raw/all_subsets/finetune_s0_bb_n6.json`
+What you need to do:
+1. **Re-run `scripts/make_locality_pgf.py`** using **both** `finetune_s42_bb_n6.json` AND `finetune_s0_bb_n6.json` as sources, with BackdoorBench normalization (std = 0.247, 0.243, 0.261)
+2. The combined run over all 2^6 = 63 non-empty subsets of 6 shards should produce **63 data points**
+3. Push the regenerated `paper/fig_locality_data.tex` to `main`
 
-Run your `scripts/make_locality_pgf.py` (or equivalent) with both seeds. Confirm the output has **63 coordinate pairs per series**. Push the regenerated `paper/fig_locality_data.tex`.
+The caption in `main.tex` currently reads "across all $2^6 - 1 = 63$ non-empty subsets" — the data file must match this claim. If the script only produced 41 subsets, check whether it is reading both seed JSONs or only one, and whether the subset enumeration is complete.
 
----
-
-## ⚠️ Item 3 — Push `anp_v2_n6.json`
-
-This unlocks four places in the paper that are currently gated off:
-- Sec III-E (ANP contrast — full paragraph)
-- A Discussion paragraph
-- A Limitations sentence
-- A Conclusion sentence
-
-The four LaTeX fill commands waiting for your data:
-
-| Command | Meaning |
-|---|---|
-| `\ANPthr` | Selected pruning threshold |
-| `\ANPpruned` | Number of pruned BN neurons (out of 3,392) |
-| `\ANPca` | ANP-repaired clean accuracy (%) |
-| `\ANPasr` | ANP-repaired ASR (%) |
-
-Push to `results/raw/all_subsets/anp_v2_n6.json` (or wherever `eval_kshard_anp.py` outputs it), and Chinh will flip `\includeanpfalse` → `\includeanptrue`, fill the numbers, recompile, and push.
-
-*(For reference: Chinh's Kaggle preliminary run gave threshold=0.55, 404/3392 neurons, CA=83.03%, ASR=0.57% — but the paper needs your full subset sweep results, not the Kaggle run.)*
+**This is the last factual error blocking submission.**
 
 ---
 
-## After You Push
+## ❌ BLOCKING #2 — anp_v2_n6.json is STILL MISSING
 
-**Ping Chinh immediately.** He will `git pull`, compile (pdflatex → bibtex → pdflatex → pdflatex), verify, and push the updated PDF. Do not push partial work without telling him — the compile chain must run after every data file change.
+The ANP results section in `main.tex` is currently gated behind `\includeanpfalse` — it produces no output in the PDF. To unlock it, you need to push `paper/anp_v2_n6.json`.
 
----
+Once it exists, Chinh will:
+- Flip `\includeanpfalse` → `\includeanptrue`
+- Fill in the four macros from your JSON:
+  - `\ANPthr` (threshold used, e.g. 0.55)
+  - `\ANPpruned` (number of neurons pruned, e.g. 404 out of 3392)
+  - `\ANPca` (clean accuracy after ANP repair)
+  - `\ANPasr` (ASR after ANP repair)
 
-## Your Section — What to Check
+From a previous Kaggle run the placeholders are: threshold=0.55, pruned=404/3392, CA=83.03%, ASR=0.57% — but these need to be confirmed from your canonical `anp_v2_n6.json`, not assumed.
 
-Pull and search `main.tex` for `%%Hung:` near your Repair-Share Metric section (Sec II-D). Dr. Hung's editing pass runs 27–28 Sep. Address any markers before 29 Sep.
-
----
-
-## What's NOT Your Problem Right Now
-
-- `fig_strategy_data.tex` — pushed, handled by Chinh later.
-- `fig_singleshard_data.tex` — pushed and wired in already.
-- Serving Comparison (Sec III-G) — that's Dat's section.
+**Push `paper/anp_v2_n6.json` to `main` as soon as it is ready.**
 
 ---
 
-**Deadline: 29 Sep. Hung submits. Items 1 and 2 are needed before the final compile.**
+## Summary — What You Still Need to Push
+
+| File | Status | Priority |
+|---|---|---|
+| `paper/fig_locality_data.tex` | ❌ Regenerate with 63 subsets | 🔴 Critical |
+| `paper/anp_v2_n6.json` | ❌ Missing entirely | 🟠 High |
+
+Camera-ready deadline is **29 Sep 2026**. Please push both as soon as possible so Chinh can do the final combined recompile.
