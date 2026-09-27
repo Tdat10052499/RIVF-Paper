@@ -469,28 +469,12 @@ ASR crosses 50\% at $k=3$ under both repairs (56.42\% and 81.11\%) and reaches 9
 \label{sec:strategy}
 %%Hung: "Replacing the earlier five random draws" refers to a draft the reader has never seen, and the exact mean is not an "ordered strategy". Replace the paragraph with:
 %%Hung: "Fig.~\ref{fig:strategy} compares three shard-selection strategies at every $k$: (a)~\textbf{repair-aware}, shards selected greedily by decreasing $\mathrm{share}_s$, which requires both signed checkpoints; (b)~\textbf{architectural}, shards selected in index order (0, 1, 2, \ldots), which requires only the partition boundaries; and (c)~the \textbf{exact mean} over all $\binom{6}{k}$ subsets, which represents an adversary who chooses shards blindly."
-Fig.~\ref{fig:strategy} compares three shard-selection strategies at
-every $k$: (a)~\textbf{repair-aware}: shards selected greedily by
-decreasing $\mathrm{share}_s$ (requires knowledge of the repair update
-norms); (b)~\textbf{architectural}: shards selected in index order
-(0, 1, 2, \ldots), requiring only knowledge of the partition
-boundaries; and (c)~\textbf{exact mean} over all $\binom{6}{k}$ subsets,
-replacing the earlier five random draws.
+Fig.~\ref{fig:strategy} compares three shard-selection strategies at every $k$: (a)~\textbf{repair-aware}, shards selected greedily by decreasing $\mathrm{share}_s$, which requires both signed checkpoints; (b)~\textbf{architectural}, shards selected in index order (0, 1, 2, \ldots), which requires only the partition boundaries; and (c)~the \textbf{exact mean} over all $\binom{6}{k}$ subsets, which represents an adversary who chooses shards blindly.
 
 
 %%Hung: "Three ordered strategies" miscounts, "on average (seed 42)" is wrong because the exact mean crosses 50% at k=5 under both repairs, "Importantly" is empty emphasis, and "moderate stale-shard counts" undersells five of six. Replace the paragraph with:
 %%Hung: "Repair-aware selection is the more efficient of the two ordered strategies: it crosses 50\% ASR at $k\!=\!3$, whereas architectural selection needs $k\!=\!5$. The exact mean over all $\binom{6}{k}$ subsets crosses 50\% at $k\!=\!5$ under both repairs (60.63\% and 67.62\%) and stays below 50\% at $k=4$ (32.05\% and 44.72\%). Architectural selection (which requires no knowledge of the repair update, only of the partition indices) still restores the backdoor at $k\!=\!5$, so an adversary who knows nothing beyond the partition succeeds once five of the six shards are stale."
-Repair-aware selection is the most efficient of the three ordered strategies:
-it reaches $>\!50\%$
-ASR at $k\!=\!3$, requiring only three stale shards to restore the
-backdoor. Architectural selection requires $k\!=\!5$ to cross the same
-threshold. The exact mean over all $\binom{6}{k}$ subsets crosses 50\% ASR
-at $k\!=\!5$ on average (seed~42) and remains below 50\% at $k=4$ for both
-repairs. Importantly, architectural selection (which requires no knowledge
-of repair update norms, only knowledge of the partition indices) still
-eventually achieves full backdoor recovery at $k\!=\!5$, which shows that
-the attack does not require privileged access to repair internals to
-succeed at moderate stale-shard counts.
+Repair-aware selection is the more efficient of the two ordered strategies: it crosses 50\% ASR at $k\!=\!3$, whereas architectural selection needs $k\!=\!5$. The exact mean over all $\binom{6}{k}$ subsets crosses 50\% at $k\!=\!5$ under both repairs (60.63\% and 67.62\%) and stays below 50\% at $k=4$ (32.05\% and 44.72\%). Architectural selection (which requires no knowledge of the repair update, only of the partition indices) still restores the backdoor at $k\!=\!5$, so an adversary who knows nothing beyond the partition succeeds once five of the six shards are stale.
 
 %%Hung: The heading is a question in disguise. Replace it with: "\subsection{Repair Share Versus Shard Identity}"
 \subsection{What Drives Recovery: Repair Share and Shard Interaction}
