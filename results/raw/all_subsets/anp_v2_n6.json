@@ -1,0 +1,980 @@
+{
+  "repair": "anp_v2",
+  "norm": "backdoorbench",
+  "n_shards": 6,
+  "infected_ckpt": "data/checkpoints/resnet18_cifar10_badnets_infected.pt",
+  "repaired_ckpt": "data/checkpoints/resnet18_cifar10_badnets_anp_fixed.pt",
+  "share_s": [
+    0.01924,
+    0.092176,
+    0.184444,
+    0.321505,
+    0.354812,
+    0.027822
+  ],
+  "sanity_full_rollback": {
+    "asr": 95.06,
+    "ca": 91.33
+  },
+  "subsets": [
+    {
+      "shards": [],
+      "k": 0,
+      "share_covered": 0,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 84.22,
+      "ca_correct": 8422,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0
+      ],
+      "k": 1,
+      "share_covered": 0.0192,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 11.2,
+      "ca_correct": 1120,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1
+      ],
+      "k": 1,
+      "share_covered": 0.0922,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 12.57,
+      "ca_correct": 1257,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2
+      ],
+      "k": 1,
+      "share_covered": 0.1844,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 7.9,
+      "ca_correct": 790,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        3
+      ],
+      "k": 1,
+      "share_covered": 0.3215,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 10.01,
+      "ca_correct": 1001,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        4
+      ],
+      "k": 1,
+      "share_covered": 0.3548,
+      "asr": 67.31,
+      "asr_correct": 6058,
+      "asr_total": 9000,
+      "ca": 8.69,
+      "ca_correct": 869,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        5
+      ],
+      "k": 1,
+      "share_covered": 0.0278,
+      "asr": 72.99,
+      "asr_correct": 6569,
+      "asr_total": 9000,
+      "ca": 11.51,
+      "ca_correct": 1151,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1
+      ],
+      "k": 2,
+      "share_covered": 0.1114,
+      "asr": 0.48,
+      "asr_correct": 43,
+      "asr_total": 9000,
+      "ca": 9.97,
+      "ca_correct": 997,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2
+      ],
+      "k": 2,
+      "share_covered": 0.2037,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 10.13,
+      "ca_correct": 1013,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        3
+      ],
+      "k": 2,
+      "share_covered": 0.3407,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 11.5,
+      "ca_correct": 1150,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        4
+      ],
+      "k": 2,
+      "share_covered": 0.3741,
+      "asr": 3.38,
+      "asr_correct": 304,
+      "asr_total": 9000,
+      "ca": 10.2,
+      "ca_correct": 1020,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        5
+      ],
+      "k": 2,
+      "share_covered": 0.0471,
+      "asr": 99.27,
+      "asr_correct": 8934,
+      "asr_total": 9000,
+      "ca": 9.56,
+      "ca_correct": 956,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2
+      ],
+      "k": 2,
+      "share_covered": 0.2766,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 9.32,
+      "ca_correct": 932,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        3
+      ],
+      "k": 2,
+      "share_covered": 0.4137,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 12.75,
+      "ca_correct": 1275,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        4
+      ],
+      "k": 2,
+      "share_covered": 0.447,
+      "asr": 15.92,
+      "asr_correct": 1433,
+      "asr_total": 9000,
+      "ca": 7.98,
+      "ca_correct": 798,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        5
+      ],
+      "k": 2,
+      "share_covered": 0.12,
+      "asr": 16.98,
+      "asr_correct": 1528,
+      "asr_total": 9000,
+      "ca": 9.38,
+      "ca_correct": 938,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        3
+      ],
+      "k": 2,
+      "share_covered": 0.5059,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 9.83,
+      "ca_correct": 983,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        4
+      ],
+      "k": 2,
+      "share_covered": 0.5393,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 8.27,
+      "ca_correct": 827,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        5
+      ],
+      "k": 2,
+      "share_covered": 0.2123,
+      "asr": 83.98,
+      "asr_correct": 7558,
+      "asr_total": 9000,
+      "ca": 10.53,
+      "ca_correct": 1053,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        3,
+        4
+      ],
+      "k": 2,
+      "share_covered": 0.6763,
+      "asr": 0.14,
+      "asr_correct": 13,
+      "asr_total": 9000,
+      "ca": 10.37,
+      "ca_correct": 1037,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        3,
+        5
+      ],
+      "k": 2,
+      "share_covered": 0.3493,
+      "asr": 99.93,
+      "asr_correct": 8994,
+      "asr_total": 9000,
+      "ca": 9.85,
+      "ca_correct": 985,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        4,
+        5
+      ],
+      "k": 2,
+      "share_covered": 0.3826,
+      "asr": 63.04,
+      "asr_correct": 5674,
+      "asr_total": 9000,
+      "ca": 16.45,
+      "ca_correct": 1645,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2
+      ],
+      "k": 3,
+      "share_covered": 0.2959,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 10.31,
+      "ca_correct": 1031,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        3
+      ],
+      "k": 3,
+      "share_covered": 0.4329,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 9.96,
+      "ca_correct": 996,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        4
+      ],
+      "k": 3,
+      "share_covered": 0.4662,
+      "asr": 14.66,
+      "asr_correct": 1319,
+      "asr_total": 9000,
+      "ca": 8.9,
+      "ca_correct": 890,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.1392,
+      "asr": 13.62,
+      "asr_correct": 1226,
+      "asr_total": 9000,
+      "ca": 10.31,
+      "ca_correct": 1031,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        3
+      ],
+      "k": 3,
+      "share_covered": 0.5252,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 9.84,
+      "ca_correct": 984,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        4
+      ],
+      "k": 3,
+      "share_covered": 0.5585,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 8.46,
+      "ca_correct": 846,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.2315,
+      "asr": 99.77,
+      "asr_correct": 8979,
+      "asr_total": 9000,
+      "ca": 10.0,
+      "ca_correct": 1000,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        3,
+        4
+      ],
+      "k": 3,
+      "share_covered": 0.6956,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 10.05,
+      "ca_correct": 1005,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        3,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.3686,
+      "asr": 99.09,
+      "asr_correct": 8918,
+      "asr_total": 9000,
+      "ca": 9.93,
+      "ca_correct": 993,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        4,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.4019,
+      "asr": 68.23,
+      "asr_correct": 6141,
+      "asr_total": 9000,
+      "ca": 10.87,
+      "ca_correct": 1087,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        3
+      ],
+      "k": 3,
+      "share_covered": 0.5981,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 9.55,
+      "ca_correct": 955,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        4
+      ],
+      "k": 3,
+      "share_covered": 0.6314,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 10.03,
+      "ca_correct": 1003,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.3044,
+      "asr": 98.88,
+      "asr_correct": 8899,
+      "asr_total": 9000,
+      "ca": 9.88,
+      "ca_correct": 988,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        3,
+        4
+      ],
+      "k": 3,
+      "share_covered": 0.7685,
+      "asr": 1.01,
+      "asr_correct": 91,
+      "asr_total": 9000,
+      "ca": 10.26,
+      "ca_correct": 1026,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        3,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.4415,
+      "asr": 72.12,
+      "asr_correct": 6491,
+      "asr_total": 9000,
+      "ca": 6.73,
+      "ca_correct": 673,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        4,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.4748,
+      "asr": 75.84,
+      "asr_correct": 6826,
+      "asr_total": 9000,
+      "ca": 12.11,
+      "ca_correct": 1211,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        3,
+        4
+      ],
+      "k": 3,
+      "share_covered": 0.8608,
+      "asr": 0.07,
+      "asr_correct": 6,
+      "asr_total": 9000,
+      "ca": 9.56,
+      "ca_correct": 956,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        3,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.5338,
+      "asr": 72.4,
+      "asr_correct": 6516,
+      "asr_total": 9000,
+      "ca": 9.24,
+      "ca_correct": 924,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        4,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.5671,
+      "asr": 98.34,
+      "asr_correct": 8851,
+      "asr_total": 9000,
+      "ca": 9.99,
+      "ca_correct": 999,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        3,
+        4,
+        5
+      ],
+      "k": 3,
+      "share_covered": 0.7041,
+      "asr": 62.59,
+      "asr_correct": 5633,
+      "asr_total": 9000,
+      "ca": 7.89,
+      "ca_correct": 789,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 4,
+      "share_covered": 0.6174,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 11.08,
+      "ca_correct": 1108,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "k": 4,
+      "share_covered": 0.6507,
+      "asr": 0.0,
+      "asr_correct": 0,
+      "asr_total": 9000,
+      "ca": 6.95,
+      "ca_correct": 695,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.3237,
+      "asr": 99.51,
+      "asr_correct": 8956,
+      "asr_total": 9000,
+      "ca": 9.99,
+      "ca_correct": 999,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "k": 4,
+      "share_covered": 0.7877,
+      "asr": 5.03,
+      "asr_correct": 453,
+      "asr_total": 9000,
+      "ca": 9.75,
+      "ca_correct": 975,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        3,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.4607,
+      "asr": 100.0,
+      "asr_correct": 9000,
+      "asr_total": 9000,
+      "ca": 10.0,
+      "ca_correct": 1000,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.4941,
+      "asr": 69.99,
+      "asr_correct": 6299,
+      "asr_total": 9000,
+      "ca": 12.97,
+      "ca_correct": 1297,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "k": 4,
+      "share_covered": 0.88,
+      "asr": 2.42,
+      "asr_correct": 218,
+      "asr_total": 9000,
+      "ca": 12.39,
+      "ca_correct": 1239,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        3,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.553,
+      "asr": 99.66,
+      "asr_correct": 8969,
+      "asr_total": 9000,
+      "ca": 10.04,
+      "ca_correct": 1004,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        4,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.5863,
+      "asr": 99.88,
+      "asr_correct": 8989,
+      "asr_total": 9000,
+      "ca": 9.86,
+      "ca_correct": 986,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        3,
+        4,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.7234,
+      "asr": 12.19,
+      "asr_correct": 1097,
+      "asr_total": 9000,
+      "ca": 11.08,
+      "ca_correct": 1108,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "k": 4,
+      "share_covered": 0.9529,
+      "asr": 5.4,
+      "asr_correct": 486,
+      "asr_total": 9000,
+      "ca": 9.53,
+      "ca_correct": 953,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.6259,
+      "asr": 99.96,
+      "asr_correct": 8996,
+      "asr_total": 9000,
+      "ca": 10.0,
+      "ca_correct": 1000,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.6593,
+      "asr": 99.3,
+      "asr_correct": 8937,
+      "asr_total": 9000,
+      "ca": 9.91,
+      "ca_correct": 991,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.7963,
+      "asr": 70.79,
+      "asr_correct": 6371,
+      "asr_total": 9000,
+      "ca": 7.2,
+      "ca_correct": 720,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "k": 4,
+      "share_covered": 0.8886,
+      "asr": 79.72,
+      "asr_correct": 7175,
+      "asr_total": 9000,
+      "ca": 9.26,
+      "ca_correct": 926,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "k": 5,
+      "share_covered": 0.9722,
+      "asr": 0.38,
+      "asr_correct": 34,
+      "asr_total": 9000,
+      "ca": 9.8,
+      "ca_correct": 980,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "k": 5,
+      "share_covered": 0.6452,
+      "asr": 98.86,
+      "asr_correct": 8897,
+      "asr_total": 9000,
+      "ca": 9.46,
+      "ca_correct": 946,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        4,
+        5
+      ],
+      "k": 5,
+      "share_covered": 0.6785,
+      "asr": 97.69,
+      "asr_correct": 8792,
+      "asr_total": 9000,
+      "ca": 8.45,
+      "ca_correct": 845,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        3,
+        4,
+        5
+      ],
+      "k": 5,
+      "share_covered": 0.8156,
+      "asr": 25.54,
+      "asr_correct": 2299,
+      "asr_total": 9000,
+      "ca": 11.25,
+      "ca_correct": 1125,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "k": 5,
+      "share_covered": 0.9078,
+      "asr": 6.6,
+      "asr_correct": 594,
+      "asr_total": 9000,
+      "ca": 17.16,
+      "ca_correct": 1716,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "k": 5,
+      "share_covered": 0.9808,
+      "asr": 38.52,
+      "asr_correct": 3467,
+      "asr_total": 9000,
+      "ca": 11.18,
+      "ca_correct": 1118,
+      "ca_total": 10000
+    },
+    {
+      "shards": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "k": 6,
+      "share_covered": 1.0,
+      "asr": 95.06,
+      "asr_correct": 8555,
+      "asr_total": 9000,
+      "ca": 91.33,
+      "ca_correct": 9133,
+      "ca_total": 10000
+    }
+  ]
+}
