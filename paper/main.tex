@@ -442,15 +442,14 @@ scheme such as OpenSSF Model Signing~\cite{oms2025}) against
 epoch-manifest pinning as defenses against
 shard-version skew, measured over 30 repetitions per (scheme,
 scenario) cell against the infected checkpoint and the seed-42 repaired checkpoint.
-%%Hung: Say "rolled back" and "stale" as the rest of the paper does, and use US spelling (neighbors, IEEE). Replace the text from "In the skewed-load scenario" to "identifies the substituted shard." with:
-%%Hung: "In the skewed-load scenario (one shard rolled back to an older, independently and validly signed version, as a per-shard-signature-only loader would see after an interrupted rollout), per-shard signature checking accepts the stale shard in all 30 repetitions, since it has no way to detect that the shard belongs to a different repair epoch than its neighbors; epoch-manifest pinning rejects it in all 30 repetitions and identifies the stale shard."
-In the skewed-load scenario (one shard substituted
-with an older, independently and validly signed version, as a
+In the skewed-load scenario (one shard rolled back
+to an older, independently and validly signed version, as a
 per-shard-signature-only loader would see after an interrupted rollout),
-per-shard signature checking accepts the substituted shard in all 30 repetitions,
+per-shard signature checking accepts the stale shard in all 30 repetitions,
 since it has no way to detect that the shard belongs to a different repair
-epoch than its neighbours; epoch-manifest pinning rejects it in all 30
-repetitions and correctly identifies the substituted shard. This added
+epoch than its neighbors; epoch-manifest pinning rejects it in all 30
+repetitions and identifies the stale shard.
+This added
 protection costs 34 additional bytes of manifest per epoch (848 vs.\ 814
 bytes) to store the epoch identifier, and adds no measurable per-load
 verification cost once the identifier is hashed via an incremental update
@@ -458,9 +457,8 @@ rather than a full-buffer concatenation (132.0~$\pm$~3.8~ms vs.\
 133.4~$\pm$~3.1~ms per load over 60 loads per scheme; the 1.4~ms
 difference lies within the run-to-run variation). Recovering from a detected skew (reloading from the
 correct manifest immediately after rejection) takes 148.4~$\pm$~5.3~ms;
-%%Hung: "to begin with" is colloquial. Replace "since it never detects the skew to begin with." with: "since it never detects the skew."
 per-shard signature checking has no equivalent recovery path, since it
-never detects the skew to begin with.
+never detects the skew.
 \begin{table}[h]
 \centering
 \caption{Per-shard signature checking against epoch-manifest pinning ($n=3$ partition, 30 repetitions per cell).}
@@ -472,8 +470,7 @@ Metric & Per-shard signature & Epoch pinning \\
 Manifest size (bytes) & 814 & 848 \\
 Verify time / load (ms) & 133.4~$\pm$~3.1 & 132.0~$\pm$~3.8 \\
 Rollout recovery time (ms) & N/A (skew undetected) & 148.4~$\pm$~5.3 \\
-%%Hung: A row label should not be a question, and the text calls the scenario a skewed load. Replace the row with: "Skewed load accepted & Yes (undetected) & No (rejected) \\"
-Skewed model accepted? & Yes (undetected) & No (rejected) \\
+Skewed load accepted & Yes (undetected) & No (rejected) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -603,7 +600,7 @@ through caches.
 % =====================================================================
 % Hung, 28/09: the trigger balances the two columns of the last page. Re-tune
 % the reference number after the final edits if the last page is unbalanced.
-\IEEEtriggeratref{8}
+\IEEEtriggeratref{4}
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
