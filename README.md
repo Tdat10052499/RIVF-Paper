@@ -6,7 +6,7 @@
 **Deadline:** 29/09/2026
 
 > ### Status, 28/09 evening
-> Dr. Hung's second editing pass is in: **plan Section 14**. Seed 0 now comes from `finetune_s0_bb_n6_v2.json`; figures are regenerated and a new Fig. 1 (attack overview) is on page 1. **48 `%%Hung:` lines** in `paper/main.tex`, the **MUST** items first (wrong numbers the PDF prints now). All due **29/09 12:00**. Numbers: `results/analysis/2026-09-28_hung_digest_v2.md`.
+> Dr. Hung's second editing pass is in: **plan Section 14**. Seed 0 now comes from `finetune_s0_bb_n6_v2.json`; figures are regenerated, every seed-0 number in the text is corrected, and a new Fig. 1 (attack overview) is on page 1. **20 `%%Hung:` lines** remain in `paper/main.tex` (wording, no numbers), due **29/09 12:00**. Numbers: `results/analysis/2026-09-28_hung_digest_v2.md`.
 >
 > ### Read this first
 > [`notes/2026-09-25_hung_supervisor.md`](notes/2026-09-25_hung_supervisor.md) is **the plan** for 26 to 29 September.

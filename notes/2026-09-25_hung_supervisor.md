@@ -4,7 +4,7 @@
 **To:** Dan, Chinh, Dat
 **Ready version:** 29 September. **Official deadline:** 30 September, EDAS track SS3 (139851).
 
-> **28 September, evening: read Section 14 first.** My second editing pass is in, and seed 0 now comes from Chinh's v2 file. Every `%%Hung:` comment is due **29/09 12:00**, the MUST items first.
+> **28 September, evening: read Section 14 first.** My second editing pass is in, and seed 0 now comes from Chinh's v2 file. I corrected every seed-0 number myself; the 20 remaining `%%Hung:` lines are due **29/09 12:00**.
 >
 > **DECISION, 26 September (read Section 10 first).** The normalization check found a real problem and Chinh stopped, exactly as asked. Decision: **BackdoorBench normalization for every number in the paper.** No retraining of the seed-42 repair. Every result is re-evaluated under the new normalization today, and every number in the draft is provisional until those JSON files exist. Details, order of work, and the revised timeline are in Section 10.
 
@@ -96,7 +96,7 @@ One rule for the whole schedule. Push as you finish, not at the end of the day. 
 
 Decided: I join as the fourth and corresponding author. The block is already in `main.tex`, marked with a `%%Hung:` comment. Do not edit it.
 
-- Author 4: Dang Khanh Hung, Faculty of Information Technology, Van Lang School of Technology, Van Lang University, Ho Chi Minh City, Vietnam, hung.dk@vlu.edu.vn, corresponding author.
+- Author 4: **Hung Dang** (given name first, as printed in the paper), Faculty of Information Technology, Van Lang School of Technology, Van Lang University, Ho Chi Minh City, Vietnam, hung.dk@vlu.edu.vn, corresponding author.
 - The "Supervised by" line is gone; it is replaced by the author block.
 - The Acknowledgment now thanks an author. Delete it, or thank the university or faculty for support if that is true. Do not thank me.
 - Check your own affiliation wording against the official faculty name; see the comment in the author block.
@@ -382,17 +382,20 @@ What does not change: `layer4` is in every hybrid above 50% ASR under both repai
 - **A new Fig. 1** on page 1 draws the attack: the two signed epochs, the adversary's cache, the edge nodes, and the two checks. The other figures moved up by one: the bar chart is now Fig. 2, the k-curves Fig. 3, and the scatter Fig. 4. Section 13.4 uses the old numbers. Your `\ref` commands update themselves.
 - **My sections** (Abstract, Introduction, Discussion, Limitations, Conclusion, and the two-repair sentence in II-B) use the v2 numbers and answer the questions a reviewer is most likely to ask: one architecture, two repairs, the 6G link, the HMAC stand-in, and why the number of stale shards matters.
 - **References**: seven metadata fixes, checked against the publishers (CIFAR-10 author, pages for five papers, the OMS title).
+- **My name** in the author block is now **Hung Dang**. Dat, enter it the same way on EDAS.
 - **Page 6**: I removed the duplicated `\IEEEtriggeratref` line and set the trigger to 8. Dat, keep it unless page 6 looks unbalanced after the final compile.
 
-**What you must do.** There are 48 `%%Hung:` lines in `main.tex`. Do the **MUST** items first: each fixes a wrong number or a false claim that the PDF prints right now. Until you apply them, the PDF contradicts itself, because my sections print the v2 numbers and yours still print the old ones.
+**Seed-0 corrections: done by me.** The seed-0 numbers in Results were wrong in 14 places (Table I, III-A to III-G, and the captions of Figs. 2 to 4), and a wrong number must not reach EDAS, so I applied those corrections myself tonight. Read the new sentences once, so you know what your sections now say. Do not revert them, and do not type any of these numbers again.
 
-| Owner | MUST (wrong number or false claim) | Then |
-|---|---|---|
-| **Dan** | III-A "below 1.4%"; Table I seed-0 row; III-B CA ranges; III-C paragraph and Fig. 2 caption; III-C single-shard CA; III-D both paragraphs and Fig. 3 caption; III-E exact mean; III-F paragraph and Fig. 4 caption | III-B heading and lead sentence; III-C "seed-42 share" sentence; Results source line |
-| **Chinh** | III-G replication sentence | the pass-one items in 14.1; the Fig. 1 pointer in II-A; "adversary" in II-D |
-| **Dat** | none | III-H skewed-load sentence; "to begin with"; Table II row label |
+**What you must do.** There are 20 `%%Hung:` lines left in `main.tex`. None of them fixes a wrong number; they fix wording, headings, and consistency. Each gives the exact replacement text.
 
-**How to check your work.** After you apply the MUST items, this command must print nothing:
+| Owner | Items |
+|---|---|
+| **Dan** | III-B heading ("Hybrid Utility") and the two-line lead sentence to delete |
+| **Chinh** | the pass-one items in 14.1; the Fig. 1 pointer in II-A; "adversary" in II-D; the checkpoint manifest in 14.2 |
+| **Dat** | III-H skewed-load sentence; "to begin with"; Table II row label; EDAS title and my name |
+
+**How to check.** This command must print nothing, before and after your edits:
 
 ```bash
 grep -n -E '1\.13|93\.51|16\.40|95\.82|81\.11|11\.34|79\.87|93\.52|86\.78|44\.72|67\.62|0\.41\b|96\.07|60 of 64|0\.926|2\.3 points' paper/main.tex | grep -v '%%Hung'
@@ -404,7 +407,7 @@ Then compile, check 6 pages, and look at every page.
 
 | When (Vietnam time) | What |
 |---|---|
-| 29/09, 12:00 | Every `%%Hung:` comment applied and deleted, MUST items first. The PDF compiles to 6 pages. |
+| 29/09, 12:00 | Every `%%Hung:` comment applied and deleted. The PDF compiles to 6 pages. |
 | 29/09, afternoon | My final check. |
 | 29/09, 20:00 | Dat uploads a freshly compiled PDF to EDAS, track SS3 (139851). Dat, if you have not yet confirmed the registration and the title to me, do it tonight. |
 
@@ -414,4 +417,4 @@ Then compile, check 6 pages, and look at every page.
 2. **Do not type numbers.** Copy them from my replacement text or from the v2 digest.
 3. **This is the submission, not the camera-ready.** The camera-ready is the version we send after acceptance.
 
-You are one morning away from a paper I would be glad to put my name on. Finish the MUST items first, then the rest, and then rest.
+You are one morning away from a paper I would be glad to put my name on. Finish the last comments, compile, and then rest.
