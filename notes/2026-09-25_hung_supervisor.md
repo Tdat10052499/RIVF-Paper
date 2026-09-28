@@ -4,7 +4,7 @@
 **To:** Dan, Chinh, Dat
 **Ready version:** 29 September. **Official deadline:** 30 September, EDAS track SS3 (139851).
 
-> **27 September: read Section 12 first.** Results are re-derived and every number in `main.tex` checks against the JSON. Two items remain before my editing pass: Figure 4 is stale, and a few small fixes.
+> **28 September, evening: read Section 14 first.** My second editing pass is in, and seed 0 now comes from Chinh's v2 file. Every `%%Hung:` comment is due **29/09 12:00**, the MUST items first.
 >
 > **DECISION, 26 September (read Section 10 first).** The normalization check found a real problem and Chinh stopped, exactly as asked. Decision: **BackdoorBench normalization for every number in the paper.** No retraining of the seed-42 repair. Every result is re-evaluated under the new normalization today, and every number in the draft is provisional until those JSON files exist. Details, order of work, and the revised timeline are in Section 10.
 
@@ -338,3 +338,80 @@ The seed-0 file's per-shard repair shares are **identical to seed 42's to six de
 4. Change the seed-0 path in `RUNS` at the top of `scripts/make_figures_pgf.py`, and run the script. It prints each repair's repair-aware order.
 5. If the order is still 3, 4, 2, 1, 0, 5, only Fig. 3's seed-0 panel and the 0.41 change. Send me the new Spearman value.
 6. If the order changes, **stop and message me before editing any text.**
+
+---
+
+## 14. 28 September, evening: my second pass and the seed-0 decision
+
+This is the last section of this plan. Read all of it before you touch `main.tex`.
+
+### 14.1 Where we stand
+
+Thank you for last night's work. Dan applied every Results fix, Dat applied every serving fix, and Chinh fixed III-G and re-ran seed 0. Several of you applied a fix but left its comment line in place; I deleted those 23 lines myself.
+
+Still open from my first pass, all Chinh's: the trust sentence and the repeated paragraph in II-A, the two labels in II-B, the II-C heading, the BatchNorm sentence in II-D, the ASR sentence in II-E, and "Our adversary" in Related Work. Each is a copy-paste replacement.
+
+### 14.2 Seed 0: the decision
+
+Chinh's re-run did not pass the check in 13.5. Its ASR and CA do not match the old file: the repaired model is now 1.34% ASR and 93.13% CA instead of 1.13% and 93.51%, and one subset differs by 42 points. The share order also changed, to 3, 2, 4 instead of 3, 4, 2. So the old file and the new one come from two different seed-0 checkpoints.
+
+**Decision: every seed-0 number in the paper now comes from the v2 file.** The old file mixed two models, with ASR and CA from one checkpoint and shares copied from seed 42. The v2 file measures all three on one checkpoint, and its full rollback returns the infected model exactly, so it is the only consistent seed-0 data we have.
+
+- I pointed `scripts/make_figures_pgf.py` at the v2 file and regenerated the figures. Do not edit figure code.
+- Every number is in `results/analysis/2026-09-28_hung_digest_v2.md`, which `scripts/make_digest.py` generates from the JSON. The seed-0 columns of the 26 September digest are out of date.
+- **Chinh:** update `data/checkpoint_manifest.md` for the seed-0 checkpoint: ASR 1.34%, CA 93.13%, its SHA256, the results file `finetune_s0_bb_n6_v2.json`, and one line on where the checkpoint came from and why the old results differ.
+
+What changes in the paper:
+
+| Old claim | Now |
+|---|---|
+| Four shards restore 92.3% and 95.8% ASR, CA within 2.3 points | 92.3% and **95.9%**, CA within **2.2** points |
+| One stale shard restores at most 16.4% | at most **28.9%** (seed 0, `layer4`) |
+| Shard 3 gives the lowest single-shard ASR under both repairs | **False for seed 0** (3.49%). Say instead: shard 3 carries the largest share (47.7% and 49.0%) yet restores at most 3.5% alone |
+| The exact mean crosses 50% at k=5 under both repairs | k=5 under seed 42, **k=4 under seed 0** (52.97%) |
+| Share is a weak predictor (Spearman 0.33 and 0.41) | **at best moderate** (0.37 and 0.59, over the 63 subsets in the figure) |
+| The two repairs agree on 60 of 64 subsets, r = 0.926 | **55 of 63**, r = 0.85; all eight disagreements are subsets containing `layer4` that restore only the seed-0 repair |
+| Greedy order 3, 4, 2 under both repairs | 3, 4, 2 under seed 42, **3, 2, 4 under seed 0**; both reach {2, 3, 4} at k=3 |
+
+What does not change: `layer4` is in every hybrid above 50% ASR under both repairs, `layer3` is dispensable, repair-aware selection crosses 50% at k=3 and architectural selection at k=5 under both repairs, and the serving results.
+
+### 14.3 My second pass
+
+**What I changed directly.**
+
+- **A new Fig. 1** on page 1 draws the attack: the two signed epochs, the adversary's cache, the edge nodes, and the two checks. The other figures moved up by one: the bar chart is now Fig. 2, the k-curves Fig. 3, and the scatter Fig. 4. Section 13.4 uses the old numbers. Your `\ref` commands update themselves.
+- **My sections** (Abstract, Introduction, Discussion, Limitations, Conclusion, and the two-repair sentence in II-B) use the v2 numbers and answer the questions a reviewer is most likely to ask: one architecture, two repairs, the 6G link, the HMAC stand-in, and why the number of stale shards matters.
+- **References**: seven metadata fixes, checked against the publishers (CIFAR-10 author, pages for five papers, the OMS title).
+- **Page 6**: I removed the duplicated `\IEEEtriggeratref` line and set the trigger to 8. Dat, keep it unless page 6 looks unbalanced after the final compile.
+
+**What you must do.** There are 48 `%%Hung:` lines in `main.tex`. Do the **MUST** items first: each fixes a wrong number or a false claim that the PDF prints right now. Until you apply them, the PDF contradicts itself, because my sections print the v2 numbers and yours still print the old ones.
+
+| Owner | MUST (wrong number or false claim) | Then |
+|---|---|---|
+| **Dan** | III-A "below 1.4%"; Table I seed-0 row; III-B CA ranges; III-C paragraph and Fig. 2 caption; III-C single-shard CA; III-D both paragraphs and Fig. 3 caption; III-E exact mean; III-F paragraph and Fig. 4 caption | III-B heading and lead sentence; III-C "seed-42 share" sentence; Results source line |
+| **Chinh** | III-G replication sentence | the pass-one items in 14.1; the Fig. 1 pointer in II-A; "adversary" in II-D |
+| **Dat** | none | III-H skewed-load sentence; "to begin with"; Table II row label |
+
+**How to check your work.** After you apply the MUST items, this command must print nothing:
+
+```bash
+grep -n -E '1\.13|93\.51|16\.40|95\.82|81\.11|11\.34|79\.87|93\.52|86\.78|44\.72|67\.62|0\.41\b|96\.07|60 of 64|0\.926|2\.3 points' paper/main.tex | grep -v '%%Hung'
+```
+
+Then compile, check 6 pages, and look at every page.
+
+### 14.4 Timeline
+
+| When (Vietnam time) | What |
+|---|---|
+| 29/09, 12:00 | Every `%%Hung:` comment applied and deleted, MUST items first. The PDF compiles to 6 pages. |
+| 29/09, afternoon | My final check. |
+| 29/09, 20:00 | Dat uploads a freshly compiled PDF to EDAS, track SS3 (139851). Dat, if you have not yet confirmed the registration and the title to me, do it tonight. |
+
+### 14.5 Three rules for the last day
+
+1. **Compile before every push.** Two pushes last night replaced `main.tex` with base64 text. Push only a `main.tex` that compiles to 6 pages.
+2. **Do not type numbers.** Copy them from my replacement text or from the v2 digest.
+3. **This is the submission, not the camera-ready.** The camera-ready is the version we send after acceptance.
+
+You are one morning away from a paper I would be glad to put my name on. Finish the MUST items first, then the rest, and then rest.

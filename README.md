@@ -5,8 +5,8 @@
 **Target:** RIVF 2026 Special Session SS3  
 **Deadline:** 29/09/2026
 
-> ### Status, 27/09 evening
-> Dr. Hung's first editing pass is in: **58 `%%Hung:` comments** in `paper/main.tex`, the five data contradictions first. **Figures are restyled and regenerated from JSON; do not edit figure code** (plan 13.4). **Chinh: urgent seed-0 share problem** (plan 13.5). New title; Dat must match it on EDAS today.
+> ### Status, 28/09 evening
+> Dr. Hung's second editing pass is in: **plan Section 14**. Seed 0 now comes from `finetune_s0_bb_n6_v2.json`; figures are regenerated and a new Fig. 1 (attack overview) is on page 1. **48 `%%Hung:` lines** in `paper/main.tex`, the **MUST** items first (wrong numbers the PDF prints now). All due **29/09 12:00**. Numbers: `results/analysis/2026-09-28_hung_digest_v2.md`.
 >
 > ### Read this first
 > [`notes/2026-09-25_hung_supervisor.md`](notes/2026-09-25_hung_supervisor.md) is **the plan** for 26 to 29 September.

@@ -14,7 +14,7 @@ import statistics as st
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "paper", "figdata")
 RUNS = {"s42": "results/raw/all_subsets/finetune_s42_bb_n6.json",
-        "s0": "results/raw/all_subsets/finetune_s0_bb_n6.json"}
+        "s0": "results/raw/all_subsets/finetune_s0_bb_n6_v2.json"}
 N = 6
 
 
@@ -41,13 +41,13 @@ def main():
     data = {name: load(path) for name, path in RUNS.items()}
     full = tuple(range(N))
 
-    # Fig. 1: single-shard rollback (share of the seed-42 repair).
+    # Fig. 2: single-shard rollback (share of the seed-42 repair).
     s42, share42 = data["s42"]
     s0, _ = data["s0"]
     write("singleshard.dat", ["idx", "share", "asr_s42", "asr_s0"],
           [(i, 100 * share42[i], s42[(i,)]["asr"], s0[(i,)]["asr"]) for i in range(N)])
 
-    # Fig. 2: k-curves. Repair-aware = top-k shards by that repair's own share.
+    # Fig. 3: k-curves. Repair-aware = top-k shards by that repair's own share.
     cols, table = ["k"], {k: [k] for k in range(N + 1)}
     for name, (runs, share) in data.items():
         order = sorted(range(N), key=lambda i: -share[i])

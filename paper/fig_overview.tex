@@ -1,0 +1,42 @@
+% Fig. 1, overview of shard-version skew (schematic, no data). Hung, 28/09.
+% Colors follow the paper: blue = repaired (epoch e), red = pre-repair (epoch e-1).
+% Needs \usetikzlibrary{arrows.meta,fit} (preamble).
+\begin{tikzpicture}[
+  font=\scriptsize,
+  chip/.style={draw=black!75, line width=0.4pt, minimum width=0.40cm, minimum height=0.30cm,
+               inner sep=0pt, font=\tiny, anchor=center},
+  rep/.style={chip, fill=cAR!65},
+  inf/.style={chip, fill=cRA!70},
+  lbl/.style={font=\scriptsize, text=black!85, align=left, inner sep=1pt},
+  arr/.style={-{Latex[length=1.5mm, width=1.1mm]}, black!70, line width=0.5pt},
+  link/.style={-{Latex[length=1.2mm, width=0.9mm]}, black!55, line width=0.4pt, densely dashed},
+]
+\def\dx{0.45}
+% Row 1: publisher, two signed epochs
+\node[lbl, anchor=west] at (0,0) {Publisher\\signs per shard};
+\foreach \i in {0,...,5} { \node[inf] (a\i) at ({2.05+\i*\dx},0) {\i}; }
+\foreach \i in {0,...,5} { \node[rep] (b\i) at ({5.25+\i*\dx},0) {\i}; }
+\node[lbl, anchor=south, align=center] at ({2.05+2.5*\dx},0.17) {epoch $e{-}1$ (infected), signed};
+\node[lbl, anchor=south, align=center] at ({5.25+2.5*\dx},0.17) {epoch $e$ (repaired), signed};
+% Row 2: artifact cache under adversary control
+\node[lbl, anchor=west] at (0,-1.35) {Artifact cache\\(adversary)};
+\foreach \i/\s in {0/rep,1/inf,2/inf,3/inf,4/inf,5/rep} { \node[\s] (c\i) at ({3.65+\i*\dx},-1.35) {\i}; }
+\node[draw=cRA!80!black, densely dashed, line width=0.5pt, rounded corners=1pt, inner sep=2pt,
+      fit=(c0) (c5)] (cache) {};
+\draw[arr] (a4.south) -- ({3.65+1.0*\dx},-1.05) node[midway, left=1pt, lbl, font=\tiny] {stale copies};
+\draw[arr] (b1.south) -- ({3.65+4.0*\dx},-1.05) node[midway, right=1pt, lbl, font=\tiny] {staged rollout};
+\node[lbl, anchor=west] at (6.28,-1.35) {serves signed pre-repair\\copies of shards 1--4};
+% Row 3: edge nodes, each verifies only its own shard
+\node[lbl, anchor=west] at (0,-2.75) {Edge nodes 0--5\\(one shard each)};
+\foreach \i/\s in {0/rep,1/inf,2/inf,3/inf,4/inf,5/rep} {
+  \node[\s] (n\i) at ({3.65+\i*\dx},-2.75) {\i};
+  \draw[link] (c\i.south) -- (n\i.north);
+  \node[font=\tiny, text=black!70, anchor=north, inner sep=0.5pt] at (n\i.south) {$\checkmark$};
+}
+\node[lbl, anchor=east, align=right, font=\tiny] at (3.38,-2.05) {intermittent\\wireless links};
+\node[lbl, anchor=west] at (6.28,-2.75) {hybrid model:\\backdoor restored};
+% Row 4: the two checks
+\node[lbl, anchor=north west, align=left] at (0,-3.33)
+  {Per-shard signature check: all six shards accepted ($\checkmark$).\\
+   Epoch-manifest pinning: shards 1--4 carry epoch $e{-}1 \neq e$ and are rejected.};
+\end{tikzpicture}
