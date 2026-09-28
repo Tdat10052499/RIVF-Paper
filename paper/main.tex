@@ -211,11 +211,7 @@ are hosted by different edge nodes (split or partitioned
 inference~\cite{kang2017neurosurgeon}), a deployment pattern envisioned for
 6G edge intelligence~\cite{letaief2022edgeai6g}. Each shard is signed
 individually and delivered through an artifact cache, and each node
-%%Hung: Point the reader to the new overview figure (Fig. 1, added by me in the Introduction). Replace the last sentence of this paragraph with:
-%%Hung: "Repairs are rolled out in stages, so an interrupted rollout caused by a link outage or handover is a normal operating condition; Fig.~\ref{fig:overview} depicts the setting and the attack."
-verifies only the shard it hosts. Repairs are rolled out in stages, so
-an interrupted rollout caused by a link outage or handover is a normal
-operating condition.
+verifies only the shard it hosts. Repairs are rolled out in stages, so an interrupted rollout caused by a link outage or handover is a normal operating condition; Fig.~\ref{fig:overview} depicts the setting and the attack.
 
 \textbf{Adversary.} The adversary controls only the artifact cache or
 update path. Its goal is to make the deployment serve a \emph{hybrid}
@@ -227,24 +223,12 @@ It can therefore compute, offline, how much of the repair each shard
 carries (Section~\ref{sec:share}). It needs no queries to the model and
 no training data.
 
-%%Hung: Add the Oxford comma, and say what requires attestation (the defense, not the worker). Replace the two sentences with:
-%%Hung: "The coordinator, loader, runtime, and any stored minimum-epoch state are trusted; signatures cannot be forged. A fully compromised worker that misreports its loaded weights is out of scope, for excluding it requires attestation."
-\textbf{Trust assumptions.} The coordinator, loader, runtime and any
-stored minimum-epoch state are trusted; signatures cannot be forged.
-A fully compromised worker that misreports its loaded weights is out of
-scope, since it requires attestation.
-
-%%Hung: This paragraph repeats Introduction paragraphs 1 and 3 almost word for word; delete all four lines, for the Introduction states the gap and Section III-H measures the fix.
-Per-shard verification proves that each shard is authentic, not that
-all shards belong to the same epoch. Epoch-manifest pinning, as defined
-in TUF~\cite{tuf} and Uptane~\cite{uptane}, closes this gap without a new
-protocol. We measure the ML-specific consequence of its absence.
+\textbf{Trust assumptions.} The coordinator, loader, runtime, and any stored minimum-epoch state are trusted; signatures cannot be forged. A fully compromised worker that misreports its loaded weights is out of scope, for excluding it requires attestation.
 
 \subsection{Models, Attack, and Repairs}
 \label{sec:setup}
 
-%%Hung: Oxford comma. Replace the label with: "\textbf{Data, model, and attack.}"
-\textbf{Data, model and attack.} We use CIFAR-10~\cite{krizhevsky2009cifar}
+\textbf{Data, model, and attack.} We use CIFAR-10~\cite{krizhevsky2009cifar}
 (50{,}000 training and 10{,}000 test images) and
 PreActResNet18~\cite{he2016identity}. The infected model is the publicly
 released BackdoorBench~\cite{backdoorbench2024} BadNets~\cite{gu2019badnets}
@@ -252,8 +236,7 @@ checkpoint for this pair (poisoning ratio 10\%, 3$\times$3 white patch in the
 bottom-right corner, target class~0); we do not retrain it. Evaluated under its native input normalization it
 reaches CA~$=$~91.33\% and ASR~$=$~95.06\%, matching the published values.
 
-%%Hung: With \includeanpfalse there is no Repair (b), so "(a)" dangles. If ANP stays out at the freeze, replace the label with: "\textbf{Repairs: global clean fine-tuning.}" and leave the paragraph itself unchanged.
-\textbf{Repair~(a): global clean fine-tuning.} The infected model is
+\textbf{Repairs: global clean fine-tuning.} The infected model is
 fine-tuned for 20 epochs on the full clean training set (SGD, momentum 0.9,
 weight decay $5\!\times\!10^{-4}$, learning rate 0.01 with cosine annealing,
 batch 128), updating every parameter. We train two such repairs. The seed-42
@@ -297,8 +280,7 @@ Random seed                & 42 \\
 \end{table}
 \fi
 
-%%Hung: We say "rolling back" for the action everywhere else. Replace the heading with: "\subsection{Partitioning and Rollback}" and use "rolled back" instead of "substituted" in III-B and III-C (see the comments there).
-\subsection{Partitioning and Substitution}
+\subsection{Partitioning and Rollback}
 \label{sec:partition}
 
 We partition PreActResNet18 into $n$ contiguous shards along
@@ -323,24 +305,13 @@ repair update that it carries:
   \delta_s \;=\; \theta^{\mathrm{rep}}_s - \theta^{\mathrm{inf}}_s,
   \label{eq:share}
 \end{equation}
-%%Hung: The three \texttt names cannot be hyphenated and leave two badly spaced lines (log: lines 283--290). Replace the text from "BatchNorm buffers" to "not learned." with:
-%%Hung: "BatchNorm buffers (running mean, running variance, and batch counter) are excluded, for they are not learned."
-where $\theta_s$ are the learnable parameters of shard $s$; BatchNorm
-buffers (\texttt{running\_mean}, \texttt{running\_var},
-\texttt{num\_batches\_tracked}) are excluded because they are not
-learned. By construction $\sum_s \mathrm{share}_s = 1$, and the share of
-%%Hung: "attacker" here, "adversary" everywhere else. Replace the last sentence with: "The metric needs only the two signed checkpoints, so an adversary who holds both can compute it offline."
-a set of shards is the sum of their shares. The metric needs only the two
-signed checkpoints, so an attacker who holds both can compute it offline.
+where $\theta_s$ are the learnable parameters of shard $s$; BatchNorm buffers (running mean, running variance, and batch counter) are excluded, for they are not learned. By construction $\sum_s \mathrm{share}_s = 1$, and the share of
+a set of shards is the sum of their shares. The metric needs only the two signed checkpoints, so an adversary who holds both can compute it offline.
 
 \subsection{Metrics}
 \label{sec:metrics}
 
-%%Hung: Two stacked relative clauses make the ASR sentence hard to parse. Replace it with:
-%%Hung: "\textbf{ASR} is the fraction of the 9{,}000 triggered test images whose true class is not the target that the model classifies as the target class, following BackdoorBench~\cite{backdoorbench2024}."
-\textbf{ASR} is the fraction of triggered test images whose true class is
-not the target that are classified as the target class
-(9{,}000 images), following BackdoorBench~\cite{backdoorbench2024}.
+\textbf{ASR} is the fraction of the 9{,}000 triggered test images whose true class is not the target that the model classifies as the target class, following BackdoorBench~\cite{backdoorbench2024}.
 \textbf{CA} is top-1 accuracy on the 10{,}000 clean test images. Both are
 measured in evaluation mode. All models are evaluated with BackdoorBench's
 input normalization (per-channel standard deviation 0.247, 0.243, 0.261).
@@ -595,16 +566,12 @@ defenses, ANP among them, quickly re-learn the
 backdoor when retuned on a few poisoned samples or probed with crafted
 queries. DeferBad~\cite{shin2024deferbad} designs the backdoor so that
 unlearning leaves a residue that later benign fine-tuning reactivates.
-%%Hung: The paper says "adversary" everywhere except here and in the next paragraph, and IEEE uses US spelling. Replace "Our attacker" with "Our adversary" in both places, and "behaviour" with "behavior" in the next sentence.
-Both need training or queries. Our attacker needs neither: it restores
-backdoor behaviour purely by serving shards that were once legitimately
-signed.
+Both need training or queries. Our adversary needs neither: it restores backdoor behavior purely by serving shards that were once legitimately signed.
 
 \textbf{Weight substitution and merging.} The subnet replacement
 attack~\cite{qi2022subnet} overwrites part of a deployed model with
 weights trained for the purpose, and BadMerging~\cite{zhang2024badmerging}
-plants backdoors through merging of distinct models. Our attacker cannot
-craft weights; it reuses the two endpoints of one repair.
+plants backdoors through merging of distinct models. Our adversary cannot craft weights; it reuses the two endpoints of one repair.
 
 \textbf{Artifact integrity and update security.}
 Sentry~\cite{gan2025sentry} authenticates ML artifacts as they are loaded,
