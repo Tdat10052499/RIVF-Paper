@@ -13,13 +13,16 @@
 - Difference: delta_CA = 0.17, delta_ASR = 0.09 — within confidence half-width; no retrain.
 - All-subsets results: results/raw/all_subsets/finetune_s42_bb_n6.json (64 rows)
 
-## resnet18_cifar10_badnets_repaired_s0.pt (finetune_s0)
+## resnet18_cifar10_badnets_repaired_s0.pt (finetune_s0, v2)
 - Fine-tune seed: 0
-- Evaluation under BackdoorBench norm: ASR 1.13%, CA 93.51%
-- All-subsets results: results/raw/all_subsets/finetune_s0_bb_n6.json (64 rows)
-- **Binary file status:** NOT stored in repo (~90 MB). Obtain from Kaggle notebook output
-  (`/kaggle/working/RIVF-Paper/data/checkpoints/resnet18_cifar10_badnets_repaired_s0.pt`)
-  or upload separately via Git LFS / Kaggle Dataset.
+- Fine-tune normalization used during training: std (0.247, 0.243, 0.261) - BackdoorBench
+- Evaluation under BackdoorBench norm: ASR 1.34%, CA 93.13%
+- SHA256: pending - to be computed from the Kaggle notebook output that produced the v2 results
+- All-subsets results: results/raw/all_subsets/finetune_s0_bb_n6_v2.json (64 rows; full rollback reproduces the infected model, ASR 95.06%, CA 91.33%)
+- Provenance: seed-0 fine-tune trained on Kaggle under BackdoorBench normalization; all subsets re-evaluated with scripts/eval_all_subsets.py --norm backdoorbench (commit de5c00c), every metric measured on this one checkpoint.
+- Superseded: results/raw/all_subsets/finetune_s0_bb_n6.json (v1: ASR 1.13%, CA 93.51%) mixed two checkpoints - ASR/CA from a different seed-0 checkpoint, repair shares copied from seed 42 (plan Sec. 13.5, 14.2). Kept because raw files are append-only; do not use.
+- **Binary file status:** NOT stored in repo. Obtain from the Kaggle notebook output
+  (`/kaggle/working/RIVF-Paper/data/checkpoints/resnet18_cifar10_badnets_repaired_s0.pt`).
 
 ## resnet18_cifar10_badnets_anp_fixed.pt
 - Repair method: ANP (Adversarial Neuron Pruning), threshold=0.55, 404/3392 neurons pruned
