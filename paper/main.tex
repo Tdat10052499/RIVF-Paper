@@ -189,8 +189,8 @@ costs: in our serving comparison (Section~\ref{sec:serving}) it adds 34 bytes
 of manifest per epoch and no measurable per-load verification cost, which makes
 it a baseline control rather than a design trade-off.
 
-Section~\ref{sec:threat} states the threat model. Section~\ref{sec:setup}
-describes the dataset, architecture, attack, repairs, and partitioning.
+Section~\ref{sec:threat} states the threat model. Sections~\ref{sec:setup}--\ref{sec:metrics}
+describe the dataset, architecture, attack, repairs, partitioning, and metrics.
 Section~\ref{sec:results} reports the single-shard, multi-shard, and
 shard-selection results for both repairs, \ifincludeanp the contrast with a
 local repair, \fi the determinism and replication checks, and the serving
@@ -233,7 +233,7 @@ no training data.
 PreActResNet18~\cite{he2016identity}. The infected model is the publicly
 released BackdoorBench~\cite{backdoorbench2024} BadNets~\cite{gu2019badnets}
 checkpoint for this pair (poisoning ratio 10\%, 3$\times$3 white patch in the
-bottom-right corner, target class~0); we do not retrain it. Evaluated under its native input normalization it
+bottom-right corner, target class~0); we do not retrain it. Evaluated under its native input normalization, it
 reaches CA~$=$~91.33\% and ASR~$=$~95.06\%, matching the published values.
 
 \textbf{Repairs: global clean fine-tuning.} The infected model is
@@ -287,7 +287,7 @@ We partition PreActResNet18 into $n$ contiguous shards along
 top-level module boundaries. At $n\!=\!6$ the shards are the stem
 (\texttt{conv1}), the four residual stages \texttt{layer1}--\texttt{layer4},
 and the classifier head (\texttt{linear}), indexed 0--5. At $n\!=\!3$ they
-are \{stem, \texttt{layer1}\}, \{\texttt{layer2}, \texttt{layer3}\} and
+are \{stem, \texttt{layer1}\}, \{\texttt{layer2}, \texttt{layer3}\}, and
 \{\texttt{layer4}, head\}. Rolling back a set of shards replaces all of
 their tensors, including BatchNorm statistics, with the infected
 versions and leaves every other shard repaired. Rolling back all $n$
@@ -594,8 +594,7 @@ through caches.
 % =====================================================================
 % Hung, 28/09: the trigger balances the two columns of the last page. Re-tune
 % the reference number after the final edits if the last page is unbalanced.
-\IEEEtriggeratref{4}
+\IEEEtriggeratref{6}
 \bibliographystyle{IEEEtran}
 \bibliography{references}
-
 \end{document}
