@@ -345,14 +345,8 @@ Repaired, seed~0 (fine-tune) & 1.34 & 93.13 \\
 \end{tabular}
 \end{table}
 
-%%Hung: The full-rollback check now lives in Section II-C, so this subsection is about hybrid utility only. Replace the heading with: "\subsection{Hybrid Utility}"
-\subsection{Harness Verification and Hybrid Utility}
+\subsection{Hybrid Utility}
 \label{sec:sanity}
-
-%%Hung: Delete this two-line lead sentence: the harness check it announces is already stated in Section II-C, and "substitution harness" uses the word we replaced by "rollback" everywhere else. The paragraph below then opens the subsection.
-Before evaluating partial rollbacks, we verify that the substitution
-harness is correct and that the resulting hybrid models remain functional.
-
 
 \textbf{Hybrid utility.} Across all partial rollbacks ($n=6$, one to five stale shards), hybrids serve at 74.76\% to 93.15\% CA (seed~42) and 78.50\% to 93.31\% CA (seed~0); the single-shard hybrids stay within 86.76--93.15\% and 86.87--93.31\%. No hybrid degrades to chance accuracy (about 10\%), so a stale shard never breaks the model outright. Whether a monitor would notice depends on the subset, for the four-shard hybrids of Section~\ref{sec:kcurve} stay within 2.2 points of the repaired model.
 
